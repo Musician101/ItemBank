@@ -27,9 +27,9 @@ public class ItemTranslator
 		return materialMap;
 	}*/
 	
-	public static void parseCSV(Player player)
+	public static void parseCSV(ItemBank plugin, Player player)
 	{
-		String csvFile = ItemBank.plugin.getDataFolder() + "/items.csv";
+		String csvFile = plugin.getDataFolder() + "/items.csv";
 		BufferedReader br = null;
 		String line;
 		String split = ",";
@@ -64,10 +64,10 @@ public class ItemTranslator
 				}
 			}
 		}
-		ItemBank.plugin.logger().info("Done");
+		plugin.getLogger().info("Done");
 	}
 	
-	public static Material getMaterial(String materialName)
+	public static Material getMaterial(ItemBank plugin, String materialName)
 	{
 		Material material = Material.matchMaterial(materialName);
 		if (materialName.toLowerCase().contains("wood"))
@@ -115,7 +115,7 @@ public class ItemTranslator
 		return material;
 	}
 	
- 	public static String getPath(String materialName)
+ 	public static String getPath(ItemBank plugin, String materialName)
 	{
 		Material material = Material.matchMaterial(materialName);
 		String path = "";
@@ -372,7 +372,7 @@ public class ItemTranslator
 		return path;
 	}
 	
-	public static byte getDamage(String materialName)
+	public static byte getDamage(ItemBank plugin, String materialName)
 	{
 		byte damage = 0;
 		if (materialName.toLowerCase().contains("wood"))

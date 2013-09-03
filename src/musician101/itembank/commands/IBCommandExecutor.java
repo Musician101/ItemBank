@@ -40,7 +40,7 @@ public class IBCommandExecutor implements CommandExecutor
 				{
 					if (!sender.hasPermission(Constants.adminPerm))
 					{
-						sender.sendMessage(Constants.noPermission);
+						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
 					}
 					// Admin Deposit
@@ -48,18 +48,18 @@ public class IBCommandExecutor implements CommandExecutor
 					{
 						if (args[2] == "")
 						{
-							sender.sendMessage(Constants.prefix + "Error: You did not specify a player.");
+							sender.sendMessage(Constants.NO_PLAYER);
 							return false;
 						}
 						else if (args[3] == "")
 						{
-							sender.sendMessage(Constants.prefix + "Error: You did not specify a block/item.");
+							sender.sendMessage(Constants.NO_BLOCK_ITEM);
 							return false;
 						}
 						else
 						{
 							int amount = Integer.parseInt(args[4]);
-							String path = ItemTranslator.getPath(args[2]);
+							String path = ItemTranslator.getPath(plugin, args[2]);
 							
 							plugin.playerFile = new File(plugin.getDataFolder() + "/PlayerData", args[1] + ".yml");
 							plugin.playerData = new YamlConfiguration();
@@ -79,12 +79,12 @@ public class IBCommandExecutor implements CommandExecutor
 								plugin.playerData.set(path, newAmount);
 								if (sender instanceof Player)
 								{
-									sender.sendMessage(Constants.prefix + "Added " + amount + " " + args[3] + " to " + args[1] + "'s account.");
-									plugin.logger().info(sender.getName() + " has deposited " + amount + " of " + args[3] + " into " + args[1] + "'s account.");
+									sender.sendMessage(Constants.PREFIX + "Added " + amount + " " + args[3] + " to " + args[1] + "'s account.");
+									plugin.getLogger().info(sender.getName() + " has deposited " + amount + " of " + args[3] + " into " + args[1] + "'s account.");
 								}
 								else
 								{
-									plugin.logger().info("Added " + amount + " " + args[3] + " to " + args[1] + "'s account.");
+									plugin.getLogger().info("Added " + amount + " " + args[3] + " to " + args[1] + "'s account.");
 								}
 								
 								try
@@ -99,7 +99,7 @@ public class IBCommandExecutor implements CommandExecutor
 							}
 							else
 							{
-								sender.sendMessage(Constants.prefix + "Error: Account does not exist.");
+								sender.sendMessage(Constants.NO_ACCOUNT);
 								return false;
 							}
 						}
@@ -109,18 +109,18 @@ public class IBCommandExecutor implements CommandExecutor
 					{
 						if (args[1] == "")
 						{
-							sender.sendMessage(Constants.prefix + "Error: You did not specify a player.");
+							sender.sendMessage(Constants.NO_PLAYER);
 							return false;
 						}
 						else if (args[3] == "")
 						{
-							sender.sendMessage(Constants.prefix + "Error: You did not specify a block/item.");
+							sender.sendMessage(Constants.NO_BLOCK_ITEM);
 							return false;
 						}
 						else
 						{
 							int amount = Integer.parseInt(args[4]);
-							String path = ItemTranslator.getPath(args[3]);
+							String path = ItemTranslator.getPath(plugin, args[3]);
 							
 							plugin.playerFile = new File(plugin.getDataFolder() + "/PlayerData", args[1] + ".yml");
 							plugin.playerData = new YamlConfiguration();
@@ -137,7 +137,7 @@ public class IBCommandExecutor implements CommandExecutor
 								
 								if (amount > plugin.playerData.getInt(path))
 								{
-									sender.sendMessage(Constants.prefix + "Error: " + args[1] + " does not have enough of the specified item.");
+									sender.sendMessage(Constants.PREFIX + "Error: " + args[1] + " does not have enough of the specified item.");
 									return false;
 								}
 								else
@@ -147,12 +147,12 @@ public class IBCommandExecutor implements CommandExecutor
 									plugin.playerData.set(path, newAmount);
 									if (sender instanceof Player)
 									{
-										sender.sendMessage(Constants.prefix + "Removed " + amount + " " + args[3] + " from " + args[1] + "'s account.");
-										plugin.logger().info(sender.getName() + " has withdrawn " + amount + " " + args[3] + " from" + args[1] + "'s account.");
+										sender.sendMessage(Constants.PREFIX + "Removed " + amount + " " + args[3] + " from " + args[1] + "'s account.");
+										plugin.getLogger().info(sender.getName() + " has withdrawn " + amount + " " + args[3] + " from" + args[1] + "'s account.");
 									}
 									else
 									{
-										plugin.logger().info("Removed " + amount + " " + args[3] + " from " + args[1] + "'s account.");
+										plugin.getLogger().info("Removed " + amount + " " + args[3] + " from " + args[1] + "'s account.");
 									}
 									
 									try
@@ -168,7 +168,7 @@ public class IBCommandExecutor implements CommandExecutor
 							}
 							else
 							{
-								sender.sendMessage(Constants.prefix + "Error: Account does not exist.");
+								sender.sendMessage(Constants.NO_ACCOUNT);
 								return false;
 							}
 						}
@@ -179,17 +179,17 @@ public class IBCommandExecutor implements CommandExecutor
 				{
 					if (!sender.hasPermission(Constants.depositPerm))
 					{
-						sender.sendMessage(Constants.noPermission);
+						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
 					}
 					else if (!(sender instanceof Player))
 					{
-						sender.sendMessage(Constants.prefix + "Error: Player command only!");
+						sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
 						return false;
 					}
 					else if (args[1] == "")
 					{
-						sender.sendMessage(Constants.prefix + "Error: You did not specify a block/item.");
+						sender.sendMessage(Constants.NO_BLOCK_ITEM);
 						return false;
 					}
 					else
@@ -200,24 +200,19 @@ public class IBCommandExecutor implements CommandExecutor
 								
 								if (ID == args[1])
 								{
-									sender.sendMessage(Constants.prefix + "Sorry, but that item is not depositable.");
-									return false;
-								}
-								else if (args[1] == "")
-								{
-									sender.sendMessage(Constants.prefix + "Error: You did not specify a block/item.");
+									sender.sendMessage(Constants.NON_DEPOSITABLE);
 									return false;
 								}
 								else
 								{
 									int amount = 0;
 									//List<String> data = new ArrayList<String>(ItemTranslator.getMaterial(args[1]));
-									Material material = ItemTranslator.getMaterial(args[1]);
-									byte damage = ItemTranslator.getDamage(args[1]);
-									ItemTranslator.parseCSV((Player) sender);
+									Material material = ItemTranslator.getMaterial(plugin, args[1]);
+									byte damage = ItemTranslator.getDamage(plugin, args[1]);
+									ItemTranslator.parseCSV(plugin, (Player) sender);
 									//int material = Integer.parseInt(data.get(0));
 									//byte damage = Byte.parseByte(data.get(1);
-									String path = ItemTranslator.getPath(args[1]);
+									String path = ItemTranslator.getPath(plugin, args[1]);
 									
 									Player player = (Player) sender;
 									if (args.length == 2)
@@ -242,8 +237,8 @@ public class IBCommandExecutor implements CommandExecutor
 										int newAmount = oldAmount + amount;
 										plugin.playerData.set(path, newAmount);
 										player.getInventory().removeItem(new ItemStack(material, amount, damage));
-										sender.sendMessage(Constants.prefix + "You have deposited " + amount + " " + args[1] + ".");
-										plugin.logger().info(player.getName() + " has deposited " + amount + " of " + args[1] + ".");
+										sender.sendMessage(Constants.getDepositPlayerMessage(amount, args[1]));
+										plugin.getLogger().info(Constants.getDepositConsoleMessage(player.getName(), amount, args[1]));
 										try
 										{
 											plugin.playerData.save(plugin.playerFile);
@@ -256,7 +251,7 @@ public class IBCommandExecutor implements CommandExecutor
 									}
 									else
 									{
-										sender.sendMessage(Constants.prefix + "Error: You do not have enough of the specified item.");
+										sender.sendMessage(Constants.NOT_ENOUGH);
 										return false;
 									}
 								}
@@ -268,7 +263,7 @@ public class IBCommandExecutor implements CommandExecutor
 				{
 					if (!sender.hasPermission(Constants.helpPerm))
 					{
-						sender.sendMessage(Constants.noPermission);
+						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
 					}
 					else
@@ -302,7 +297,7 @@ public class IBCommandExecutor implements CommandExecutor
 							}
 							else
 							{
-								sender.sendMessage(Constants.prefix + "Error: Command not recognized.");
+								sender.sendMessage(Constants.PREFIX + "Error: Command not recognized.");
 								return false;
 							}
 						}
@@ -313,7 +308,7 @@ public class IBCommandExecutor implements CommandExecutor
 				{
 					if (!sender.hasPermission(Constants.purgePerm))
 					{
-						sender.sendMessage(Constants.noPermission);
+						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
 					}
 					else
@@ -346,7 +341,7 @@ public class IBCommandExecutor implements CommandExecutor
 									}
 								}
 							}
-							sender.sendMessage(Constants.prefix + "Purge complete.");
+							sender.sendMessage(Constants.PREFIX + "Purge complete.");
 							return true;
 						}
 						else if (args.length == 2)
@@ -366,12 +361,12 @@ public class IBCommandExecutor implements CommandExecutor
 							{
 								e.printStackTrace();
 							}
-							sender.sendMessage(Constants.prefix + "Player file reset.");
+							sender.sendMessage(Constants.PLAYER_FILE_RESET);
 							return true;
 						}
 						else
 						{
-							sender.sendMessage(Constants.prefix + "Error: Too many arguments.");
+							sender.sendMessage(Constants.TOO_MANY_ARGUMENTS);
 							return false;
 						}
 					}
@@ -381,12 +376,12 @@ public class IBCommandExecutor implements CommandExecutor
 				{
 					if (!sender.hasPermission(Constants.versionPerm))
 					{
-						sender.sendMessage(Constants.noPermission);
+						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
 					}
 					else
 					{
-						sender.sendMessage(Constants.prefix + "Version " + plugin.getDescription().getVersion() + " originally compiled for CraftBukkit 1.5.2-R1.0.");
+						sender.sendMessage(Constants.getVersionMessage(plugin.getDescription().getVersion()));
 						return true;
 					}
 				}
@@ -395,28 +390,28 @@ public class IBCommandExecutor implements CommandExecutor
 				{
 					if (!sender.hasPermission(Constants.withdrawPerm))
 					{
-						sender.sendMessage(Constants.noPermission);
+						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
 					}
 					else if (!(sender instanceof Player))
 					{
-						sender.sendMessage(Constants.prefix + "Error: Player command only!");
+						sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
 						return false;
 					}
 					else if (args[1] == "")
 					{
-						sender.sendMessage(Constants.prefix + "Error: You did not specify a block/item.");
+						sender.sendMessage(Constants.NO_BLOCK_ITEM);
 						return false;
 					}
 					else
 					{
 						int amount = 0;
 						//List<String> data = new ArrayList<String>(ItemTranslator.getMaterial(args[1]));
-						Material material = ItemTranslator.getMaterial(args[1]);
-						byte damage = ItemTranslator.getDamage(args[1]);
+						Material material = ItemTranslator.getMaterial(plugin, args[1]);
+						byte damage = ItemTranslator.getDamage(plugin, args[1]);
 						//int material = Integer.parseInt(data.get(0));
 						//byte damage = Byte.parseByte(data.get(1));
-						String path = ItemTranslator.getPath(args[1]);
+						String path = ItemTranslator.getPath(plugin, args[1]);
 						
 						Player player = (Player) sender;						
 						plugin.playerFile = new File(plugin.getDataFolder() + "/PlayerData/", player.getName() + ".yml");
@@ -433,19 +428,19 @@ public class IBCommandExecutor implements CommandExecutor
 						if (args.length == 2)
 						{
 							amount = plugin.playerData.getInt(path);
-							sender.sendMessage(Constants.prefix + "Defaulting to all of specified block/item.");
+							sender.sendMessage(Constants.ALL_BLOCK_ITEM);
 						}
 						else if (args.length == 3)
 							amount = Integer.parseInt(args[2]);
 						else
 						{
-							sender.sendMessage(Constants.prefix + "Error: Too many arguments. Defaulting to all of specified block/item.");
+							sender.sendMessage(Constants.TOO_MANY_ARGUMENTS_DEFAULT_TO_ALL);
 							return false;
 						}
 						
 						if (amount > plugin.playerData.getInt(path))
 						{
-							sender.sendMessage(Constants.prefix + "Error: You do not have enough of the specified item.");
+							sender.sendMessage(Constants.NOT_ENOUGH);
 							return false;
 						}
 						else
@@ -455,8 +450,8 @@ public class IBCommandExecutor implements CommandExecutor
 							newAmount = oldAmount - amount;
 							plugin.playerData.set(path, newAmount);
 							player.getInventory().addItem(new ItemStack(material, amount, damage));
-							sender.sendMessage(Constants.prefix + "You have withdrawn " + amount + " " + args[1] + " and now have a total of " + plugin.playerData.getInt(path) + " " + args[1] + ".");
-							plugin.logger().info(player.getName() + " has withdrawn " + amount + " of " + args[1] + ".");
+							sender.sendMessage(Constants.getWithdrawPlayerMessage(amount, args[1], plugin.playerData.getInt(path)));
+							plugin.getLogger().info(Constants.getWithdrawConsoleMessage(player.getName(), amount, args[1]));
 							try
 							{
 								plugin.playerData.save(plugin.playerFile);
@@ -475,12 +470,12 @@ public class IBCommandExecutor implements CommandExecutor
 			{
 				if (sender.hasPermission(Constants.basePerm + ".*") || sender.hasPermission(Constants.depositPerm) || sender.hasPermission(Constants.helpPerm) || sender.hasPermission(Constants.purgePerm) || sender.hasPermission(Constants.versionPerm) || sender.hasPermission(Constants.withdrawPerm))
 				{
-					sender.sendMessage(Constants.prefix + Constants.baseDesc);
+					sender.sendMessage(Constants.PREFIX + Constants.baseDesc);
 					return true;
 				}
 				else
 				{
-					sender.sendMessage(Constants.noPermission);
+					sender.sendMessage(Constants.NO_PERMISSION);
 					return false;
 				}
 			}

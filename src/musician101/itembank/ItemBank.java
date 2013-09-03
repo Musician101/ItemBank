@@ -19,8 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ItemBank extends JavaPlugin
-{	
-	public static ItemBank plugin;
+{
 	protected UpdateChecker updateChecker;
 	public List<String> blacklist;
 	public static File dir = new File("plugins/ItemBank/PlayerData");
@@ -62,12 +61,6 @@ public class ItemBank extends JavaPlugin
 			dir.mkdirs();
 		}
 		
-		// Get a list of blocks/items blacklisted in the config
-		if (config.getString("blacklist") != null)
-		{
-			blacklist = config.getStringList("blacklist");
-		}
-		
 		// Create files for players if they don't have one already
 		Player[] players = Bukkit.getOnlinePlayers();
 		if (players.length > 0)
@@ -92,6 +85,12 @@ public class ItemBank extends JavaPlugin
 					}
 				}
 			}
+		}
+		
+		// Get a list of blocks/items blacklisted in the config
+		if (config.getString("blacklist") != null)
+		{
+			blacklist = config.getStringList("blacklist");
 		}
 		
 		//check for update
