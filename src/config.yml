@@ -1,0 +1,7 @@
+# Which blocks/items shouldn't be stored in the bank. 'Block/Item Name: Maximum Amount Allowed in Storage'
+# If the amount is 0 then that block/item is NON-DEPOSITABLE.
+blacklist:
+    bedrock: 0
+
+# Whether to check for updates or not.    
+checkForUpdate: true

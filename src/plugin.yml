@@ -1,0 +1,39 @@
+name: ItemBank
+main: musician101.itembank.ItemBank
+version: 1.3
+description: Virtual chest with configurable limits.
+authors: [Musician101]
+maintainer: Musician101
+
+commands:
+    itembank:
+        aliases: [ib]
+        description: Virtual chest with configurable limits.
+        usage: <command> help
+
+permissions:
+   itembank.*:
+      defautl: op
+      description: Gives access to all commands.
+      children:
+         itembank.admin: true
+         itembank.deposit: true
+         itembank.help: true
+         itembank.purge: true
+         itembank.version: true
+         itembank.withdraw: true
+   itembank.admin:
+      default: op
+      description: Allows user/group to manage other players' accounts.
+   itembank.deposit:
+      default: op
+      description: Allows user/group to use the deposit command.
+   itembank.purge:
+      default: op
+      description: Allows user/group to use the purge command.
+   itembank.version:
+      default: op
+      description: Allows user/group to use the version command.
+   itembank.withdraw:
+      default: op
+      description: Allows user/group to use the withdraw command.
