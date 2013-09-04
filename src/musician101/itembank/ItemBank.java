@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import musician101.itembank.commands.IBCommandExecutor;
+import musician101.itembank.commands.IBCommand;
 import musician101.itembank.listeners.PlayerListener;
 import musician101.itembank.util.UpdateChecker;
 
@@ -38,7 +38,7 @@ public class ItemBank extends JavaPlugin
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
 		// TODO: Change commands so they don't rely on the base command
-		getCommand("itembank").setExecutor(new IBCommandExecutor(this));
+		getCommand("itembank").setExecutor(new IBCommand(this));
 		
 		configFile = new File(getDataFolder(), "config.yml");
 		saveDefaultConfig();

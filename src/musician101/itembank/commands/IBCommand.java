@@ -23,13 +23,13 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Musician101
  */
-public class IBCommandExecutor implements CommandExecutor
+public class IBCommand implements CommandExecutor
 {
 	ItemBank plugin;
 	/**
 	 * @param plugin References the plugin's 
 	 */
-	public IBCommandExecutor(ItemBank plugin)
+	public IBCommand(ItemBank plugin)
 	{
 		this.plugin = plugin;
 	}
