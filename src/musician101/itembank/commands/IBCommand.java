@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * The code used to run when any command in the plugin is executed.
+ * The code used to run when the ItemBank command is executed.
  * 
  * @author Musician101
  */
@@ -44,14 +44,14 @@ public class IBCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (command.getName().equalsIgnoreCase(Constants.baseCmd) || command.getName().equalsIgnoreCase(Constants.baseAlias))
+		if (command.getName().equalsIgnoreCase(Constants.BASE_CMD) || command.getName().equalsIgnoreCase(Constants.BASE_ALIAS))
 		{
 			/** Base Command */
 			if (args.length == 0)
 			{
-				if (sender.hasPermission(Constants.basePerm + ".*") || sender.hasPermission(Constants.depositPerm) || sender.hasPermission(Constants.helpPerm) || sender.hasPermission(Constants.purgePerm) || sender.hasPermission(Constants.versionPerm) || sender.hasPermission(Constants.withdrawPerm))
+				if (sender.hasPermission(Constants.BASE_PERM + ".*") || sender.hasPermission(Constants.DEPOSIT_PERM) || sender.hasPermission(Constants.HELP_PERM) || sender.hasPermission(Constants.PURGE_PERM) || sender.hasPermission(Constants.VERSION_PERM) || sender.hasPermission(Constants.WITHDRAW_PERM))
 				{
-					sender.sendMessage(Constants.PREFIX + Constants.baseDesc);
+					sender.sendMessage(Constants.PREFIX + Constants.BASE_DESC);
 					return true;
 				}
 				else
@@ -63,15 +63,15 @@ public class IBCommand implements CommandExecutor
 			else if (args.length > 0)
 			{
 				/** Admin Command */
-				if (args[0].equalsIgnoreCase(Constants.adminCmd) || args[0].equalsIgnoreCase(Constants.adminAlias))
+				if (args[0].equalsIgnoreCase(Constants.ADMIN_CMD) || args[0].equalsIgnoreCase(Constants.ADMIN_ALIAS))
 				{
-					if (!sender.hasPermission(Constants.adminPerm))
+					if (!sender.hasPermission(Constants.ADMIN_PERM))
 					{
 						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
 					}
 					/** Admin Deposit */
-					else if (args[2].equalsIgnoreCase(Constants.depositCmd) || args[2].equalsIgnoreCase(Constants.depositAlias))
+					else if (args[2].equalsIgnoreCase(Constants.DEPOSIT_CMD) || args[2].equalsIgnoreCase(Constants.DEPOSIT_ALIAS))
 					{
 						if (args[2] == "")
 						{
@@ -106,12 +106,12 @@ public class IBCommand implements CommandExecutor
 								plugin.playerData.set(path, newAmount);
 								if (sender instanceof Player)
 								{
-									sender.sendMessage(Constants.PREFIX + "Added " + amount + " " + args[3] + " to " + args[1] + "'s account.");
-									plugin.getLogger().info(sender.getName() + " has deposited " + amount + " of " + args[3] + " into " + args[1] + "'s account.");
+									sender.sendMessage(Constants.getAdminDepositPlayerMessage(amount, args[3], args[1]));
+									plugin.getLogger().info(Constants.getAdminDepositConsoleMessage(sender.getName(), amount, args[3], args[1]));
 								}
 								else
 								{
-									plugin.getLogger().info("Added " + amount + " " + args[3] + " to " + args[1] + "'s account.");
+									plugin.getLogger().info(Constants.getAdminDepositConsoleMessage(sender.getName(), amount, args[3], args[1]));
 								}
 								
 								try
@@ -132,7 +132,7 @@ public class IBCommand implements CommandExecutor
 						}
 					}
 					/** Admin Withdraw */
-					else if (args[2].equalsIgnoreCase(Constants.withdrawCmd) || args[2].equalsIgnoreCase(Constants.withdrawAlias))
+					else if (args[2].equalsIgnoreCase(Constants.WITHDRAW_CMD) || args[2].equalsIgnoreCase(Constants.WITHDRAW_ALIAS))
 					{
 						if (args[1] == "")
 						{
@@ -202,9 +202,9 @@ public class IBCommand implements CommandExecutor
 					}
 				}
 				/** Deposit Command */
-				else if (args[0].equalsIgnoreCase(Constants.depositCmd) || args[0].equalsIgnoreCase(Constants.depositAlias))
+				else if (args[0].equalsIgnoreCase(Constants.DEPOSIT_CMD) || args[0].equalsIgnoreCase(Constants.DEPOSIT_ALIAS))
 				{
-					if (!sender.hasPermission(Constants.depositPerm))
+					if (!sender.hasPermission(Constants.DEPOSIT_PERM))
 					{
 						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
@@ -286,9 +286,9 @@ public class IBCommand implements CommandExecutor
 						}
 					}
 				/** Help Command */
-				else if (args[0].equalsIgnoreCase(Constants.helpCmd) || args[0].equalsIgnoreCase(Constants.helpAlias))
+				else if (args[0].equalsIgnoreCase(Constants.HELP_CMD) || args[0].equalsIgnoreCase(Constants.HELP_ALIAS))
 				{
-					if (!sender.hasPermission(Constants.helpPerm))
+					if (!sender.hasPermission(Constants.HELP_PERM))
 					{
 						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
@@ -297,29 +297,29 @@ public class IBCommand implements CommandExecutor
 					{
 						if (args.length == 1)
 						{
-							sender.sendMessage(Constants.helpMessageList);
+							sender.sendMessage(Constants.HELP_LIST);
 							return true;
 						}
 						else
 						{
-							if (args[1].equalsIgnoreCase(Constants.adminCmd) || args[1].equalsIgnoreCase(Constants.adminAlias))
+							if (args[1].equalsIgnoreCase(Constants.ADMIN_CMD) || args[1].equalsIgnoreCase(Constants.ADMIN_ALIAS))
 							{
-								sender.sendMessage(Constants.adminHelp);
+								sender.sendMessage(Constants.ADMIN_HELP);
 								return true;
 							}
-							else if (args[1].equalsIgnoreCase(Constants.depositCmd) || args[1].equalsIgnoreCase(Constants.depositAlias))
+							else if (args[1].equalsIgnoreCase(Constants.DEPOSIT_CMD) || args[1].equalsIgnoreCase(Constants.DEPOSIT_ALIAS))
 							{
-								sender.sendMessage(Constants.depositHelp);
+								sender.sendMessage(Constants.DEPOSIT_HELP);
 								return true;
 							}
-							else if (args[1].equalsIgnoreCase(Constants.purgeCmd) || args[1].equalsIgnoreCase(Constants.purgeAlias))
+							else if (args[1].equalsIgnoreCase(Constants.PURGE_CMD) || args[1].equalsIgnoreCase(Constants.PURGE_ALIAS))
 							{
-								sender.sendMessage(Constants.purgeHelp);
+								sender.sendMessage(Constants.PURGE_HELP);
 								return true;
 							}
-							else if (args[1].equalsIgnoreCase(Constants.withdrawCmd) || args[1].equalsIgnoreCase(Constants.withdrawAlias))
+							else if (args[1].equalsIgnoreCase(Constants.WITHDRAW_CMD) || args[1].equalsIgnoreCase(Constants.WITHDRAW_ALIAS))
 							{
-								sender.sendMessage(Constants.withdrawHelp);
+								sender.sendMessage(Constants.WITHDRAW_HELP);
 								return true;
 							}
 							else
@@ -331,9 +331,9 @@ public class IBCommand implements CommandExecutor
 					}
 				}
 				/** Purge Command */
-				else if (args[0].equalsIgnoreCase(Constants.purgeCmd) || args[0].equalsIgnoreCase(Constants.purgeAlias))
+				else if (args[0].equalsIgnoreCase(Constants.PURGE_CMD) || args[0].equalsIgnoreCase(Constants.PURGE_ALIAS))
 				{
-					if (!sender.hasPermission(Constants.purgePerm))
+					if (!sender.hasPermission(Constants.PURGE_PERM))
 					{
 						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
@@ -399,9 +399,9 @@ public class IBCommand implements CommandExecutor
 					}
 				}
 				/** Version Command */
-				else if (args[0].equalsIgnoreCase(Constants.versionCmd) || args[0].equalsIgnoreCase(Constants.versionAlias))
+				else if (args[0].equalsIgnoreCase(Constants.VERSION_CMD) || args[0].equalsIgnoreCase(Constants.VERSION_ALIAS))
 				{
-					if (!sender.hasPermission(Constants.versionPerm))
+					if (!sender.hasPermission(Constants.VERSION_PERM))
 					{
 						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
@@ -413,9 +413,9 @@ public class IBCommand implements CommandExecutor
 					}
 				}
 				/** Withdraw Command */
-				else if (args[0].equalsIgnoreCase(Constants.withdrawCmd) || args[0].equalsIgnoreCase(Constants.withdrawAlias))
+				else if (args[0].equalsIgnoreCase(Constants.WITHDRAW_CMD) || args[0].equalsIgnoreCase(Constants.WITHDRAW_ALIAS))
 				{
-					if (!sender.hasPermission(Constants.withdrawPerm))
+					if (!sender.hasPermission(Constants.WITHDRAW_PERM))
 					{
 						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
