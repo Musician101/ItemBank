@@ -12,6 +12,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Checks the RSS feed for an update.
+ * 
+ * @author Musician101
+ */
 public class UpdateChecker
 {
 	private ItemBank plugin;
@@ -19,6 +24,10 @@ public class UpdateChecker
 	private String version;
 	private String link;
 	
+	/**
+	 * @param plugin References the main class.
+	 * @param url The URL to the files.rss.
+	 */
 	public UpdateChecker(ItemBank plugin, String url)
 	{
 		this.plugin = plugin;
@@ -32,6 +41,9 @@ public class UpdateChecker
 		}
 	}
 	
+	/**
+	 * @return True if there's an update available.
+	 */
 	public boolean updateNeeded()
 	{
 		try
@@ -53,11 +65,17 @@ public class UpdateChecker
 		return false;
 	}
 	
+	/**
+	 * @return The version of the newest release.
+	 */
 	public String getVersion()
 	{
 		return this.version;
 	}
 	
+	/**
+	 * @return The link to the RSS feed.
+	 */
 	public String getLink()
 	{
 		return this.link;

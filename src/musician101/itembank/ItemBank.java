@@ -2,10 +2,8 @@ package musician101.itembank;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import musician101.itembank.commands.IBCommandExecutor;
@@ -18,6 +16,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * The plugin's main class.
+ * 
+ * @author Musician101
+ */
 public class ItemBank extends JavaPlugin
 {
 	protected UpdateChecker updateChecker;
@@ -29,15 +32,14 @@ public class ItemBank extends JavaPlugin
 	public FileConfiguration playerData;
 	File itemsCSV = new File(getDataFolder() + "/items.csv");
 	
+	/** Initializes the plugin, checks for the config, and register commands and listeners. */
 	public void onEnable()
 	{
-		// Get listener for player login to create file if it doesnt exists
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
-		// Set up CommandExecutor
+		// TODO: Change commands so they don't rely on the base command
 		getCommand("itembank").setExecutor(new IBCommandExecutor(this));
 		
-		// Create config if it doesn't exist and load it
 		configFile = new File(getDataFolder(), "config.yml");
 		saveDefaultConfig();
 		config = new YamlConfiguration();
@@ -50,18 +52,17 @@ public class ItemBank extends JavaPlugin
 			e.printStackTrace();
 		}
 		
+		/* TODO: Implement items.csv for blocks with multiple names.
 		if (!itemsCSV.exists())
 		{
 			createCSV();
-		}
+		}*/
 		
-		// Create the PlayerData folder if it doesnt exist
 		if (!dir.exists())
 		{
 			dir.mkdirs();
 		}
 		
-		// Create files for players if they don't have one already
 		Player[] players = Bukkit.getOnlinePlayers();
 		if (players.length > 0)
 		{
@@ -87,13 +88,11 @@ public class ItemBank extends JavaPlugin
 			}
 		}
 		
-		// Get a list of blocks/items blacklisted in the config
 		if (config.getString("blacklist") != null)
 		{
 			blacklist = config.getStringList("blacklist");
 		}
 		
-		//check for update
 		if (config.getBoolean("checkForUpdate") == true)
 		{
 			this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/bukkit-plugins/item_bank/files.rss");
@@ -114,12 +113,14 @@ public class ItemBank extends JavaPlugin
 		}
 	}
 	
+	/** Shuts off the plugin */
 	public void onDisable()
 	{
 		getLogger().info("Shutting down.");
 	}
 	
-	public void createCSV()
+	/** @see onEnabled() */
+	/*public void createCSV()
 	{
 		InputStream stream = getClass().getResourceAsStream("/items.csv");
 		FileOutputStream resStreamOut;
@@ -138,5 +139,5 @@ public class ItemBank extends JavaPlugin
 		{
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

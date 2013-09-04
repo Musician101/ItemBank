@@ -1,14 +1,18 @@
 package musician101.itembank.lib;
 
 import org.bukkit.ChatColor;
-
-// Constants for command names, aliases, perms, and other things. 
+ 
+/**
+ * List of strings used throughout the plugin.
+ * 
+ * @author Musician101
+ */
 public class Constants 
 {
-	// Formatting.
+	/** Formatting. */
 	public static String PREFIX = ChatColor.DARK_RED + "[ItemBank] ";
 	
-	// Error messages.
+	/** Error messages. */
 	public static final String COMMAND_NOT_RECOGNIZED = PREFIX + "Error: Command not recognized.";
 	public static final String NO_ACCOUNT = PREFIX + "Error: Account does not exist.";
 	public static final String NO_BLOCK_ITEM = PREFIX + "Error: You did not specify a block/item.";
@@ -20,7 +24,7 @@ public class Constants
 	public static final String TOO_MANY_ARGUMENTS = PREFIX + "Error: Too many arguments.";
 	public static final String TOO_MANY_ARGUMENTS_DEFAULT_TO_ALL = PREFIX + "Error: Too many arguments. Defaulting to all of the specified block/item.";
 	
-	// Command success.
+	/** Command success messages. */
 	public static final String ALL_BLOCK_ITEM = "Defaulting to all of the specified block/item.";
 	
 	public static String getDepositConsoleMessage(String player, int amount, String material)
@@ -50,13 +54,13 @@ public class Constants
 		return PREFIX + "You have withdrawn " + amount + " " + material + " and now have a total of " + bankAmount + " left.";
 	}
 	
-	// Itembank command
+	/** ItemBank command */
 	public static final String baseCmd = "ItemBank";
 	public static final String baseAlias = "ib";
 	public static final String basePerm = "itembank";
 	public static final String baseDesc = "Base command, type /itembank help for more info.";
 	
-	// Deposit command
+	/** Deposit command */
 	public static final String depositCmd = "deposit";
 	public static final String depositAlias = "d";
 	public static final String depositPerm = basePerm + ".deposit";
@@ -66,7 +70,7 @@ public class Constants
 		"Help for the " + ChatColor.DARK_RED + "Deposit" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + depositDesc, ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + depositUsage}; 
 	
-	// Purge command
+	/** Purge command */
 	public static final String purgeCmd = "purge";
 	public static final String purgeAlias = "p";
 	public static final String purgePerm = basePerm + ".purge";
@@ -76,7 +80,7 @@ public class Constants
 		"Help for the " + ChatColor.DARK_RED + "Purge" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + purgeDesc, ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + purgeUsage};
 	
-	// Version command
+	/** Version command */
 	public static final String versionCmd = "version";
 	public static final String versionAlias = "v";
 	public static final String versionPerm = basePerm + ".version";
@@ -86,7 +90,7 @@ public class Constants
 		"Help for the " + ChatColor.DARK_RED + "Version" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + versionDesc, ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + versionUsage};
 	
-	// Withdraw command
+	/** Withdraw command */
 	public static final String withdrawCmd = "withdraw";
 	public static final String withdrawAlias = "w";
 	public static final String withdrawPerm = basePerm + ".withdraw";
@@ -96,7 +100,7 @@ public class Constants
 		"Help for the " + ChatColor.DARK_RED + "Withdraw" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + withdrawDesc, ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + withdrawUsage};
 	
-	// Admin command
+	/** Admin command */
 	public static final String adminCmd = "admin";
 	public static final String adminAlias = "a";
 	public static final String adminPerm = basePerm + ".admin";
@@ -106,7 +110,7 @@ public class Constants
 		"Help for the " + ChatColor.DARK_RED + "Admin" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + adminDesc, ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + adminUsage};
 	
-	// Help command
+	/** Help command */
 	public static final String helpCmd = "help";
 	public static final String helpAlias = "h";
 	public static final String helpPerm = basePerm + ".help";

@@ -1,17 +1,23 @@
 package musician101.itembank.util;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-
 import musician101.itembank.ItemBank;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 
+/**
+ * Translates the command inputs into the proper data.
+ * 
+ * @author Musician101
+ */
 public class ItemTranslator
 {
-	// Reads items.csv for id and metadata numbers.
+	
+	/**
+	 * Reads items.csv for id and metadata numbers. (Unimplemented)
+	 * 
+	 * @param materialName The material that is being deposited/withdrawn.
+	 * @return The material ID and Damage Value.
+	 */
 	/*public static Map<Integer, Byte> getMaterial(String materialName)
 	{
 		Map<Integer, Byte> materialMap = null;
@@ -27,7 +33,13 @@ public class ItemTranslator
 		return materialMap;
 	}*/
 	
-	public static void parseCSV(ItemBank plugin, Player player)
+	/**
+	 * Reads the items.csv. (Unimplemented)
+	 * 
+	 * @param plugin References the plugin's main class.
+	 * @param player The player who executed the command.
+	 */
+	/*public static void parseCSV(ItemBank plugin, Player player)
 	{
 		String csvFile = plugin.getDataFolder() + "/items.csv";
 		BufferedReader br = null;
@@ -65,8 +77,15 @@ public class ItemTranslator
 			}
 		}
 		plugin.getLogger().info("Done");
-	}
-	
+	}*/
+
+	/**
+	 * Uses materialName to find the block/item's Material enum.
+	 * 
+	 * @param plugin References the plugin's main class.
+	 * @param materialName The material that is being deposited/withdrawn.
+	 * @return The Material of the block/item.
+	 */
 	public static Material getMaterial(ItemBank plugin, String materialName)
 	{
 		Material material = Material.matchMaterial(materialName);
@@ -115,6 +134,13 @@ public class ItemTranslator
 		return material;
 	}
 	
+	/**
+	 * Sets the path within the player's account.
+	 * 
+	 * @param plugin References the plugin's main class.
+	 * @param materialName The material that is being deposited/withdrawn.
+	 * @return The path to the block/item in the player's account.
+	 */
  	public static String getPath(ItemBank plugin, String materialName)
 	{
 		Material material = Material.matchMaterial(materialName);
@@ -372,6 +398,13 @@ public class ItemTranslator
 		return path;
 	}
 	
+ 	/**
+ 	 * Uses materialName to find the block/item's damage value.
+ 	 * 
+ 	 * @param plugin References the plugin's main class.
+ 	 * @param materialName The material that is being deposited/withdrawn.
+ 	 * @return The damage value of the block/item.
+ 	 */
 	public static byte getDamage(ItemBank plugin, String materialName)
 	{
 		byte damage = 0;

@@ -18,24 +18,51 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * The code used to run when any command in the plugin is executed.
+ * 
+ * @author Musician101
+ */
 public class IBCommandExecutor implements CommandExecutor
-{	
-	// Allow use of the main class.
-	private ItemBank plugin;
+{
+	ItemBank plugin;
+	/**
+	 * @param plugin References the plugin's 
+	 */
 	public IBCommandExecutor(ItemBank plugin)
 	{
 		this.plugin = plugin;
 	}
 	
-	// Command Executor
+	/**
+	 * @param sender Who sent the command.
+	 * @param command Which command was executed
+	 * @param label Alias of the command
+	 * @param args Command parameters
+	 * @return True if the command was successfully executed
+	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
 		if (command.getName().equalsIgnoreCase(Constants.baseCmd) || command.getName().equalsIgnoreCase(Constants.baseAlias))
 		{
-			if (args.length > 0)
+			/** Base Command */
+			if (args.length == 0)
 			{
-				// Admin Command
+				if (sender.hasPermission(Constants.basePerm + ".*") || sender.hasPermission(Constants.depositPerm) || sender.hasPermission(Constants.helpPerm) || sender.hasPermission(Constants.purgePerm) || sender.hasPermission(Constants.versionPerm) || sender.hasPermission(Constants.withdrawPerm))
+				{
+					sender.sendMessage(Constants.PREFIX + Constants.baseDesc);
+					return true;
+				}
+				else
+				{
+					sender.sendMessage(Constants.NO_PERMISSION);
+					return false;
+				}
+			}
+			else if (args.length > 0)
+			{
+				/** Admin Command */
 				if (args[0].equalsIgnoreCase(Constants.adminCmd) || args[0].equalsIgnoreCase(Constants.adminAlias))
 				{
 					if (!sender.hasPermission(Constants.adminPerm))
@@ -43,7 +70,7 @@ public class IBCommandExecutor implements CommandExecutor
 						sender.sendMessage(Constants.NO_PERMISSION);
 						return false;
 					}
-					// Admin Deposit
+					/** Admin Deposit */
 					else if (args[2].equalsIgnoreCase(Constants.depositCmd) || args[2].equalsIgnoreCase(Constants.depositAlias))
 					{
 						if (args[2] == "")
@@ -104,7 +131,7 @@ public class IBCommandExecutor implements CommandExecutor
 							}
 						}
 					}
-					// Admin Withdraw
+					/** Admin Withdraw */
 					else if (args[2].equalsIgnoreCase(Constants.withdrawCmd) || args[2].equalsIgnoreCase(Constants.withdrawAlias))
 					{
 						if (args[1] == "")
@@ -174,7 +201,7 @@ public class IBCommandExecutor implements CommandExecutor
 						}
 					}
 				}
-				// Deposit Command
+				/** Deposit Command */
 				else if (args[0].equalsIgnoreCase(Constants.depositCmd) || args[0].equalsIgnoreCase(Constants.depositAlias))
 				{
 					if (!sender.hasPermission(Constants.depositPerm))
@@ -209,7 +236,7 @@ public class IBCommandExecutor implements CommandExecutor
 									//List<String> data = new ArrayList<String>(ItemTranslator.getMaterial(args[1]));
 									Material material = ItemTranslator.getMaterial(plugin, args[1]);
 									byte damage = ItemTranslator.getDamage(plugin, args[1]);
-									ItemTranslator.parseCSV(plugin, (Player) sender);
+									//ItemTranslator.parseCSV(plugin, (Player) sender);
 									//int material = Integer.parseInt(data.get(0));
 									//byte damage = Byte.parseByte(data.get(1);
 									String path = ItemTranslator.getPath(plugin, args[1]);
@@ -258,7 +285,7 @@ public class IBCommandExecutor implements CommandExecutor
 							}
 						}
 					}
-				// Help Command
+				/** Help Command */
 				else if (args[0].equalsIgnoreCase(Constants.helpCmd) || args[0].equalsIgnoreCase(Constants.helpAlias))
 				{
 					if (!sender.hasPermission(Constants.helpPerm))
@@ -303,7 +330,7 @@ public class IBCommandExecutor implements CommandExecutor
 						}
 					}
 				}
-				// Purge Command
+				/** Purge Command */
 				else if (args[0].equalsIgnoreCase(Constants.purgeCmd) || args[0].equalsIgnoreCase(Constants.purgeAlias))
 				{
 					if (!sender.hasPermission(Constants.purgePerm))
@@ -371,7 +398,7 @@ public class IBCommandExecutor implements CommandExecutor
 						}
 					}
 				}
-				// Version Command
+				/** Version Command */
 				else if (args[0].equalsIgnoreCase(Constants.versionCmd) || args[0].equalsIgnoreCase(Constants.versionAlias))
 				{
 					if (!sender.hasPermission(Constants.versionPerm))
@@ -385,7 +412,7 @@ public class IBCommandExecutor implements CommandExecutor
 						return true;
 					}
 				}
-				// Withdraw Command
+				/** Withdraw Command */
 				else if (args[0].equalsIgnoreCase(Constants.withdrawCmd) || args[0].equalsIgnoreCase(Constants.withdrawAlias))
 				{
 					if (!sender.hasPermission(Constants.withdrawPerm))
@@ -465,25 +492,19 @@ public class IBCommandExecutor implements CommandExecutor
 					}
 				}
 			}
-			// Base Command
-			else
-			{
-				if (sender.hasPermission(Constants.basePerm + ".*") || sender.hasPermission(Constants.depositPerm) || sender.hasPermission(Constants.helpPerm) || sender.hasPermission(Constants.purgePerm) || sender.hasPermission(Constants.versionPerm) || sender.hasPermission(Constants.withdrawPerm))
-				{
-					sender.sendMessage(Constants.PREFIX + Constants.baseDesc);
-					return true;
-				}
-				else
-				{
-					sender.sendMessage(Constants.NO_PERMISSION);
-					return false;
-				}
-			}
+			return true;
 		}
 		return false;
 	}
 	
-	// Method for finding specific blocks/items in a player's inventory
+	/**
+	 * Method for finding specific blocks/items in a player's inventory
+	 * 
+	 * @param player Player who's inventory is being checked.
+	 * @param material The material that is being searched for.
+	 * @param dmg The damage value of the material (i.e. if material = oak wood then dmg = 1).
+	 * @return The amount of the material in the player's inventory.
+	 */
 	public static int getAmount(Player player, Material material, byte dmg)
 	{
 		int has = 0;
