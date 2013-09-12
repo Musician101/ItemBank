@@ -6,7 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import musician101.itembank.commands.DepositCommand;
 import musician101.itembank.commands.IBCommand;
+import musician101.itembank.commands.WithdrawCommand;
 import musician101.itembank.listeners.PlayerListener;
 import musician101.itembank.util.UpdateChecker;
 
@@ -37,8 +39,9 @@ public class ItemBank extends JavaPlugin
 	{
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
-		// TODO: Change commands so they don't rely on the base command
+		getCommand("deposit").setExecutor(new DepositCommand(this));
 		getCommand("itembank").setExecutor(new IBCommand(this));
+		getCommand("withdraw").setExecutor(new WithdrawCommand(this));
 		
 		configFile = new File(getDataFolder(), "config.yml");
 		saveDefaultConfig();

@@ -14,6 +14,7 @@ public class Constants
 	
 	/** Error messages. */
 	public static final String COMMAND_NOT_RECOGNIZED = PREFIX + "Error: Command not recognized.";
+	public static final String ERROR_AMOUNT = PREFIX + "Error: Amount must be greater than 0.";
 	public static final String NO_ACCOUNT = PREFIX + "Error: Account does not exist.";
 	public static final String NO_BLOCK_ITEM = PREFIX + "Error: You did not specify a block/item.";
 	public static final String NO_PERMISSION = PREFIX + "You do not have permission for this command.";
@@ -27,6 +28,7 @@ public class Constants
 	
 	/** Command success messages. */
 	public static final String ALL_BLOCK_ITEM = "Defaulting to all of the specified block/item.";
+	public static final String PLAYER_FILE_RESET = PREFIX + "Player file reset.";
 	
 	public static String getAdminDepositConsoleMessage(String admin, int amount, String material, String player)
 	{
@@ -38,6 +40,16 @@ public class Constants
 		return PREFIX + "Added " + amount + " " + material + " to " + player + "'s account.";
 	}
 	
+	public static String getAdminWithdrawConsoleMessage(String admin, int amount, String material, String player)
+	{
+		return admin + " has withdrawn " + amount + " " + material + " from " + player + "'s account.";
+	}
+	
+	public static String getAdminWithdrawPlayerMessage(int amount, String material, String player)
+	{
+		return PREFIX + "Removed " + amount + " " + material + " from " + player + "'s account.";
+	}
+	
 	public static String getDepositConsoleMessage(String player, int amount, String material)
 	{
 		return player + " has deposited " + amount + " of " + material + ".";
@@ -47,8 +59,6 @@ public class Constants
 	{
 		return PREFIX + "You have deposited " + amount + " " + material + ".";
 	}
-	
-	public static final String PLAYER_FILE_RESET = PREFIX + "Player file reset.";
 	
 	public static String getVersionMessage(String version)
 	{

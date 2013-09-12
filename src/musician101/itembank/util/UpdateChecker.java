@@ -25,7 +25,7 @@ public class UpdateChecker
 	private String link;
 	
 	/**
-	 * @param plugin References the main class.
+	 * @param plugin References the plugin's main class.
 	 * @param url The URL to the files.rss.
 	 */
 	public UpdateChecker(ItemBank plugin, String url)
