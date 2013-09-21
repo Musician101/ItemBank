@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import musician101.itembank.ItemBank;
+import musician101.itembank.exceptions.InvalidMaterialException;
+
+import org.bukkit.Material;
 
 /**
  * @author Musician101
@@ -13,10 +16,10 @@ import musician101.itembank.ItemBank;
 public class ItemTranslator 
 {
 	/** HashMap storing all of the aliases and their data values.*/
-	private final Map<String, Map<Integer, Short>> items = new HashMap<String, Map<Integer, Short>>();
+	private final Map<String, Map<Material, Short>> items = new HashMap<String, Map<Material, Short>>();
 	
 	/** HashMap storing all of the appropriate IDs and data values. */
-	private final List<Integer> ids = new ArrayList<Integer>();
+	private final List<Material> ids = new ArrayList<Material>();
 	
 	/**
 	 * Loads up the translator for the plugin.
@@ -31,7 +34,7 @@ public class ItemTranslator
 			if (!s[0].startsWith("#"))
 			{
 				if (s.length < 1) continue;
-				int id = 0;
+				Material material = null;
 				short data = 0;
 				String alias = "";
 				try
@@ -41,17 +44,15 @@ public class ItemTranslator
 				catch (IndexOutOfBoundsException e)
 				{
 					plugin.getLogger().warning("Error with aliases: " + s[0]);
-					continue;
 				}
 				
 				try
 				{
-					id = Integer.valueOf(s[1]);
+					material = IBUtils.getMaterial(s[1]);
 				}
-				catch (NumberFormatException e)
+				catch (InvalidMaterialException e)
 				{
-					plugin.getLogger().warning("Error with ids: " + s[1]);
-					id = -1;
+					plugin.getLogger().warning("Error with material: " + s[1]);
 				}
 				
 				try
@@ -63,9 +64,9 @@ public class ItemTranslator
 					plugin.getLogger().info("Error with data: " + s[2]);
 				}
 				
-				Map<Integer, Short> itemIds = new HashMap<Integer, Short>();
-				itemIds.put(id, data);
-				ids.add(id);
+				Map<Material, Short> itemIds = new HashMap<Material, Short>();
+				itemIds.put(material, data);
+				ids.add(material);
 				synchronized (items)
 				{
 					items.put(alias, itemIds);
@@ -93,7 +94,7 @@ public class ItemTranslator
 		
 		if (!found) return null;
 		
-		Map.Entry<Integer, Short> entry = items.get(alias).entrySet().iterator().next();
+		Map.Entry<Material, Short> entry = items.get(alias).entrySet().iterator().next();
 		if (data == null || data.isEmpty()) data = String.valueOf(entry.getValue());
 		return entry.getKey() + ":" + data;
 	}

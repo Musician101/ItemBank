@@ -9,6 +9,7 @@ import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.util.IBUtils;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -103,7 +104,7 @@ public class WithdrawCommand implements CommandExecutor
 					sender.sendMessage(Constants.getAliasError(name));
 					return false;
 				}
-				if (item.getTypeId() == 0)
+				if (item.getType() == Material.AIR)
 				{
 					sender.sendMessage(Constants.AIR_BLOCK);
 					return false;
@@ -187,7 +188,7 @@ public class WithdrawCommand implements CommandExecutor
 				sender.sendMessage(Constants.getAliasError(name));
 				return false;
 			}
-			if (item.getTypeId() == 0)
+			if (item.getType() == Material.AIR)
 			{
 				sender.sendMessage(Constants.AIR_BLOCK);
 				return false;

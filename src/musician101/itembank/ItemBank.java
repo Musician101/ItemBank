@@ -23,7 +23,7 @@ public class ItemBank extends JavaPlugin
 {
 	protected UpdateChecker updateChecker;
 	public ItemTranslator translator;
-	public File playerDataDir = new File(getDataFolder() + "/PlayerData");
+	public File playerDataDir;// = new File(getDataFolder() + "/PlayerData");
 	public File playerFile;
 	public FileConfiguration playerData;
 	public Config config;
@@ -31,9 +31,9 @@ public class ItemBank extends JavaPlugin
 	/** Loads the plugin's various configurations and reference files/folders. */
 	public void loadConfiguration()
 	{
+		getLogger().info("quack");
 		if (!new File(getDataFolder(), "config.yml").exists()) saveDefaultConfig();
 		if (!new File(getDataFolder(), "items.csv").exists()) saveResource("items.csv", false);
-		
 		if (!playerDataDir.exists()) playerDataDir.mkdirs();
 	}
 	
@@ -59,17 +59,14 @@ public class ItemBank extends JavaPlugin
 	/** Initializes the plugin, checks for the config, and register commands and listeners. */
 	public void onEnable()
 	{
-		IBUtils.createPlayerFiles(this, Bukkit.getOnlinePlayers());
-		
+		playerDataDir = new File(getDataFolder() + "/PlayerData");
 		loadConfiguration();
 		config = new Config(this);
-		
+		IBUtils.createPlayerFiles(this, Bukkit.getOnlinePlayers());
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-		
 		getCommand("deposit").setExecutor(new DepositCommand(this));
 		getCommand("itembank").setExecutor(new IBCommand(this));
 		getCommand("withdraw").setExecutor(new WithdrawCommand(this));
-		
 		versionCheck();
 	}
 	

@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
+import musician101.itembank.exceptions.InvalidMaterialException;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.listeners.PlayerListener;
 
@@ -32,7 +33,7 @@ public class IBUtils
 		int has = 0;
 		for (ItemStack item : player.getInventory().getContents())
 		{
-			if ((item != null) && (item.getTypeId() == material.getId()) && (item.getAmount() > 0) && (item.getDurability() == data))
+			if ((item != null) && (item.getType() == material) && (item.getAmount() > 0) && (item.getDurability() == data))
 				has += item.getAmount();
 		}
 		return has;
@@ -79,7 +80,8 @@ public class IBUtils
 		{
 			try
 			{
-				material = Material.getMaterial(Integer.valueOf(name));
+				//material = Material.getMaterial(Integer.valueOf(name));
+				material = Material.getMaterial(name);
 				if (material == null) return null;
 			}
 			catch (Exception e)
@@ -101,15 +103,19 @@ public class IBUtils
 	 * @param name The alias of the material.
 	 * @param amount The amount of the material.
 	 * @return Returns the ItemStack with the proper ID, Durability and the Amount.
+	 * @throws InvalidAliasException
+	 * @throws NullPointerException
 	 */
 	public static ItemStack getItemFromAlias(ItemBank plugin, String alias, int amount) throws InvalidAliasException, NullPointerException
 	{
 		ItemStack item;
 		if (plugin.translator == null)
 			throw new NullPointerException("Error: items.csv is not loaded.");
+		
 		item = getItem(plugin, plugin.translator.getIdFromAlias(alias), amount);
 		if (item == null)
 			throw new InvalidAliasException(alias + " is not a valid alias!");
+		
 		return item;
 	}
 	
@@ -152,5 +158,21 @@ public class IBUtils
 				createPlayerFile(plugin, new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml"));
 			}
 		}
+	}
+
+	/**
+	 * Custom method that throws an exception when a material isn't recognized.
+	 * 
+	 * @param name The material from the items.csv file.
+	 * @return name as a Material.
+	 * @throws InvalidMaterialException
+	 */
+	public static Material getMaterial(String name) throws InvalidMaterialException
+	{
+		Material material = Material.getMaterial(name.toUpperCase());
+		if (material == null)
+			throw new InvalidMaterialException("Error: " + name + " is not a valid Material.");
+		
+		return material;
 	}
 }
