@@ -1,16 +1,13 @@
 package musician101.itembank.commands;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
-import musician101.itembank.listeners.PlayerListener;
+import musician101.itembank.util.IBUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * The code used when the Purge argument is used in the ItemBank command.
@@ -32,54 +29,19 @@ public class PurgeCommand
 		{
 			if (args.length == 1)
 			{
-				File files = new File(plugin.getDataFolder() + "/PlayerData");
-				for (File file : files.listFiles())
+				for (File file : plugin.playerDataDir.listFiles())
 					file.delete();
 				
-				Player[] players = Bukkit.getOnlinePlayers();
-				if (players.length > 0)
-				{
-					for (Player player : players)
-					{
-						plugin.playerFile = new File(plugin.getDataFolder() + "/PlayerData/" + player.getName() + ".yml");
-						try
-						{
-							FileWriter fw;
-							plugin.playerFile.createNewFile();
-							fw = new FileWriter(plugin.playerFile.getAbsoluteFile());
-							BufferedWriter bw = new BufferedWriter(fw);
-							bw.write(PlayerListener.template);
-							bw.close();
-						}
-						catch (Exception e)
-						{
-							e.printStackTrace();
-						}
-					}
-				}
+				IBUtils.createPlayerFiles(plugin, Bukkit.getOnlinePlayers());
 				sender.sendMessage(Constants.PREFIX + "Purge complete.");
 			}
 			else if (args.length == 2)
 			{
-				plugin.playerFile = new File(plugin.getDataFolder() + "/PlayerData/" + args[1] + ".yml");
-				try
-				{
-					plugin.playerFile.delete();
-					FileWriter fw;
-					plugin.playerFile.createNewFile();
-					fw = new FileWriter(plugin.playerFile.getAbsoluteFile());
-					BufferedWriter bw = new BufferedWriter(fw);
-					bw.write(PlayerListener.template);
-					bw.close();
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-				sender.sendMessage(Constants.PLAYER_FILE_RESET);
+				plugin.playerFile = new File(plugin.playerDataDir + "/" + args[1].toLowerCase() + ".yml");
+				plugin.playerFile.delete();
+				IBUtils.createPlayerFile(plugin, plugin.playerFile);
+				sender.sendMessage(Constants.PREFIX + "Player file reset.");
 			}
-			else
-				sender.sendMessage(Constants.TOO_MANY_ARGUMENTS);
 		}
 	}
 }

@@ -9,15 +9,12 @@ commands:
     itembank:
         aliases: [ib]
         description: Virtual chest with configurable limits.
-        usage: /<command> help
     deposit:
         aliases: [d]
         description: Add blocks/items to a player's account.
-        usage: /<command> [admin [block/item name]|block/item name] <amount>
     withdraw:
         aliases: [w]
         description: Remove blocks/items to a player's account.
-        usage: /<command> [admin [block/item name]|block/item name] <amount>
 
 permissions:
    itembank.*:

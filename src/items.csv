@@ -1,6 +1,6 @@
 #version: 1.0
 #This file will not update if you make any changes.
-#item,id,metadata
+#aliases,id,metadata
 stone,1,0
 grass,2,0
 dirt,3,0
@@ -958,7 +958,7 @@ crackmusicrecord,2266,0
 crackmusicdisk,2266,0
 crackmusicdisc,2266,0
 crackmusiccd,2266,0
-11musicrecord,2266,0
-11musicdisk,2266,0
-11musicdisc,2266,0
-11musiccd,2266,0
+11musicrecord,2267,0
+11musicdisk,2267,0
+11musicdisc,2267,0
+11musiccd,2267,0

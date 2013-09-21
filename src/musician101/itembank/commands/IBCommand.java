@@ -33,13 +33,14 @@ public class IBCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (command.getName().equalsIgnoreCase(Constants.BASE_CMD) || command.getName().equalsIgnoreCase(Constants.BASE_ALIAS))
+		if (command.getName().equalsIgnoreCase(Constants.BASE_CMD))
 		{
 			/** Base Command */
 			if (args.length == 0)
 			{
-				if (sender.hasPermission(Constants.BASE_PERM + ".*") || sender.hasPermission(Constants.DEPOSIT_PERM) || sender.hasPermission(Constants.HELP_PERM) || sender.hasPermission(Constants.PURGE_PERM) || sender.hasPermission(Constants.VERSION_PERM) || sender.hasPermission(Constants.WITHDRAW_PERM))
-					sender.sendMessage(Constants.PREFIX + Constants.BASE_DESC);
+				if (sender.hasPermission(Constants.DEPOSIT_PERM) || sender.hasPermission(Constants.PURGE_PERM) || sender.hasPermission(Constants.WITHDRAW_PERM))
+					sender.sendMessage(new String[]{Constants.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.6.2-R1.0.",
+							Constants.PREFIX + "Base command, type /itembank help for more info."});
 				else
 					sender.sendMessage(Constants.NO_PERMISSION);
 			}
@@ -47,10 +48,10 @@ public class IBCommand implements CommandExecutor
 			{
 				String cmd = args[0].toLowerCase();
 				/** Help Command */
-				if (cmd == Constants.HELP_CMD || cmd == Constants.HELP_ALIAS)
+				if (cmd == Constants.HELP_CMD)
 					new HelpCommand(plugin, sender, args);
 				/** Purge Command */
-				else if (cmd == Constants.PURGE_CMD || cmd == Constants.PURGE_ALIAS)
+				else if (cmd == Constants.PURGE_CMD)
 					new PurgeCommand(plugin, sender, args);
 			}
 			return true;

@@ -19,7 +19,7 @@ public class HelpCommand
 	 */
 	public HelpCommand(ItemBank plugin, CommandSender sender, String[] args)
 	{
-		if (!sender.hasPermission(Constants.HELP_PERM))
+		if (!sender.hasPermission(Constants.DEPOSIT_PERM) || !sender.hasPermission(Constants.PURGE_PERM) || !sender.hasPermission(Constants.WITHDRAW_PERM))
 			sender.sendMessage(Constants.NO_PERMISSION);
 		else
 		{
@@ -28,11 +28,11 @@ public class HelpCommand
 			else
 			{
 				String cmd = args[1].toLowerCase();
-				if (cmd == Constants.DEPOSIT_CMD || cmd == Constants.DEPOSIT_ALIAS)
+				if (cmd == Constants.DEPOSIT_CMD)
 					sender.sendMessage(Constants.DEPOSIT_HELP);
-				else if (cmd == Constants.PURGE_CMD || cmd == Constants.PURGE_ALIAS)
+				else if (cmd == Constants.PURGE_CMD)
 					sender.sendMessage(Constants.PURGE_HELP);
-				else if (cmd == Constants.WITHDRAW_CMD || cmd == Constants.WITHDRAW_ALIAS)
+				else if (cmd == Constants.WITHDRAW_CMD)
 					sender.sendMessage(Constants.WITHDRAW_HELP);
 				else
 					sender.sendMessage(Constants.PREFIX + "Error: Command not recognized.");
