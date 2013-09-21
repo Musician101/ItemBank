@@ -23,7 +23,7 @@ public class ItemBank extends JavaPlugin
 {
 	protected UpdateChecker updateChecker;
 	public ItemTranslator translator;
-	public File playerDataDir;// = new File(getDataFolder() + "/PlayerData");
+	public File playerDataDir;
 	public File playerFile;
 	public FileConfiguration playerData;
 	public Config config;
@@ -31,7 +31,6 @@ public class ItemBank extends JavaPlugin
 	/** Loads the plugin's various configurations and reference files/folders. */
 	public void loadConfiguration()
 	{
-		getLogger().info("quack");
 		if (!new File(getDataFolder(), "config.yml").exists()) saveDefaultConfig();
 		if (!new File(getDataFolder(), "items.csv").exists()) saveResource("items.csv", false);
 		if (!playerDataDir.exists()) playerDataDir.mkdirs();
