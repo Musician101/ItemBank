@@ -90,7 +90,7 @@ public class DepositCommand implements CommandExecutor
 				ItemStack item = null;
 				try
 				{
-					item = IBUtils.getItemFromAlias(plugin, name, amount);
+					item = IBUtils.getIdFromAlias(plugin, name, amount);
 				}
 				catch (InvalidAliasException e)
 				{
@@ -173,7 +173,7 @@ public class DepositCommand implements CommandExecutor
 			ItemStack item = null;
 			try
 			{
-				item = IBUtils.getItemFromAlias(plugin, name, amount);
+				item = IBUtils.getIdFromAlias(plugin, name, amount);
 			}
 			catch (InvalidAliasException e)
 			{

@@ -88,7 +88,7 @@ public class WithdrawCommand implements CommandExecutor
 				ItemStack item = null;
 				try
 				{
-					item = IBUtils.getItemFromAlias(plugin, name, amount);
+					item = IBUtils.getIdFromAlias(plugin, name, amount);
 				}
 				catch (InvalidAliasException e)
 				{
@@ -172,7 +172,7 @@ public class WithdrawCommand implements CommandExecutor
 			ItemStack item = null;
 			try
 			{
-				item = IBUtils.getItemFromAlias(plugin, name, amount);
+				item = IBUtils.getIdFromAlias(plugin, name, amount);
 			}
 			catch (InvalidAliasException e)
 			{

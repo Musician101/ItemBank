@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import musician101.itembank.ItemBank;
-import musician101.itembank.exceptions.InvalidMaterialException;
-
-import org.bukkit.Material;
 
 /**
  * @author Musician101
@@ -16,10 +13,10 @@ import org.bukkit.Material;
 public class ItemTranslator 
 {
 	/** HashMap storing all of the aliases and their data values.*/
-	private final Map<String, Map<Material, Short>> items = new HashMap<String, Map<Material, Short>>();
+	private final Map<String, Map<Integer, Short>> items = new HashMap<String, Map<Integer, Short>>();
 	
 	/** HashMap storing all of the appropriate IDs and data values. */
-	private final List<Material> ids = new ArrayList<Material>();
+	private final List<Integer> ids = new ArrayList<Integer>();
 	
 	/**
 	 * Loads up the translator for the plugin.
@@ -34,7 +31,7 @@ public class ItemTranslator
 			if (!s[0].startsWith("#"))
 			{
 				if (s.length < 1) continue;
-				Material material = null;
+				int id = 0;
 				short data = 0;
 				String alias = "";
 				try
@@ -45,14 +42,13 @@ public class ItemTranslator
 				{
 					plugin.getLogger().warning("Error with aliases: " + s[0]);
 				}
-				
 				try
 				{
-					material = IBUtils.getMaterial(s[1]);
+					id = Integer.parseInt(s[1]);
 				}
-				catch (InvalidMaterialException e)
+				catch (NumberFormatException e)
 				{
-					plugin.getLogger().warning("Error with material: " + s[1]);
+					plugin.getLogger().warning("Error with ID: " + s[1]);
 				}
 				
 				try
@@ -64,9 +60,9 @@ public class ItemTranslator
 					plugin.getLogger().info("Error with data: " + s[2]);
 				}
 				
-				Map<Material, Short> itemIds = new HashMap<Material, Short>();
-				itemIds.put(material, data);
-				ids.add(material);
+				Map<Integer, Short> itemIds = new HashMap<Integer, Short>();
+				itemIds.put(id, data);
+				ids.add(id);
 				synchronized (items)
 				{
 					items.put(alias, itemIds);
@@ -76,9 +72,9 @@ public class ItemTranslator
 	}
 	
 	/**
-	 * How the plugin determines a material's ID and data value.
+	 * How the plugin determines an ID and data value.
 	 * 
-	 * @param alias The alias used to match the ID and data value.
+	 * @param alias The alias used to match the Material and data value.
 	 * @return Returns the ID as ID:Damage Value.
 	 */
 	public String getIdFromAlias(String alias)
@@ -94,7 +90,7 @@ public class ItemTranslator
 		
 		if (!found) return null;
 		
-		Map.Entry<Material, Short> entry = items.get(alias).entrySet().iterator().next();
+		Map.Entry<Integer, Short> entry = items.get(alias).entrySet().iterator().next();
 		if (data == null || data.isEmpty()) data = String.valueOf(entry.getValue());
 		return entry.getKey() + ":" + data;
 	}

@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
-import musician101.itembank.exceptions.InvalidMaterialException;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.listeners.PlayerListener;
 
@@ -80,8 +79,11 @@ public class IBUtils
 		{
 			try
 			{
-				//material = Material.getMaterial(Integer.valueOf(name));
-				material = Material.getMaterial(name);
+				/** 
+				 * Deprecated method Material.getMaterial(int) in Bukkit.
+				 *  Waiting for a proper alternative before fixing.
+				 */
+				material = Material.getMaterial(Integer.valueOf(name));
 				if (material == null) return null;
 			}
 			catch (Exception e)
@@ -106,7 +108,7 @@ public class IBUtils
 	 * @throws InvalidAliasException
 	 * @throws NullPointerException
 	 */
-	public static ItemStack getItemFromAlias(ItemBank plugin, String alias, int amount) throws InvalidAliasException, NullPointerException
+	public static ItemStack getIdFromAlias(ItemBank plugin, String alias, int amount) throws InvalidAliasException, NullPointerException
 	{
 		ItemStack item;
 		if (plugin.translator == null)
@@ -158,21 +160,5 @@ public class IBUtils
 				createPlayerFile(plugin, new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml"));
 			}
 		}
-	}
-
-	/**
-	 * Custom method that throws an exception when a material isn't recognized.
-	 * 
-	 * @param name The material from the items.csv file.
-	 * @return name as a Material.
-	 * @throws InvalidMaterialException
-	 */
-	public static Material getMaterial(String name) throws InvalidMaterialException
-	{
-		Material material = Material.getMaterial(name.toUpperCase());
-		if (material == null)
-			throw new InvalidMaterialException("Error: " + name + " is not a valid Material.");
-		
-		return material;
 	}
 }
