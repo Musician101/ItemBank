@@ -36,17 +36,17 @@ public class ItemBank extends JavaPlugin
 		if (!playerDataDir.exists()) playerDataDir.mkdirs();
 	}
 	
-	/** Checks if a new version is available. **/
+	/** Checks if a new version is available. */
 	public void versionCheck()
 	{
 		if (Config.checkForUpdate)
 		{
-			this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/bukkit-plugins/item_bank/files.rss");
+			updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/bukkit-plugins/item_bank/files.rss");
 			getLogger().info("Update checker is enabled.");
-			if (this.updateChecker.updateNeeded())
+			if (updateChecker.updateNeeded())
 			{
-				getLogger().info("A new version is available: " + this.updateChecker.getVersion());
-				getLogger().info("Get it from: " + this.updateChecker.getLink());
+				getLogger().info("A new version is available: " + updateChecker.getVersion());
+				getLogger().info("Get it from: " + updateChecker.getLink());
 			}
 			else
 				getLogger().info("ItemBank is up to date.");
@@ -59,13 +59,18 @@ public class ItemBank extends JavaPlugin
 	public void onEnable()
 	{
 		playerDataDir = new File(getDataFolder() + "/PlayerData");
+		
 		loadConfiguration();
 		config = new Config(this);
+		
 		IBUtils.createPlayerFiles(this, Bukkit.getOnlinePlayers());
+		
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+		
 		getCommand("deposit").setExecutor(new DepositCommand(this));
 		getCommand("itembank").setExecutor(new IBCommand(this));
 		getCommand("withdraw").setExecutor(new WithdrawCommand(this));
+		
 		versionCheck();
 	}
 	

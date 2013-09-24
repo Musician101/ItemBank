@@ -81,7 +81,7 @@ public class IBUtils
 			{
 				/** 
 				 * Deprecated method Material.getMaterial(int) in Bukkit.
-				 *  Waiting for a proper alternative before fixing.
+				 * Waiting for a proper alternative before fixing.
 				 */
 				material = Material.getMaterial(Integer.valueOf(name));
 				if (material == null) return null;
