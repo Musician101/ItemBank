@@ -61,6 +61,8 @@ public class WithdrawCommand implements CommandExecutor
 				sender.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
 				return false;
 			}
+			
+			/** Admin Withdraw Start */
 			if (args[0].equalsIgnoreCase(Constants.ADMIN_CMD))
 			{
 				if (args.length < 3)
@@ -153,6 +155,7 @@ public class WithdrawCommand implements CommandExecutor
 				sender.sendMessage(Constants.PREFIX + "Removed " + newAmount + " " + item.getType().toString() + " from " + player + "'s account.");
 				return true;
 			}
+			/** Admin Withdraw End */
 			
 			String name = args[0].toLowerCase();
 			int amount = 64;
