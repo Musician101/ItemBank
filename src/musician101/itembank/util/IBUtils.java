@@ -46,6 +46,7 @@ public class IBUtils
 	 * @param amount The amount of the material.
 	 * @return Returns the ItemStack with the proper ID, Durability and the Amount.
 	 */
+	@SuppressWarnings("deprecation")
 	public static ItemStack getItem(ItemBank plugin, String name, int amount)
 	{
 		if (name == null) return null;
