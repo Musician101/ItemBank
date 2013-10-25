@@ -42,7 +42,6 @@ public class Constants
 	/** Admin command */
 	public static final String ADMIN_CMD = "admin";
 	public static final String ADMIN_PERM = BASE_CMD + "." + ADMIN_CMD;
-	public static final String ADMIN_DESC = "Add/Remove blocks/items from a specified account.";
 	
 	/** Deposit command */
 	public static final String DEPOSIT_CMD = "deposit";
