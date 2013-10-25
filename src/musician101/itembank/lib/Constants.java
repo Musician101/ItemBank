@@ -14,6 +14,7 @@ public class Constants
 	
 	/** Error messages. */
 	public static final String AIR_BLOCK = PREFIX + "Silly player, you can't use air. :3";
+	public static final String FULL_INV = PREFIX + "Sorry, but you're invenotry is to full to accept any more items.";
 	public static final String NO_PERMISSION = PREFIX + "You do not have permission for this command.";
 	public static final String NOT_ENOUGH_ARGUMENTS = PREFIX + "Error: Not enough arguments.";
 	public static final String PLAYER_COMMAND_ONLY = PREFIX + "Error: This is a player command only.";
@@ -21,6 +22,11 @@ public class Constants
 	public static String getAliasError(String alias)
 	{
 		return PREFIX + "Error: " + alias.toUpperCase() + " is not a valid alias.";
+	}
+	
+	public static String getCustomItemWithdrawError(String name)
+	{
+		return PREFIX + "Error getting " + name + ". Please contact an administrator.";
 	}
 	
 	/** Exception messages. */
@@ -73,4 +79,7 @@ public class Constants
 	public static final String[] HELP_LIST = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Type " + ChatColor.DARK_RED + "/itembank help <command> " + ChatColor.WHITE + "for specific info.",
 		"Deposit: " + DEPOSIT_DESC, "Purge: " + PURGE_DESC, "Withdraw: " + WITHDRAW_DESC};
+	
+	/** Other */
+	public static final String CUSTOM_ITEM = "customItem";
 }

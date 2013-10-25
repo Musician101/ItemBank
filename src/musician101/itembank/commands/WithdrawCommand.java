@@ -3,6 +3,7 @@ package musician101.itembank.commands;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
@@ -15,8 +16,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * The code used to run when the Withdraw command is executed.
@@ -157,6 +161,172 @@ public class WithdrawCommand implements CommandExecutor
 			}
 			/** Admin Withdraw End */
 			
+			/** Enchant, Custom Name, Armor/Tool Damage Start */
+			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
+			{
+				if (args.length < 2)
+				{
+					sender.sendMessage(Constants.PREFIX + "Error: Item not specified.");
+					return false;
+				}
+				
+				plugin.playerFile = new File(plugin.playerDataDir + "/" + sender.getName().toLowerCase() + ".yml");
+				plugin.playerData = new YamlConfiguration();
+				try
+				{
+					plugin.playerData.load(plugin.playerFile);
+				}
+				catch (FileNotFoundException e)
+				{
+					sender.sendMessage(Constants.FILE_NOT_FOUND);
+					return false;
+				}
+				catch (IOException e)
+				{
+					sender.sendMessage(Constants.IO_EXCEPTION);
+					return false;
+				}
+				catch (InvalidConfigurationException e)
+				{
+					sender.sendMessage(Constants.YAML_EXCEPTION);
+					return false;
+				}
+				
+				ItemStack item = null;
+				String name = args[1];
+				try
+				{
+					item = IBUtils.getIdFromAlias(plugin, name, 1);
+				}
+				catch (InvalidAliasException e)
+				{
+					item = IBUtils.getItem(plugin, name, 1);
+				}
+				catch (NullPointerException e)
+				{
+						sender.sendMessage(Constants.NULL_POINTER);
+						return false;
+				}
+				
+				ItemMeta meta = null;
+				BookMeta bookMeta = null;
+				if (item == null)
+				{
+					if (!plugin.playerData.isSet(name))
+					{
+						sender.sendMessage(new String[]{Constants.getAliasError(name), Constants.PREFIX + "Check for capitalization."});
+						return false;
+					}
+					item = new ItemStack(Material.getMaterial(plugin.playerData.getString(name + ".material").toUpperCase()));
+				}
+				
+				if (item.getType() == Material.WRITTEN_BOOK)
+				{
+					bookMeta = (BookMeta) item.getItemMeta();
+					bookMeta.setTitle(name.replace("_", " "));
+					bookMeta.setAuthor(plugin.playerData.getString(name + ".author"));
+					if (plugin.playerData.isSet(name + ".pages"))
+					{
+						for (Map.Entry<String, Object> pages : plugin.playerData.getConfigurationSection(name + ".pages").getValues(true).entrySet())
+						{
+							try
+							{
+								bookMeta.addPage(plugin.playerData.getString(name + ".pages." + pages.getKey()));
+							}
+							catch (IllegalArgumentException e)
+							{
+								sender.sendMessage(Constants.getCustomItemWithdrawError(name));
+								e.printStackTrace();
+								return false;
+							}
+						}
+					}
+					item.setItemMeta((ItemMeta) bookMeta);
+				}
+				else
+				{
+					meta = item.getItemMeta();
+					if (!name.equalsIgnoreCase(item.getType().toString()))
+						meta.setDisplayName(name.replace("_", " "));
+					
+					item.setItemMeta(meta);
+					if (plugin.playerData.isSet(name + ".enchantments"))
+					{
+						for (Map.Entry<String, Object> enchant : plugin.playerData.getConfigurationSection(name + ".enchantments").getValues(true).entrySet())
+						{
+							try
+							{						
+								item.addEnchantment(Enchantment.getByName(enchant.getKey().toUpperCase()), Integer.valueOf(enchant.getValue().toString()));
+							}
+							catch (IllegalArgumentException e)
+							{
+								sender.sendMessage(Constants.getCustomItemWithdrawError(name));
+								return false;
+							}
+						}
+					}
+					
+					if (plugin.playerData.isSet(name + ".lore"))
+						meta.setLore(plugin.playerData.getStringList(name + ".lore"));
+				}
+				
+				try
+				{
+					item.setDurability(Short.valueOf(plugin.playerData.getString(name + ".durability")));
+				}
+				catch (NumberFormatException e)
+				{
+					sender.sendMessage(Constants.getCustomItemWithdrawError(name));
+					return false;
+				}
+				
+				try
+				{
+					item.setAmount(plugin.playerData.getInt(name + ".amount"));
+				}
+				catch (NumberFormatException e)
+				{
+					sender.sendMessage(Constants.getCustomItemWithdrawError(name));
+					return false;
+				}
+				
+				int freeSpace = 0;
+				for (ItemStack is : ((Player) sender).getInventory())
+				{
+					if (is == null)
+						freeSpace += item.getType().getMaxStackSize();
+					else if (is.getType() == item.getType())
+						freeSpace += is.getType().getMaxStackSize() - is.getAmount();
+				}
+				
+				if (freeSpace == 0)
+				{
+					sender.sendMessage(Constants.FULL_INV);
+					return false;
+				}
+				
+				if (item.getAmount() > freeSpace)
+					item.setAmount(freeSpace);
+				
+				int oldAmount = plugin.playerData.getInt(name + ".amount");
+				plugin.playerData.set(name + ".amount", oldAmount - item.getAmount());
+				try
+				{
+					plugin.playerData.save(plugin.playerFile);
+				}
+				catch (IOException e)
+				{
+					sender.sendMessage(Constants.IO_EXCEPTION);
+					plugin.playerData.set(name + ".amount", oldAmount);
+					return false;
+				}
+				
+				((Player) sender).getInventory().addItem(item);
+				sender.sendMessage(Constants.PREFIX + "You have withdrawn " + item.getAmount() + " " + name + " and now have a total of " + plugin.playerData.getInt(name + ".amount") + " left.");
+				return true;
+			}
+			/** Enchant, Custom Name, Armor/Tool Damage End */
+			
 			String name = args[0].toLowerCase();
 			int amount = 64;
 			if (args.length == 2)
@@ -234,7 +404,7 @@ public class WithdrawCommand implements CommandExecutor
 			}
 			if (freeSpace == 0)
 			{
-				sender.sendMessage(Constants.PREFIX + "Sorry, but you're invenotry is to full to accept any more items.");
+				sender.sendMessage(Constants.FULL_INV);
 				return false;
 			}
 			if (amount > freeSpace)

@@ -3,6 +3,7 @@ package musician101.itembank.commands;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 
 import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
@@ -16,8 +17,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * The code used to run when the Deposit command is executed.
@@ -154,6 +158,110 @@ public class DepositCommand implements CommandExecutor
 				return true;
 			}
 			/** Admin Deposit End */
+			
+			/** Enchant, Custom Name, Armor/Tool Damage Start */
+			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
+			{
+				ItemStack item = ((Player) sender).getItemInHand();
+				if (item == null || item.getType() == Material.AIR)
+				{
+					sender.sendMessage(Constants.PREFIX + "Error: You're not holding anything.");
+					return false;
+				}
+				if (!item.hasItemMeta())
+				{
+					sender.sendMessage(Constants.PREFIX + "Error: This is not a custom item.");
+					return false;
+				}
+				
+				plugin.playerFile = new File(plugin.playerDataDir + "/" + sender.getName().toLowerCase() + ".yml");
+				plugin.playerData = new YamlConfiguration();
+				try
+				{
+					plugin.playerData.load(plugin.playerFile);
+				}
+				catch (FileNotFoundException e)
+				{
+					sender.sendMessage(Constants.FILE_NOT_FOUND);
+					return false;
+				}
+				catch (IOException e)
+				{
+					sender.sendMessage(Constants.IO_EXCEPTION);
+					return false;
+				}
+				catch (InvalidConfigurationException e)
+				{
+					sender.sendMessage(Constants.YAML_EXCEPTION);
+					return false;
+				}
+				
+				ItemMeta meta = item.getItemMeta();
+				String itemPath = item.getType().toString().toLowerCase();
+				if (meta.hasDisplayName())
+					itemPath = meta.getDisplayName().replace(" ", "_");
+				
+				if (plugin.playerData.isSet(itemPath + ".amount") && plugin.playerData.getInt(itemPath + ".amount") > 0)
+				{
+					sender.sendMessage(Constants.PREFIX + "Sorry but there's already an item with that name in your bank.");
+					return false;
+				}
+				
+				if (item.getType() == Material.WRITTEN_BOOK)
+				{
+					BookMeta bookMeta = (BookMeta) item.getItemMeta();
+					if (bookMeta.hasTitle())
+						itemPath = bookMeta.getTitle();
+					else
+					{
+						sender.sendMessage(Constants.PREFIX + "Please sign your book before depositing it.");
+						return false;
+					}
+					
+					if (bookMeta.hasAuthor())
+						plugin.playerData.set(itemPath + ".author", bookMeta.getAuthor());
+					
+					if (bookMeta.hasPages())
+					{
+						int x = 1;
+						for (String page : bookMeta.getPages())
+						{
+							plugin.playerData.set(itemPath + ".pages." + x, page);
+							x++;
+						}
+					}
+				}
+				
+				plugin.playerData.set(itemPath + ".material", item.getType().toString());
+				plugin.playerData.set(itemPath + ".durability", item.getDurability());
+				plugin.playerData.set(itemPath + ".amount", plugin.playerData.getInt(itemPath + ".amount") + item.getAmount());
+				if (meta.hasLore())
+					plugin.playerData.set(itemPath + ".lore", meta.getLore());
+				if (item.getItemMeta().hasEnchants())
+					for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
+						plugin.playerData.set(itemPath + ".enchantments." + entry.getKey().getName(), entry.getValue());
+				
+				try
+				{
+					plugin.playerData.save(plugin.playerFile);
+				}
+				catch (IOException e)
+				{
+					sender.sendMessage(Constants.IO_EXCEPTION);
+					plugin.playerData.set(itemPath + ".amount", 0);
+					return false;
+				}
+				
+				((Player) sender).setItemInHand(null);
+				if (item.getItemMeta().hasDisplayName())
+					sender.sendMessage(Constants.PREFIX + "You have deposited " + item.getItemMeta().getDisplayName() + ".");
+				else if (((BookMeta) item.getItemMeta()).hasTitle())
+					sender.sendMessage(Constants.PREFIX + "You have deposited " + ((BookMeta) item.getItemMeta()).getTitle() + ".");
+				else
+					sender.sendMessage(Constants.PREFIX + "You have deposited a " + item.getType().toString() + ".");
+				return true;
+			}
+			/** Enchant, Custom Name, Armor/Tool Damage End */
 			
 			String name = args[0].toLowerCase();
 			int amount = 64;
