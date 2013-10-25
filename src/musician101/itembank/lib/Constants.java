@@ -30,11 +30,11 @@ public class Constants
 	}
 	
 	/** Exception messages. */
-	public static final String FILE_NOT_FOUND = "Error: The file does not exist. Please contact an admin.";
-	public static final String IO_EXCEPTION = "An internal server error has occured. Please alert an admin.";
-	public static final String NULL_POINTER = "Error: The ItemTranslator failed to load. Please contact an admin.";
-	public static final String NUMBER_FORMAT = "Error: The amount you entered is not a number.";
-	public static final String YAML_EXCEPTION = "Error: Improper file format. Please check for TABs.";
+	public static final String FILE_NOT_FOUND = PREFIX + "Error: The file does not exist. Please contact an admin.";
+	public static final String IO_EXCEPTION = PREFIX + "An internal server error has occured. Please alert an admin.";
+	public static final String NULL_POINTER = PREFIX + "Error: The ItemTranslator failed to load. Please contact an admin.";
+	public static final String NUMBER_FORMAT = PREFIX + "Error: The amount you entered is not a number.";
+	public static final String YAML_EXCEPTION = PREFIX + "Error: Improper file format. Please check for TABs.";
 	
 	/** ItemBank command */
 	public static final String BASE_CMD = "itembank";
@@ -77,7 +77,8 @@ public class Constants
 	public static final String HELP_DESC = "Gives a list of commands for the plugin, how they're used and what they do.";
 	public static final String[] HELP_LIST = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Type " + ChatColor.DARK_RED + "/itembank help <command> " + ChatColor.WHITE + "for specific info.",
-		"Deposit: " + DEPOSIT_DESC, "Purge: " + PURGE_DESC, "Withdraw: " + WITHDRAW_DESC};
+		ChatColor.DARK_RED + "Deposit: " + ChatColor.WHITE  + DEPOSIT_DESC, ChatColor.DARK_RED + "Purge: " + ChatColor.WHITE + PURGE_DESC,
+		ChatColor.DARK_RED + "Withdraw: " + ChatColor.WHITE + WITHDRAW_DESC};
 	
 	/** Other */
 	public static final String CUSTOM_ITEM = "customItem";
