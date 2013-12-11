@@ -17,10 +17,13 @@ public class HelpCommand
 	 * @param sender Who sent the command.
 	 * @param args The arguments used in the command.
 	 */
-	public HelpCommand(ItemBank plugin, CommandSender sender, String[] args)
+	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
 	{
 		if (!sender.hasPermission(Constants.DEPOSIT_PERM) || !sender.hasPermission(Constants.PURGE_PERM) || !sender.hasPermission(Constants.WITHDRAW_PERM))
+		{
 			sender.sendMessage(Constants.NO_PERMISSION);
+			return false;
+		}
 		else
 		{
 			if (args.length == 1)
@@ -37,6 +40,7 @@ public class HelpCommand
 				else
 					sender.sendMessage(Constants.PREFIX + "Error: Command not recognized.");
 			}
+			return true;
 		}
 	}
 }

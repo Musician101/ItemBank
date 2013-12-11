@@ -29,6 +29,16 @@ public class Constants
 		return PREFIX + "Error getting " + name + ". Please contact an administrator.";
 	}
 	
+	public static String getFileAmountError(String name)
+	{
+		return PREFIX + "Error getting amount for " + name + ". Check that the amount is a number greater than -1.";
+	}
+	
+	public static String getFileDurabilityError(String name)
+	{
+		return PREFIX + "Error getting durability for " + name + ". Check that the durability is a number greater than -1.";
+	}
+	
 	/** Exception messages. */
 	public static final String FILE_NOT_FOUND = PREFIX + "Error: The file does not exist. Please contact an admin.";
 	public static final String IO_EXCEPTION = PREFIX + "An internal server error has occured. Please alert an admin.";
@@ -38,6 +48,11 @@ public class Constants
 	
 	/** ItemBank command */
 	public static final String BASE_CMD = "itembank";
+
+	/** Account command */
+	public static final String ACCOUNT_CMD = "account";
+	public static final String ACCOUNT_PERM = BASE_CMD + "." + ACCOUNT_CMD;
+	public static final String ACCOUNT_DESC = "";
 	
 	/** Admin command */
 	public static final String ADMIN_CMD = "admin";

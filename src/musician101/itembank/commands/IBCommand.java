@@ -44,17 +44,16 @@ public class IBCommand implements CommandExecutor
 				else
 					sender.sendMessage(Constants.NO_PERMISSION);
 			}
-			else if (args.length > 0)
-			{
-				String cmd = args[0].toLowerCase();
-				/** Help Command */
-				if (cmd == Constants.HELP_CMD)
-					new HelpCommand(plugin, sender, args);
-				/** Purge Command */
-				else if (cmd == Constants.PURGE_CMD)
-					new PurgeCommand(plugin, sender, args);
-			}
-			return true;
+			
+			/** Account Command */
+			if (args[0].equalsIgnoreCase(Constants.ACCOUNT_CMD))
+				return AccountCommand.execute(plugin, sender, args);
+			/** Help Command */
+			else if (args[0].equalsIgnoreCase(Constants.HELP_CMD))
+				return HelpCommand.execute(plugin, sender, args);
+			/** Purge Command */
+			else if (args[0].equalsIgnoreCase(Constants.PURGE_CMD))
+				return PurgeCommand.execute(plugin, sender, args);
 		}
 		return false;
 	}
