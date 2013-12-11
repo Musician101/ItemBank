@@ -11,6 +11,8 @@ import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.util.IBUtils;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,7 +23,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * The code used to run when the Deposit command is executed.
@@ -159,7 +163,7 @@ public class DepositCommand implements CommandExecutor
 			}
 			/** Admin Deposit End */
 			
-			/** Enchant, Custom Name, Armor/Tool Damage Start */
+			/** "Custom Item" Start */
 			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
 			{
 				ItemStack item = ((Player) sender).getItemInHand();
@@ -232,11 +236,55 @@ public class DepositCommand implements CommandExecutor
 					}
 				}
 				
+				if (item.getType() == Material.SKULL_ITEM)
+				{
+					SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
+					if (skullMeta.hasOwner())
+						itemPath = skullMeta.getOwner();
+				}
+				
+				if (item.getType() == Material.FIREWORK)
+				{
+					FireworkMeta fwMeta = (FireworkMeta) item.getItemMeta();
+					plugin.playerData.set(itemPath + ".effects.power", fwMeta.getPower());
+					int x = 1;
+					for (FireworkEffect effect : fwMeta.getEffects())
+					{
+						plugin.playerData.set(itemPath + ".effects." + x + ".flicker", effect.hasFlicker());
+						plugin.playerData.set(itemPath + ".effects." + x + ".trail", effect.hasTrail());
+						int y = 1;
+						for (Color color : effect.getColors())
+						{
+							plugin.playerData.set(itemPath + ".effects." + x + ".colors." + y + ".red", color.getRed());
+							plugin.playerData.set(itemPath + ".effects." + x + ".colors." + y + ".green", color.getGreen());
+							plugin.playerData.set(itemPath + ".effects." + x + ".colors." + y + ".blue", color.getBlue());
+							y++;
+						}
+						y = 1;
+						for (Color color : effect.getFadeColors())
+						{
+							plugin.playerData.set(itemPath + ".effects." + x + ".fadeColors." + y + ".red", color.getRed());
+							plugin.playerData.set(itemPath + ".effects." + x + ".fadeColors." + y + ".green", color.getGreen());
+							plugin.playerData.set(itemPath + ".effects." + x + ".fadeColors." + y + ".blue", color.getBlue());
+							y++;
+						}
+						plugin.playerData.set(itemPath + ".effects." + x + ".type", effect.getType().toString());
+						x++;
+					}
+				}
+				
 				plugin.playerData.set(itemPath + ".material", item.getType().toString());
-				plugin.playerData.set(itemPath + ".durability", item.getDurability());
-				plugin.playerData.set(itemPath + ".amount", plugin.playerData.getInt(itemPath + ".amount") + item.getAmount());
+				if (item.getType() != Material.FIREWORK && item.getType() != Material.WRITTEN_BOOK)
+					plugin.playerData.set(itemPath + ".durability", item.getDurability());
+				
+				if (item.getType() == Material.FIREWORK)
+					plugin.playerData.set(itemPath + ".effects.amount", plugin.playerData.getInt(itemPath + ".effects.amount") + item.getAmount());
+				else
+					plugin.playerData.set(itemPath + ".amount", plugin.playerData.getInt(itemPath + ".amount") + item.getAmount());
+				
 				if (meta.hasLore())
 					plugin.playerData.set(itemPath + ".lore", meta.getLore());
+				
 				if (item.getItemMeta().hasEnchants())
 					for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
 						plugin.playerData.set(itemPath + ".enchantments." + entry.getKey().getName(), entry.getValue());
@@ -255,13 +303,15 @@ public class DepositCommand implements CommandExecutor
 				((Player) sender).setItemInHand(null);
 				if (item.getItemMeta().hasDisplayName())
 					sender.sendMessage(Constants.PREFIX + "You have deposited " + item.getItemMeta().getDisplayName() + ".");
-				else if (((BookMeta) item.getItemMeta()).hasTitle())
+				else if (item.getType() == Material.WRITTEN_BOOK)
 					sender.sendMessage(Constants.PREFIX + "You have deposited " + ((BookMeta) item.getItemMeta()).getTitle() + ".");
+				else if (item.getType() == Material.SKULL_ITEM && item.getDurability() == 3)
+					sender.sendMessage(Constants.PREFIX + "You have deposited " + ((SkullMeta) item.getItemMeta()).getOwner() + "'s Head.");
 				else
-					sender.sendMessage(Constants.PREFIX + "You have deposited a " + item.getType().toString() + ".");
+					sender.sendMessage(Constants.PREFIX + "You have deposited a " + item.getType().toString() + ".");			
 				return true;
 			}
-			/** Enchant, Custom Name, Armor/Tool Damage End */
+			/** "Custom Item" End */
 			
 			String name = args[0].toLowerCase();
 			int amount = 64;
@@ -325,6 +375,7 @@ public class DepositCommand implements CommandExecutor
 				sender.sendMessage(Constants.YAML_EXCEPTION);
 				return false;
 			}
+			
 			if (!((Player) sender).getInventory().contains(item))
 			{
 				sender.sendMessage(Constants.PREFIX + "Error: You do not have any of the specified item.");
@@ -335,6 +386,7 @@ public class DepositCommand implements CommandExecutor
 			int amountInInv = IBUtils.getAmount((Player) sender, item.getType(), item.getDurability());
 			if (amountInInv < amount)
 				amount = amountInInv;
+			
 			int newAmount = oldAmount + amount;
 			if (Config.blacklist.isSet(itemPath))
 			{

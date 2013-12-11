@@ -10,6 +10,8 @@ import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.util.IBUtils;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +22,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * The code used to run when the Withdraw command is executed.
@@ -161,7 +165,7 @@ public class WithdrawCommand implements CommandExecutor
 			}
 			/** Admin Withdraw End */
 			
-			/** Enchant, Custom Name, Armor/Tool Damage Start */
+			/** "Custom Item" Start */
 			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
 			{
 				if (args.length < 2)
@@ -210,6 +214,8 @@ public class WithdrawCommand implements CommandExecutor
 				
 				ItemMeta meta = null;
 				BookMeta bookMeta = null;
+				FireworkMeta fwMeta = null;
+				SkullMeta skullMeta = null;
 				if (item == null)
 				{
 					if (!plugin.playerData.isSet(name))
@@ -218,6 +224,17 @@ public class WithdrawCommand implements CommandExecutor
 						return false;
 					}
 					item = new ItemStack(Material.getMaterial(plugin.playerData.getString(name + ".material").toUpperCase()));
+				}
+				
+				try
+				{
+					if (plugin.playerData.isSet(name + ".durability"))
+						item.setDurability(Short.valueOf(plugin.playerData.getString(name + ".durability")));
+				}
+				catch (NumberFormatException e)
+				{
+					sender.sendMessage(Constants.getCustomItemWithdrawError(name));
+					return false;
 				}
 				
 				if (item.getType() == Material.WRITTEN_BOOK)
@@ -236,12 +253,63 @@ public class WithdrawCommand implements CommandExecutor
 							catch (IllegalArgumentException e)
 							{
 								sender.sendMessage(Constants.getCustomItemWithdrawError(name));
-								e.printStackTrace();
 								return false;
 							}
 						}
 					}
 					item.setItemMeta((ItemMeta) bookMeta);
+				}
+				else if (item.getType() == Material.FIREWORK)
+				{
+					fwMeta = (FireworkMeta) item.getItemMeta();
+					fwMeta.setPower(plugin.playerData.getInt(name + ".power"));
+					int x = 1;
+					while (plugin.playerData.isSet(name + ".effects." + x))
+					{
+						FireworkEffect.Builder effect = FireworkEffect.builder();
+						effect.flicker(plugin.playerData.getBoolean(name + ".effects." + x + ".flicker"));
+						effect.trail(plugin.playerData.getBoolean(name + ".effects." + x + ".trail"));
+						int y = 1;
+						while (plugin.playerData.isSet(name + ".effects." + x + ".colors." + y))
+						{
+							int red = plugin.playerData.getInt(name + ".effects." + x + ".colors." + y + ".red");
+							int green = plugin.playerData.getInt(name + ".effects." + x + ".colors." + y + ".green");
+							int blue = plugin.playerData.getInt(name + ".effects." + x + ".colors." + y + ".blue");
+							effect.withColor(Color.fromRGB(red, green, blue));
+							y++;
+						}
+						
+						y = 1;
+						while (plugin.playerData.isSet(name + ".effects." + x + ".fadeColors." + y))
+						{
+							int red = plugin.playerData.getInt(name + ".effects." + x + ".fadeColors." + y + ".red");
+							int green = plugin.playerData.getInt(name + ".effects." + x + ".fadeColors." + y + ".green");
+							int blue = plugin.playerData.getInt(name + ".effects." + x + ".fadeColors." + y + ".blue");
+							effect.withFade(Color.fromRGB(red, green, blue));
+							y++;
+						}
+						
+						try
+						{
+							effect.with(FireworkEffect.Type.valueOf(plugin.playerData.getString(name + ".effects." + x + ".type").toUpperCase()));
+						}
+						catch (IllegalArgumentException | NullPointerException e)
+						{
+							sender.sendMessage(Constants.PREFIX + "Could not set FireworkEffect.Type.");
+							return false;
+						}
+						
+						fwMeta.addEffect(effect.build());
+						x++;
+					}
+					item.setItemMeta(fwMeta);
+				}
+				else if (item.getType() == Material.SKULL_ITEM)
+				{
+					skullMeta = (SkullMeta) item.getItemMeta();
+					skullMeta.setOwner(name);
+					sender.sendMessage(skullMeta.getOwner());
+					item.setItemMeta(skullMeta);
 				}
 				else
 				{
@@ -268,16 +336,6 @@ public class WithdrawCommand implements CommandExecutor
 					
 					if (plugin.playerData.isSet(name + ".lore"))
 						meta.setLore(plugin.playerData.getStringList(name + ".lore"));
-				}
-				
-				try
-				{
-					item.setDurability(Short.valueOf(plugin.playerData.getString(name + ".durability")));
-				}
-				catch (NumberFormatException e)
-				{
-					sender.sendMessage(Constants.getCustomItemWithdrawError(name));
-					return false;
 				}
 				
 				try
@@ -325,7 +383,7 @@ public class WithdrawCommand implements CommandExecutor
 				sender.sendMessage(Constants.PREFIX + "You have withdrawn " + item.getAmount() + " " + name + " and now have a total of " + plugin.playerData.getInt(name + ".amount") + " left.");
 				return true;
 			}
-			/** Enchant, Custom Name, Armor/Tool Damage End */
+			/** "Custom Item" End */
 			
 			String name = args[0].toLowerCase();
 			int amount = 64;
