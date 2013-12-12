@@ -40,7 +40,7 @@ public class IBCommand implements CommandExecutor
 			{
 				if (sender.hasPermission(Constants.DEPOSIT_PERM) || sender.hasPermission(Constants.PURGE_PERM) || sender.hasPermission(Constants.WITHDRAW_PERM))
 				{
-					sender.sendMessage(new String[]{Constants.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.6.2-R1.0.",
+					sender.sendMessage(new String[]{Constants.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.6.4-R2.0.",
 							Constants.PREFIX + "Base command, type /itembank help for more info."});
 					return true;
 				}
