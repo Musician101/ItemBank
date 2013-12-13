@@ -8,7 +8,7 @@ import musician101.itembank.commands.WithdrawCommand;
 import musician101.itembank.listeners.PlayerListener;
 import musician101.itembank.util.IBUtils;
 import musician101.itembank.util.ItemTranslator;
-import musician101.itembank.util.UpdateChecker;
+import musician101.itembank.util.Update;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,12 +21,12 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class ItemBank extends JavaPlugin
 {
-	protected UpdateChecker updateChecker;
 	public ItemTranslator translator;
 	public File playerDataDir;
 	public File playerFile;
 	public FileConfiguration playerData;
 	public Config config;
+	//public static Economy econ = null;
 	
 	/** Loads the plugin's various configurations and reference files/folders. */
 	public void loadConfiguration()
@@ -39,25 +39,18 @@ public class ItemBank extends JavaPlugin
 	/** Checks if a new version is available. */
 	public void versionCheck()
 	{
+		@SuppressWarnings("unused")
+		Update update = null; 
 		if (Config.checkForUpdate)
-		{
-			updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/bukkit-plugins/item_bank/files.rss");
-			getLogger().info("Update checker is enabled.");
-			if (updateChecker.updateNeeded())
-			{
-				getLogger().info("A new version is available: " + updateChecker.getVersion());
-				getLogger().info("Get it from: " + updateChecker.getLink());
-			}
-			else
-				getLogger().info("ItemBank is up to date.");
-		}
-		else if (!Config.checkForUpdate)
-			getLogger().info("Update checker is not enabled.");
+			update = new Update(59073, "72784c134bdbc3c2216591011a29df99fac08239");
 	}
 	
 	/** Initializes the plugin, checks for the config, and register commands and listeners. */
 	public void onEnable()
 	{
+		/*if (!setupEconomy())
+			getLogger().info("Vault not deteceted. Disabling Economy support.");*/
+		
 		playerDataDir = new File(getDataFolder() + "/PlayerData");
 		
 		loadConfiguration();
@@ -67,9 +60,19 @@ public class ItemBank extends JavaPlugin
 		
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
+		/*if (econ != null)
+		{
+			getCommand("deposit").setExecutor(new DepositCommand(this));
+			getCommand("withdraw").setExecutor(new WithdrawCommand(this));
+		}
+		else
+		{
+			getCommand("deposit").setExecutor(new DepositCommand(this, econ));
+			getCommand("withdraw").setExecutor(new WithdrawCommand(this));
+		}*/
 		getCommand("deposit").setExecutor(new DepositCommand(this));
-		getCommand("itembank").setExecutor(new IBCommand(this));
 		getCommand("withdraw").setExecutor(new WithdrawCommand(this));
+		getCommand("itembank").setExecutor(new IBCommand(this));
 		
 		versionCheck();
 	}
@@ -79,4 +82,18 @@ public class ItemBank extends JavaPlugin
 	{
 		getLogger().info("Shutting down.");
 	}
+	
+	/** Vault set up (May not be implemented. 
+	private boolean setupEconomy()
+	{
+		if (getServer().getPluginManager().getPlugin("Vault") == null)
+			return false;
+		
+		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+		if (rsp == null)
+			return false;
+		
+		econ = rsp.getProvider();
+		return econ != null;
+	}*/
 }
