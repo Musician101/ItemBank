@@ -113,14 +113,13 @@ public class Update
                 // Get the version's game version
                 String versionGameVersion = (String) latest.get(API_GAME_VERSION_VALUE);
 
-                /*System.out.println(
+                System.out.println(
                         "The latest version of " + versionFileName +
                                 " is " + versionName +
                                 ", a " + versionType.toUpperCase() +
                                 " for " + versionGameVersion +
                                 ", available at: " + versionLink
-                );*/
-                System.out.println(versionName + " (" + versionType + ") version of " + versionFileName + " for " + versionGameVersion + " is available at: " + versionLink);
+                );
             } else {
                 System.out.println("There are no files for this project");
             }
