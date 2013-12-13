@@ -54,7 +54,7 @@ public class WithdrawCommand implements CommandExecutor
 	{
 		if (command.getName().equalsIgnoreCase(Constants.WITHDRAW_CMD))
 		{
-			if (!sender.hasPermission(Constants.WITHDRAW_CMD))
+			if (!sender.hasPermission(Constants.WITHDRAW_PERM))
 			{
 				sender.sendMessage(Constants.NO_PERMISSION);
 				return false;
