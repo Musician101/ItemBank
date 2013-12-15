@@ -2,9 +2,9 @@ package musician101.itembank;
 
 import java.io.File;
 
-import musician101.itembank.commands.DepositCommand;
-import musician101.itembank.commands.IBCommand;
-import musician101.itembank.commands.WithdrawCommand;
+import musician101.itembank.commands.dwcommands.DepositCommand;
+import musician101.itembank.commands.dwcommands.WithdrawCommand;
+import musician101.itembank.commands.ibcommand.IBCommand;
 import musician101.itembank.listeners.PlayerListener;
 import musician101.itembank.util.IBUtils;
 import musician101.itembank.util.ItemTranslator;

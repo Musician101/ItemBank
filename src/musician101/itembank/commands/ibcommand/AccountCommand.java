@@ -1,4 +1,4 @@
-package musician101.itembank.commands;
+package musician101.itembank.commands.ibcommand;
 
 import java.io.File;
 import java.io.FileNotFoundException;

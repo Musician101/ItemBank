@@ -1,4 +1,4 @@
-package musician101.itembank.commands;
+package musician101.itembank.commands.ibcommand;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
