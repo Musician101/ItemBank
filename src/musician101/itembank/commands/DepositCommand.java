@@ -172,19 +172,8 @@ public class DepositCommand implements CommandExecutor
 			/** Admin Deposit End */
 			
 			/** Economy Check Start */
-			if (ItemBank.getEconomy().isEnabled() && config.enableVault)
-			{
-				double money = ItemBank.getEconomy().getMoney(sender.getName());
-				double cost = config.transactionCost;
-				if (money < cost)
-				{
-					sender.sendMessage(Constants.PREFIX + "You lack the money to cover the transaction fee.");
-					return false;
-				}
-				
-				ItemBank.getEconomy().takeMoney(sender.getName(), cost);
-			}
-			/** Economy Check End */
+			if (!IBUtils.checkEconomy(plugin, config, (Player) sender))
+				return false;
 			
 			/** "Custom Item" Start */
 			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
@@ -441,15 +430,15 @@ public class DepositCommand implements CommandExecutor
 			{
 				sender.sendMessage(Constants.IO_EXCEPTION);
 				plugin.playerData.set(itemPath, oldAmount);
-				if (ItemBank.getEconomy().isEnabled() && config.enableVault)
-					ItemBank.getEconomy().giveMoney(sender.getName(), config.transactionCost);
+				if (plugin.getEconomy().isEnabled() && config.enableVault)
+					plugin.getEconomy().giveMoney(sender.getName(), config.transactionCost);
 				return false;
 			}
 			
 			item.setAmount(amount);
 			((Player) sender).getInventory().removeItem(item);
 			sender.sendMessage(Constants.PREFIX + "You have deposited " + amount + " " + item.getType().toString() + ".");
-			if (ItemBank.getEconomy().isEnabled() && config.enableVault)
+			if (plugin.getEconomy().isEnabled() && config.enableVault)
 				sender.sendMessage(Constants.PREFIX + "A " + config.transactionCost + " transaction fee has been deducted from your account.");
 			
 			return true;

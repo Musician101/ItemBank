@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Constants;
@@ -161,5 +162,30 @@ public class IBUtils
 				createPlayerFile(plugin, new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml"));
 			}
 		}
+	}
+	
+	/**
+	 * Check if the player has enough money.
+	 * 
+	 * @param plugin Reference's the main class.
+	 * @param config Provides access to the config options.
+	 * @param player The player involved.
+	 * @return false if the player does not have enough money, else true.
+	 */
+	public static boolean checkEconomy(ItemBank plugin, Config config, Player player)
+	{
+		if (!(plugin.getEconomy().isEnabled() && config.enableVault))
+			return true;
+			
+		double money = plugin.getEconomy().getMoney(player.getName());
+		double cost = config.transactionCost;
+		if (money < cost)
+		{
+			player.sendMessage(Constants.PREFIX + "You lack the money to cover the transaction fee.");
+			return false;
+		}
+		
+		plugin.getEconomy().takeMoney(player.getName(), cost);
+		return true;
 	}
 }

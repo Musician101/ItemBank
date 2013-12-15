@@ -83,7 +83,7 @@ public class ItemBank extends JavaPlugin
 	 *
 	 * @return
 	 */
-	public static Econ getEconomy()
+	public Econ getEconomy()
 	{
 		return economy;
 	}
