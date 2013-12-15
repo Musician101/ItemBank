@@ -19,8 +19,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Config
 {
 	private ItemBank plugin;
-	public static boolean checkForUpdate;
-	public static ConfigurationSection blacklist;
+	public boolean checkForUpdate;
+	public ConfigurationSection blacklist;
+	public boolean enableVault;
+	public double transactionCost;
 	
 	/**
 	 * Config constructor.
@@ -49,6 +51,8 @@ public class Config
 		
 		checkForUpdate = config.getBoolean("checkForUpdate", true);
 		blacklist = config.getConfigurationSection("blacklist");
+		enableVault = config.getBoolean("enableVault", true);
+		transactionCost = config.getDouble("transactionCost", 5);
 		
 		try
 		{

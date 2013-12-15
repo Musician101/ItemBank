@@ -35,12 +35,15 @@ import org.bukkit.inventory.meta.SkullMeta;
 public class DepositCommand implements CommandExecutor
 {
 	ItemBank plugin;
+	Config config;
+	
 	/**
 	 * @param plugin References the plugin's main class.
 	 */
-	public DepositCommand(ItemBank plugin)
+	public DepositCommand(ItemBank plugin, Config config)
 	{
 		this.plugin = plugin;
+		this.config = config;
 	}
 	
 	/**
@@ -60,16 +63,19 @@ public class DepositCommand implements CommandExecutor
 				sender.sendMessage(Constants.NO_PERMISSION);
 				return false;
 			}
+			
 			if (!(sender instanceof Player) && !args[0].equalsIgnoreCase(Constants.ADMIN_CMD))
 			{
 				sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
 				return false;
 			}
+			
 			if (args.length == 0)
 			{
 				sender.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
 				return false;
 			}
+			
 			/** Admin Deposit Begin*/
 			if (args[0].equalsIgnoreCase(Constants.ADMIN_CMD))
 			{
@@ -109,11 +115,13 @@ public class DepositCommand implements CommandExecutor
 					sender.sendMessage(Constants.NULL_POINTER);
 					return false;
 				}
+				
 				if (item == null)
 				{
 					sender.sendMessage(Constants.getAliasError(name));
 					return false;
 				}
+				
 				if (item.getType() == Material.AIR)
 				{
 					sender.sendMessage(Constants.AIR_BLOCK);
@@ -162,6 +170,21 @@ public class DepositCommand implements CommandExecutor
 				return true;
 			}
 			/** Admin Deposit End */
+			
+			/** Economy Check Start */
+			if (ItemBank.getEconomy().isEnabled() && config.enableVault)
+			{
+				double money = ItemBank.getEconomy().getMoney(sender.getName());
+				double cost = config.transactionCost;
+				if (money < cost)
+				{
+					sender.sendMessage(Constants.PREFIX + "You lack the money to cover the transaction fee.");
+					return false;
+				}
+				
+				ItemBank.getEconomy().takeMoney(sender.getName(), cost);
+			}
+			/** Economy Check End */
 			
 			/** "Custom Item" Start */
 			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
@@ -388,9 +411,9 @@ public class DepositCommand implements CommandExecutor
 				amount = amountInInv;
 			
 			int newAmount = oldAmount + amount;
-			if (Config.blacklist.isSet(itemPath))
+			if (config.blacklist.isSet(itemPath))
 			{
-				int maxAmount = Config.blacklist.getInt(itemPath);
+				int maxAmount = config.blacklist.getInt(itemPath);
 				if (maxAmount == 0)
 				{
 					sender.sendMessage(Constants.PREFIX + "Sorry, but that item is not depositable.");
@@ -418,12 +441,17 @@ public class DepositCommand implements CommandExecutor
 			{
 				sender.sendMessage(Constants.IO_EXCEPTION);
 				plugin.playerData.set(itemPath, oldAmount);
+				if (ItemBank.getEconomy().isEnabled() && config.enableVault)
+					ItemBank.getEconomy().giveMoney(sender.getName(), config.transactionCost);
 				return false;
 			}
 			
 			item.setAmount(amount);
 			((Player) sender).getInventory().removeItem(item);
 			sender.sendMessage(Constants.PREFIX + "You have deposited " + amount + " " + item.getType().toString() + ".");
+			if (ItemBank.getEconomy().isEnabled() && config.enableVault)
+				sender.sendMessage(Constants.PREFIX + "A " + config.transactionCost + " transaction fee has been deducted from your account.");
+			
 			return true;
 		}
 		return false;

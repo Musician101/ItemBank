@@ -1,6 +1,6 @@
 name: ItemBank
 main: musician101.itembank.ItemBank
-version: 1.4
+version: 1.5
 description: Virtual chest with configurable limits.
 authors: [Musician101]
 maintainer: Musician101

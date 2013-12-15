@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 public class IBCommand implements CommandExecutor
 {
 	ItemBank plugin;
+	
 	/**
 	 * @param plugin References the plugin's main class.
 	 */

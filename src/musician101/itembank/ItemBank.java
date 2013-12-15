@@ -26,7 +26,7 @@ public class ItemBank extends JavaPlugin
 	public File playerFile;
 	public FileConfiguration playerData;
 	public Config config;
-	//public static Economy econ = null;
+	public static Econ economy = null;
 	
 	/** Loads the plugin's various configurations and reference files/folders. */
 	public void loadConfiguration()
@@ -37,44 +37,39 @@ public class ItemBank extends JavaPlugin
 	}
 	
 	/** Checks if a new version is available. */
-	public void versionCheck()
+	public void versionCheck(Config config)
 	{
 		@SuppressWarnings("unused")
 		Update update = null; 
-		if (Config.checkForUpdate)
+		if (config.checkForUpdate)
 			update = new Update(59073, "72784c134bdbc3c2216591011a29df99fac08239");
 	}
 	
 	/** Initializes the plugin, checks for the config, and register commands and listeners. */
 	public void onEnable()
 	{
-		/*if (!setupEconomy())
-			getLogger().info("Vault not deteceted. Disabling Economy support.");*/
-		
 		playerDataDir = new File(getDataFolder() + "/PlayerData");
 		
 		loadConfiguration();
 		config = new Config(this);
 		
+		economy = new Econ();
+		if (economy.isEnabled() && config.enableVault)
+			getLogger().info("Vault detected and enabled in config. Using Vault for monetary transactions.");
+		else if (!economy.isEnabled())
+			getLogger().info("Error detecting Vault. Is it installed?");
+		else if (!config.enableVault)
+			getLogger().info("Vault detected but disabled in config. No monetary transactions will occur.");
+		
 		IBUtils.createPlayerFiles(this, Bukkit.getOnlinePlayers());
 		
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
-		/*if (econ != null)
-		{
-			getCommand("deposit").setExecutor(new DepositCommand(this));
-			getCommand("withdraw").setExecutor(new WithdrawCommand(this));
-		}
-		else
-		{
-			getCommand("deposit").setExecutor(new DepositCommand(this, econ));
-			getCommand("withdraw").setExecutor(new WithdrawCommand(this));
-		}*/
-		getCommand("deposit").setExecutor(new DepositCommand(this));
-		getCommand("withdraw").setExecutor(new WithdrawCommand(this));
+		getCommand("deposit").setExecutor(new DepositCommand(this, config));
+		getCommand("withdraw").setExecutor(new WithdrawCommand(this, config));
 		getCommand("itembank").setExecutor(new IBCommand(this));
 		
-		versionCheck();
+		versionCheck(config);
 	}
 	
 	/** Shuts off the plugin */
@@ -83,17 +78,13 @@ public class ItemBank extends JavaPlugin
 		getLogger().info("Shutting down.");
 	}
 	
-	/** Vault set up (May not be implemented. 
-	private boolean setupEconomy()
+	/**
+	 * Get economy related methods.
+	 *
+	 * @return
+	 */
+	public static Econ getEconomy()
 	{
-		if (getServer().getPluginManager().getPlugin("Vault") == null)
-			return false;
-		
-		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-		if (rsp == null)
-			return false;
-		
-		econ = rsp.getProvider();
-		return econ != null;
-	}*/
+		return economy;
+	}
 }

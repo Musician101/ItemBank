@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
+import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Constants;
@@ -34,12 +35,15 @@ import org.bukkit.inventory.meta.SkullMeta;
 public class WithdrawCommand implements CommandExecutor
 {
 	ItemBank plugin;
+	Config config;
+	
 	/**
 	 * @param plugin References the plugin's 
 	 */
-	public WithdrawCommand(ItemBank plugin)
+	public WithdrawCommand(ItemBank plugin, Config config)
 	{
 		this.plugin = plugin;
+		this.config = config;
 	}
 	
 	/**
@@ -59,11 +63,13 @@ public class WithdrawCommand implements CommandExecutor
 				sender.sendMessage(Constants.NO_PERMISSION);
 				return false;
 			}
+			
 			if (!(sender instanceof Player) && !args[0].equalsIgnoreCase(Constants.ADMIN_CMD))
 			{
 				sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
 				return false;
 			}
+			
 			if (args.length == 0)
 			{
 				sender.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
@@ -164,6 +170,21 @@ public class WithdrawCommand implements CommandExecutor
 				return true;
 			}
 			/** Admin Withdraw End */
+			
+			/** Economy Check Start */
+			if (ItemBank.getEconomy().isEnabled() && config.enableVault)
+			{
+				double money = ItemBank.getEconomy().getMoney(sender.getName());
+				double cost = config.transactionCost;
+				if (money < cost)
+				{
+					sender.sendMessage(Constants.PREFIX + "You lack the money to cover the transaction fee.");
+					return false;
+				}
+				
+				ItemBank.getEconomy().takeMoney(sender.getName(), cost);
+			}
+			/** Economy Check End */
 			
 			/** "Custom Item" Start */
 			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
@@ -484,6 +505,9 @@ public class WithdrawCommand implements CommandExecutor
 			item.setAmount(amount);
 			((Player) sender).getInventory().addItem(item);
 			sender.sendMessage(Constants.PREFIX + "You have withdrawn " + amount + " " + item.getType().toString() + " and now have a total of " + newAmount + " left.");
+			if (ItemBank.getEconomy().isEnabled() && config.enableVault)
+				sender.sendMessage(Constants.PREFIX + "A " + config.transactionCost + " transaction fee has been deducted from your account.");
+			
 			return true;
 		}
 		return false;

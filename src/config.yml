@@ -6,3 +6,9 @@ blacklist:
 
 # Whether to check for updates or not.    
 checkForUpdate: true
+
+# Vault related options.
+enableVault: true
+
+# How much it is to deposit/withdraw items.
+transactionCost: 5
