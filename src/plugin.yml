@@ -4,7 +4,7 @@ version: 1.5
 description: Virtual chest with configurable limits.
 authors: [Musician101]
 maintainer: Musician101
-#softdepend: [Vault]
+softdepend: [Vault]
 
 commands:
     itembank:
