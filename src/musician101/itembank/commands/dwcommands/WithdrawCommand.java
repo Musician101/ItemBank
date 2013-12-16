@@ -30,7 +30,8 @@ public class WithdrawCommand implements CommandExecutor
 	Config config;
 	
 	/**
-	 * @param plugin References the plugin's 
+	 * @param plugin References the plugin's main class
+	 * @param config References the config options.
 	 */
 	public WithdrawCommand(ItemBank plugin, Config config)
 	{

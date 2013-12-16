@@ -15,6 +15,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * The admin portion of the Deposit and Withdraw commands.
+ * 
+ * @author Musician101
+ */
 public class Admin
 {
 	public static boolean deposit(ItemBank plugin, Player admin, String[] args)

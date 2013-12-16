@@ -31,6 +31,7 @@ public class DepositCommand implements CommandExecutor
 	
 	/**
 	 * @param plugin References the plugin's main class.
+	 * @param config References the config options.
 	 */
 	public DepositCommand(ItemBank plugin, Config config)
 	{

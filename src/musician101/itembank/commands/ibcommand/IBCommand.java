@@ -18,6 +18,7 @@ public class IBCommand implements CommandExecutor
 	
 	/**
 	 * @param plugin References the plugin's main class.
+	 * @param config References the config options.
 	 */
 	public IBCommand(ItemBank plugin)
 	{

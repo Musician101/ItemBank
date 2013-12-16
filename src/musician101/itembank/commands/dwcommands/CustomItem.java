@@ -23,6 +23,11 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+/**
+ * The custom item handler for the Deposit and Withdraw commands.
+ * 
+ * @author Musician101
+ */
 public class CustomItem
 {
 	public static boolean deposit(ItemBank plugin, ItemStack item, Player player)
