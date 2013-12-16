@@ -19,12 +19,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 public class AccountCommand
 {
+	private static Map<String, Object> amounts = new HashMap<String, Object>();
+	
 	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
 	{
 		if (!sender.hasPermission(Constants.ACCOUNT_PERM))
@@ -32,175 +35,228 @@ public class AccountCommand
 			sender.sendMessage(Constants.NO_PERMISSION);
 			return false;
 		}
-		else
+		
+		if (args.length == 1)
 		{
-			plugin.playerFile = new File(plugin.playerDataDir + "/" + sender.getName().toLowerCase() + ".yml");
-			plugin.playerData = new YamlConfiguration();
-			try
+			if (!(sender instanceof Player))
 			{
-				plugin.playerData.load(plugin.playerFile);
-			}
-			catch (FileNotFoundException e)
-			{
-				sender.sendMessage(Constants.FILE_NOT_FOUND);
-				return false;
-			}
-			catch (IOException e)
-			{
-				sender.sendMessage(Constants.IO_EXCEPTION);
-				return false;
-			}
-			catch (InvalidConfigurationException e)
-			{
-				sender.sendMessage(Constants.YAML_EXCEPTION);
+				sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
 				return false;
 			}
 			
-			Map<String, Object> amounts = new HashMap<String, Object>();
-			for (Map.Entry<String, Object> entry : plugin.playerData.getValues(true).entrySet())
+			if (!getAccount(plugin, (Player) sender, sender.getName()))
+				return false;
+			
+			return displayAccount(plugin, sender, args);
+		}
+		else if (args.length == 2)
+		{
+			if (!(sender instanceof Player))
 			{
-				if (!(entry.getValue() instanceof MemorySection))
-				{
-					if (Material.getMaterial(entry.getKey().split("\\.")[0].toUpperCase()) == null)
-					{
-						if (entry.getKey().contains("amount"))
-							amounts.put(entry.getKey(), entry.getValue());
-					}
-					else if (Material.getMaterial(entry.getKey().split("\\.")[0].toUpperCase()) != null)
-					{
-						try
-						{
-							if (Short.valueOf(entry.getKey().split("\\.")[1]) >= 0)
-								amounts.put(entry.getKey(), entry.getValue());
-						}
-						catch (NumberFormatException e)
-						{
-							List<String> children = new ArrayList<String>(Arrays.asList("material", "durability", "enchantments", "lore", "power", "effects"));
-							if (entry.getKey().contains("amount"))
-								amounts.put(entry.getKey(), entry.getValue());
-							else if (!children.contains(entry.getKey().split("\\.")[1]))
-							{
-								sender.sendMessage(Constants.getFileAmountError(entry.getKey().split("\\.")[0]));
-								return false;
-							}
-						}
-					}
-				}
+				sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
+				return false;
 			}
 			
-			if (args.length == 1)
+			if (!getAccount(plugin, (Player) sender, sender.getName()))
+				return false;
+			
+			if (args[1].equalsIgnoreCase(Constants.ADMIN_CMD))
 			{
-				sender.sendMessage("--------" + ChatColor.DARK_RED + "Your ItemBank Account" + ChatColor.WHITE + "--------");
-				for (Map.Entry<String, Object> entry : amounts.entrySet())
+				if (!sender.hasPermission(Constants.ADMIN_PERM))
+					sender.sendMessage(Constants.NO_PERMISSION);
+				else
+					sender.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
+				
+				return false;
+			}
+			
+			String name = args[1];
+			if (!plugin.playerData.isSet(name))
+			{
+				sender.sendMessage(Constants.PREFIX + "You have 0 " + name + ".");
+				return true;
+			}
+			
+			for (Map.Entry<String, Object> entry : amounts.entrySet())
+			{
+				int amount = Integer.valueOf(entry.getValue().toString());
+				String[] pathSplit = entry.getKey().split("\\.");
+				ItemStack item = null;
+				short durability = 0;
+				
+				if (pathSplit[0].equals(name))
 				{
-					int amount = 0;
-					
 					try
 					{
-						amount = Integer.valueOf(entry.getValue().toString());
+						durability = Short.valueOf(pathSplit[1]);
 					}
 					catch (NumberFormatException e)
 					{
-						sender.sendMessage(Constants.getFileAmountError(entry.getKey().toUpperCase()));
-						return false;
-					}
-					
-					if (amount != 0)
-					{					
-						String[] pathSplit = entry.getKey().split("\\.");					
-						ItemStack item = null;
-						short durability = 0;
-						try
+						if (pathSplit[1].contains("amount"))
 						{
-							durability = Short.valueOf(pathSplit[1]);
+							if (plugin.playerData.isSet(pathSplit[0] + ".durability"))
+								durability = Short.valueOf(plugin.playerData.getString(pathSplit[0] + ".durability"));
 						}
-						catch (NumberFormatException e)
-						{
-							if (pathSplit[1].contains("amount"))
-							{
-								if (plugin.playerData.isSet(pathSplit[0] + ".durability"))
-									durability = Short.valueOf(plugin.playerData.getString(pathSplit[0] + ".durability"));
-							}
-							else
-							{
-								sender.sendMessage(Constants.getFileDurabilityError(pathSplit[0]));
-								return false;
-							}
-						}
-						
-						if (Material.getMaterial(pathSplit[0].toUpperCase()) != null)
-							item = new ItemStack(Material.getMaterial(pathSplit[0].toUpperCase()), amount, durability);
 						else
 						{
-							item = new ItemStack(Material.getMaterial(plugin.playerData.getString(pathSplit[0] + ".material")), amount, durability);
-							if (item.getType() != Material.getMaterial(pathSplit[0].toUpperCase()))
-							{
-								ItemMeta meta = item.getItemMeta();
-								meta.setDisplayName(pathSplit[0].replace("_", " "));
-								item.setItemMeta(meta);
-							}
+							sender.sendMessage(Constants.getFileDurabilityError(pathSplit[0]));
+							return false;
 						}
-						sender.sendMessage(ChatColor.DARK_RED + getName(item) + ChatColor.WHITE + ": " + item.getAmount());
 					}
+					
+					if (Material.getMaterial(pathSplit[0].toUpperCase()) != null)
+						item = new ItemStack(Material.getMaterial(pathSplit[0].toUpperCase()), amount, durability);
+					else
+					{
+						item = new ItemStack(Material.getMaterial(plugin.playerData.getString(pathSplit[0] + ".material")), amount, durability);
+						if (item.getType() != Material.getMaterial(pathSplit[0].toUpperCase()))
+						{
+							ItemMeta meta = item.getItemMeta();
+							meta.setDisplayName(pathSplit[0].replace("_", " "));
+							item.setItemMeta(meta);
+						}
+					}
+					sender.sendMessage(Constants.PREFIX + getName(item) + ChatColor.WHITE + ": " + item.getAmount());
 				}
-				return true;
 			}
-			else if (args.length == 2)
+			return true;
+		}
+		else if (args.length == 3)
+		{
+			if (args[1].equalsIgnoreCase(Constants.ADMIN_CMD))
 			{
-				String name = args[1];
-				if (!plugin.playerData.isSet(name))
+				if (!sender.hasPermission(Constants.ADMIN_PERM))
 				{
-					sender.sendMessage(Constants.PREFIX + "You have 0 " + name + ".");
-					return true;
+					sender.sendMessage(Constants.NO_PERMISSION);
+					return false;
 				}
 				
-				for (Map.Entry<String, Object> entry : amounts.entrySet())
+				if (!getAccount(plugin, sender, args[2]))
+					return false;
+				
+				return displayAccount(plugin, sender, args);
+			}
+		}
+		return false;
+	}
+	
+	public static boolean displayAccount(ItemBank plugin, CommandSender sender, String[] args)
+	{
+		if (args[1].equalsIgnoreCase(Constants.ADMIN_CMD))
+			sender.sendMessage("--------" + ChatColor.DARK_RED + args[2] + "'s ItemBank Account" + ChatColor.WHITE + "--------");
+		else
+			sender.sendMessage("--------" + ChatColor.DARK_RED + "Your ItemBank Account" + ChatColor.WHITE + "--------");
+		for (Map.Entry<String, Object> entry : amounts.entrySet())
+		{
+			int amount = 0;
+			
+			try
+			{
+				amount = Integer.valueOf(entry.getValue().toString());
+			}
+			catch (NumberFormatException e)
+			{
+				sender.sendMessage(Constants.getFileAmountError(entry.getKey().toUpperCase()));
+				return false;
+			}
+			
+			if (amount != 0)
+			{					
+				String[] pathSplit = entry.getKey().split("\\.");					
+				ItemStack item = null;
+				short durability = 0;
+				try
 				{
-					int amount = Integer.valueOf(entry.getValue().toString());
-					String[] pathSplit = entry.getKey().split("\\.");
-					ItemStack item = null;
-					short durability = 0;
-					
-					if (pathSplit[0].equals(name))
+					durability = Short.valueOf(pathSplit[1]);
+				}
+				catch (NumberFormatException e)
+				{
+					if (pathSplit[1].contains("amount"))
 					{
-						try
-						{
-							durability = Short.valueOf(pathSplit[1]);
-						}
-						catch (NumberFormatException e)
-						{
-							if (pathSplit[1].contains("amount"))
-							{
-								if (plugin.playerData.isSet(pathSplit[0] + ".durability"))
-									durability = Short.valueOf(plugin.playerData.getString(pathSplit[0] + ".durability"));
-							}
-							else
-							{
-								sender.sendMessage(Constants.getFileDurabilityError(pathSplit[0]));
-								return false;
-							}
-						}
-						
-						if (Material.getMaterial(pathSplit[0].toUpperCase()) != null)
-							item = new ItemStack(Material.getMaterial(pathSplit[0].toUpperCase()), amount, durability);
-						else
-						{
-							item = new ItemStack(Material.getMaterial(plugin.playerData.getString(pathSplit[0] + ".material")), amount, durability);
-							if (item.getType() != Material.getMaterial(pathSplit[0].toUpperCase()))
-							{
-								ItemMeta meta = item.getItemMeta();
-								meta.setDisplayName(pathSplit[0].replace("_", " "));
-								item.setItemMeta(meta);
-							}
-						}
-						sender.sendMessage(Constants.PREFIX + getName(item) + ChatColor.WHITE + ": " + item.getAmount());
+						if (plugin.playerData.isSet(pathSplit[0] + ".durability"))
+							durability = Short.valueOf(plugin.playerData.getString(pathSplit[0] + ".durability"));
+					}
+					else
+					{
+						sender.sendMessage(Constants.getFileDurabilityError(pathSplit[0]));
+						return false;
 					}
 				}
-				return true;
+				
+				if (Material.getMaterial(pathSplit[0].toUpperCase()) != null)
+					item = new ItemStack(Material.getMaterial(pathSplit[0].toUpperCase()), amount, durability);
+				else
+				{
+					item = new ItemStack(Material.getMaterial(plugin.playerData.getString(pathSplit[0] + ".material")), amount, durability);
+					if (item.getType() != Material.getMaterial(pathSplit[0].toUpperCase()))
+					{
+						ItemMeta meta = item.getItemMeta();
+						meta.setDisplayName(pathSplit[0].replace("_", " "));
+						item.setItemMeta(meta);
+					}
+				}
+				sender.sendMessage(ChatColor.DARK_RED + getName(item) + ChatColor.WHITE + ": " + item.getAmount());
 			}
 		}
 		
-		return false;
+		return true;
+	}
+	
+	public static boolean getAccount(ItemBank plugin, CommandSender sender, String playerName)
+	{
+		plugin.playerFile = new File(plugin.playerDataDir + "/" + playerName.toLowerCase() + ".yml");
+		plugin.playerData = new YamlConfiguration();
+		try
+		{
+			plugin.playerData.load(plugin.playerFile);
+		}
+		catch (FileNotFoundException e)
+		{
+			sender.sendMessage(Constants.FILE_NOT_FOUND);
+			return false;
+		}
+		catch (IOException e)
+		{
+			sender.sendMessage(Constants.IO_EXCEPTION);
+			return false;
+		}
+		catch (InvalidConfigurationException e)
+		{
+			sender.sendMessage(Constants.YAML_EXCEPTION);
+			return false;
+		}
+		
+		for (Map.Entry<String, Object> entry : plugin.playerData.getValues(true).entrySet())
+		{
+			if (!(entry.getValue() instanceof MemorySection))
+			{
+				if (Material.getMaterial(entry.getKey().split("\\.")[0].toUpperCase()) == null)
+				{
+					if (entry.getKey().contains("amount"))
+						amounts.put(entry.getKey(), entry.getValue());
+				}
+				else if (Material.getMaterial(entry.getKey().split("\\.")[0].toUpperCase()) != null)
+				{
+					try
+					{
+						if (Short.valueOf(entry.getKey().split("\\.")[1]) >= 0)
+							amounts.put(entry.getKey(), entry.getValue());
+					}
+					catch (NumberFormatException e)
+					{
+						List<String> children = new ArrayList<String>(Arrays.asList("material", "durability", "enchantments", "lore", "power", "effects"));
+						if (entry.getKey().contains("amount"))
+							amounts.put(entry.getKey(), entry.getValue());
+						else if (!children.contains(entry.getKey().split("\\.")[1]))
+						{
+							sender.sendMessage(Constants.getFileAmountError(entry.getKey().split("\\.")[0]));
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
 	}
 	
 	public static String getName(ItemStack item)
@@ -639,10 +695,23 @@ public class AccountCommand
 		
 		if (durabilityItems.contains(item.getType()))
 			name = name + " (Uses: " + item.getDurability() + ")";
+		
 		if (item.hasItemMeta())
-			name = item.getItemMeta().getDisplayName();
+		{
+			name = item.getItemMeta().getDisplayName() + " (Material: " + item.getType();
+			if (durabilityItems.contains(item.getType()))
+			{
+				name = name + " Uses: " + item.getDurability() + ")";
+			}
+			else
+			{
+				name = name + ")";
+			}
+		}
+		
 		if (item.getType() == Material.SKULL_ITEM && ((SkullMeta) item.getItemMeta()).hasOwner())
 			name = name + "'s Head";
+		
 		return name;
 	}
 }
