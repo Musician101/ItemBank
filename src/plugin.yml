@@ -13,6 +13,9 @@ commands:
     deposit:
         aliases: [d]
         description: Add blocks/items to a player's account.
+    itemalias:
+    	aliases: [ia]
+    	description: View block/item aliases.
     withdraw:
         aliases: [w]
         description: Remove blocks/items to a player's account.
@@ -22,18 +25,26 @@ permissions:
       default: op
       description: Gives access to all commands.
       children:
+         itembank.account: true
          itembank.admin: true
          itembank.deposit: true
+         itembank.itemalias: true
          itembank.help: true
          itembank.purge: true
          itembank.version: true
          itembank.withdraw: true
+   itembank.account:
+      default: op
+      description: Allows user/group to view what is in their account.
    itembank.admin:
       default: op
-      description: Allows user/group to manage other players' accounts.
+      description: Allows user/group to view and manage other players' accounts.
    itembank.deposit:
       default: op
       description: Allows user/group to use the deposit command.
+   itembank.itemalias:
+      default: op
+      description: Allows user/group to use the itemalias command.
    itembank.purge:
       default: op
       description: Allows user/group to use the purge command.
