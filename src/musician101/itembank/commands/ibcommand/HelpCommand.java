@@ -24,7 +24,9 @@ public class HelpCommand
 		else
 		{
 			String cmd = args[1].toLowerCase();
-			if (cmd == Constants.DEPOSIT_CMD)
+			if (cmd == Constants.ACCOUNT_CMD)
+				sender.sendMessage(Constants.ACCOUNT_HELP);
+			else if (cmd == Constants.DEPOSIT_CMD)
 				sender.sendMessage(Constants.DEPOSIT_HELP);
 			else if (cmd == Constants.IA_CMD)
 				sender.sendMessage(Constants.IA_HELP);

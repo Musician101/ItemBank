@@ -52,7 +52,12 @@ public class Constants
 	/** Account command */
 	public static final String ACCOUNT_CMD = "account";
 	public static final String ACCOUNT_PERM = BASE_CMD + "." + ACCOUNT_CMD;
-	public static final String ACCOUNT_DESC = "";
+	public static final String ACCOUNT_DESC = "Used for viewing a player's account.";
+	public static final String[] ACCOUNT_USAGE = {"/itembank account <block|item|custom name>", "/itembank account admin [player]"};
+	public static final String[] ACCOUNT_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
+		"Help for the " + ChatColor.DARK_RED + "Account" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
+		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + ACCOUNT_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + ACCOUNT_USAGE[0],
+		ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + ACCOUNT_USAGE[1]};
 	
 	/** Admin command */
 	public static final String ADMIN_CMD = "admin";
