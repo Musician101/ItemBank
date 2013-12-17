@@ -22,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 public class IBUtils
 {
 	/**
-	 * Method for finding specific blocks/items in a player's inventory
+	 * Method for finding specific blocks/items in a player's inventory.
 	 * 
 	 * @param player Player who's inventory is being checked.
 	 * @param material The material that is being searched for.
@@ -95,6 +95,7 @@ public class IBUtils
 				return null;
 			}
 		}
+		
 		ItemStack item = new ItemStack(material);
 		if (amount == 0) amount = 64;
 		item.setAmount(amount);
@@ -109,8 +110,8 @@ public class IBUtils
 	 * @param name The alias of the material.
 	 * @param amount The amount of the material.
 	 * @return Returns the ItemStack with the proper ID, Durability and the Amount.
-	 * @throws InvalidAliasException
-	 * @throws NullPointerException
+	 * @throws InvalidAliasException Alias not recognized.
+	 * @throws NullPointerException Translator failed to load on startup.
 	 */
 	public static ItemStack getIdFromAlias(ItemBank plugin, String alias, int amount) throws InvalidAliasException, NullPointerException
 	{
@@ -192,22 +193,22 @@ public class IBUtils
 	}
 	
 	/**
-	 * Takes a list and joins it into a string separated by the given serperator.
+	 * Takes a list and joins it into a string separated by the given separator.
 	 * 
-	 * @param seperator The character/characters used to separator the contents of a list.
+	 * @param separator The character/characters used to separator the contents of a list.
 	 * @param list The list to be turned into a single string.
 	 * @return
 	 */
-	public static String joinList(String seperator, Object... list)
+	public static String joinList(String separator, Object... list)
 	{
 		StringBuilder sb = new StringBuilder();
 		for (Object object : list)
 		{
 			if (sb.length() > 0)
-				sb.append(seperator);
+				sb.append(separator);
 			
 			if (object instanceof Collection)
-				sb.append(joinList(seperator, ((Collection<?>) object).toArray()));
+				sb.append(joinList(separator, ((Collection<?>) object).toArray()));
 			else
 				sb.append(object.toString());
 		}

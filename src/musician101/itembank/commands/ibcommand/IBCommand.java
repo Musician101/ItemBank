@@ -27,10 +27,10 @@ public class IBCommand implements CommandExecutor
 	
 	/**
 	 * @param sender Who sent the command.
-	 * @param command Which command was executed
-	 * @param label Alias of the command
-	 * @param args Command parameters
-	 * @return True if the command was successfully executed
+	 * @param command Which command was executed.
+	 * @param label Alias of the command.
+	 * @param args Command parameters.
+	 * @return True if the command was successfully executed.
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)

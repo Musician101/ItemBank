@@ -12,11 +12,6 @@ import org.bukkit.command.CommandSender;
  */
 public class HelpCommand
 {
-	/**
-	 * @param plugin Referenecs the plugin's main class.
-	 * @param sender Who sent the command.
-	 * @param args The arguments used in the command.
-	 */
 	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
 	{
 		if (args.length == 1)

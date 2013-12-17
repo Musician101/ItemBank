@@ -16,11 +16,6 @@ import org.bukkit.command.CommandSender;
  */
 public class PurgeCommand
 {
-	/**
-	 * @param plugin References the plugin's main class.
-	 * @param sender Who sent the command.
-	 * @param args The arguments used in the command.
-	 */
 	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
 	{
 		if (!sender.hasPermission(Constants.PURGE_PERM))

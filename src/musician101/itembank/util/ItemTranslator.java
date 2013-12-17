@@ -18,6 +18,7 @@ public class ItemTranslator
 	/** HashMap storing all of the aliases and their data values.*/
 	private final Map<String, Map<Integer, Short>> items = new HashMap<String, Map<Integer, Short>>();
 	
+	/** HashMap used to find aliases for a given block/item. */
 	private final Map<ItemData, List<String>> names = new HashMap<ItemData, List<String>>();
 	
 	/** HashMap storing all of the appropriate IDs and data values. */
@@ -106,6 +107,7 @@ public class ItemTranslator
 			String[] datas = alias.split(":");
 			data = (datas.length > 1) ? datas[1] : "";
 		}
+		
 		if (items.keySet().contains(alias.toLowerCase())) found = true;
 		
 		if (!found) return null;
@@ -118,7 +120,7 @@ public class ItemTranslator
 	/**
 	 * Get the list of aliases based on a given ItemStack.
 	 * 
-	 * @param item
+	 * @param item The item to search aliases for.
 	 * @return
 	 */
 	public String getAliases(ItemStack item)

@@ -153,11 +153,13 @@ public class Admin
 			admin.sendMessage(Constants.NULL_POINTER);
 			return false;
 		}
+		
 		if (item == null)
 		{
 			admin.sendMessage(Constants.getAliasError(name));
 			return false;
 		}
+		
 		if (item.getType() == Material.AIR)
 		{
 			admin.sendMessage(Constants.AIR_BLOCK);

@@ -100,6 +100,7 @@ public class ItemAliasCommand implements CommandExecutor
 			String aliases = plugin.translator.getAliases(item);
 			if (aliases != null)
 				sender.sendMessage(Constants.PREFIX + "Aliases: " + aliases);
+			
 			return true;
 		}
 		return false;

@@ -41,10 +41,10 @@ public class DepositCommand implements CommandExecutor
 	
 	/**
 	 * @param sender Who sent the command.
-	 * @param command Which command was executed
-	 * @param label Alias of the command
-	 * @param args Command parameters
-	 * @return True if the command was successfully executed
+	 * @param command Which command was executed.
+	 * @param label Alias of the command.
+	 * @param args Command parameters.
+	 * @return True if the command was successfully executed.
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -110,11 +110,13 @@ public class DepositCommand implements CommandExecutor
 				sender.sendMessage(Constants.NULL_POINTER);
 				return false;
 			}
+			
 			if (item == null)
 			{
 				sender.sendMessage(Constants.getAliasError(name));
 				return false;
 			}
+			
 			if (item.getType() == Material.AIR)
 			{
 				sender.sendMessage(Constants.AIR_BLOCK);

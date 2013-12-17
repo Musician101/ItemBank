@@ -30,7 +30,7 @@ public class WithdrawCommand implements CommandExecutor
 	Config config;
 	
 	/**
-	 * @param plugin References the plugin's main class
+	 * @param plugin References the plugin's main class.
 	 * @param config References the config options.
 	 */
 	public WithdrawCommand(ItemBank plugin, Config config)
@@ -41,10 +41,10 @@ public class WithdrawCommand implements CommandExecutor
 	
 	/**
 	 * @param sender Who sent the command.
-	 * @param command Which command was executed
-	 * @param label Alias of the command
-	 * @param args Command parameters
-	 * @return True if the command was successfully executed
+	 * @param command Which command was executed.
+	 * @param label Alias of the command.
+	 * @param args Command parameters.
+	 * @return True if the command was successfully executed.
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -80,8 +80,6 @@ public class WithdrawCommand implements CommandExecutor
 			/** "Custom Item" Check */
 			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
 				return CustomItem.withdraw(plugin, (Player) sender, args);
-
-			/** "Custom Item" End */
 			
 			String name = args[0].toLowerCase();
 			int amount = 64;
@@ -112,11 +110,13 @@ public class WithdrawCommand implements CommandExecutor
 				sender.sendMessage(Constants.NULL_POINTER);
 				return false;
 			}
+			
 			if (item == null)
 			{
 				sender.sendMessage(Constants.getAliasError(name));
 				return false;
 			}
+			
 			if (item.getType() == Material.AIR)
 			{
 				sender.sendMessage(Constants.AIR_BLOCK);
@@ -158,11 +158,13 @@ public class WithdrawCommand implements CommandExecutor
 				else if (is.getType() == item.getType())
 					freeSpace += is.getType().getMaxStackSize() - is.getAmount();
 			}
+			
 			if (freeSpace == 0)
 			{
 				sender.sendMessage(Constants.FULL_INV);
 				return false;
 			}
+			
 			if (amount > freeSpace)
 				amount = freeSpace;
 			
