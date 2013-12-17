@@ -14,8 +14,8 @@ commands:
         aliases: [d]
         description: Add blocks/items to a player's account.
     itemalias:
-    	aliases: [ia]
-    	description: View block/item aliases.
+        aliases: [ia]
+        description: View block/item aliases.
     withdraw:
         aliases: [w]
         description: Remove blocks/items to a player's account.
