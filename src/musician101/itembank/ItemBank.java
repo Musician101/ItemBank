@@ -2,6 +2,7 @@ package musician101.itembank;
 
 import java.io.File;
 
+import musician101.itembank.commands.ItemAliasCommand;
 import musician101.itembank.commands.dwcommands.DepositCommand;
 import musician101.itembank.commands.dwcommands.WithdrawCommand;
 import musician101.itembank.commands.ibcommand.IBCommand;
@@ -66,6 +67,7 @@ public class ItemBank extends JavaPlugin
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
 		getCommand("deposit").setExecutor(new DepositCommand(this, config));
+		getCommand("itemalias").setExecutor(new ItemAliasCommand(this));
 		getCommand("withdraw").setExecutor(new WithdrawCommand(this, config));
 		getCommand("itembank").setExecutor(new IBCommand(this));
 		

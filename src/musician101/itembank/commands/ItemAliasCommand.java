@@ -1,6 +1,5 @@
 package musician101.itembank.commands;
 
-import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Constants;
@@ -20,16 +19,14 @@ import org.bukkit.inventory.ItemStack;
 public class ItemAliasCommand implements CommandExecutor
 {
 	ItemBank plugin;
-	Config config;
 	
 	/**
 	 * @param plugin
 	 * @param config
 	 */
-	public ItemAliasCommand(ItemBank plugin, Config config)
+	public ItemAliasCommand(ItemBank plugin)
 	{
 		this.plugin = plugin;
-		this.config = config;
 	}
 	
 	/**
