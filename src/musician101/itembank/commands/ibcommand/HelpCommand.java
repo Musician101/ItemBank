@@ -26,6 +26,8 @@ public class HelpCommand
 			String cmd = args[1].toLowerCase();
 			if (cmd == Constants.DEPOSIT_CMD)
 				sender.sendMessage(Constants.DEPOSIT_HELP);
+			else if (cmd == Constants.IA_CMD)
+				sender.sendMessage(Constants.IA_HELP);
 			else if (cmd == Constants.PURGE_CMD)
 				sender.sendMessage(Constants.PURGE_HELP);
 			else if (cmd == Constants.WITHDRAW_CMD)

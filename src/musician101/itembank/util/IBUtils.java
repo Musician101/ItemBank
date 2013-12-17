@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 
 import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
@@ -66,6 +67,7 @@ public class IBUtils
 				name = name.split(":")[0];
 			}
 		}
+		
 		try
 		{
 			data = Short.valueOf(datas);
@@ -75,6 +77,7 @@ public class IBUtils
 			if (datas != null) return null;
 			else data = 0;
 		}
+		
 		Material material = Material.getMaterial(name);
 		if (material == null)
 		{
@@ -186,5 +189,29 @@ public class IBUtils
 		
 		plugin.getEconomy().takeMoney(player.getName(), cost);
 		return true;
+	}
+	
+	/**
+	 * Takes a list and joins it into a string separated by the given serperator.
+	 * 
+	 * @param seperator The character/characters used to separator the contents of a list.
+	 * @param list The list to be turned into a single string.
+	 * @return
+	 */
+	public static String joinList(String seperator, Object... list)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (Object object : list)
+		{
+			if (sb.length() > 0)
+				sb.append(seperator);
+			
+			if (object instanceof Collection)
+				sb.append(joinList(seperator, ((Collection<?>) object).toArray()));
+			else
+				sb.append(object.toString());
+		}
+		
+		return sb.toString();
 	}
 }
