@@ -19,28 +19,20 @@ public class HelpCommand
 	 */
 	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
 	{
-		if (!sender.hasPermission(Constants.DEPOSIT_PERM) || !sender.hasPermission(Constants.PURGE_PERM) || !sender.hasPermission(Constants.WITHDRAW_PERM))
-		{
-			sender.sendMessage(Constants.NO_PERMISSION);
-			return false;
-		}
+		if (args.length == 1)
+			sender.sendMessage(Constants.HELP_LIST);
 		else
 		{
-			if (args.length == 1)
-				sender.sendMessage(Constants.HELP_LIST);
+			String cmd = args[1].toLowerCase();
+			if (cmd == Constants.DEPOSIT_CMD)
+				sender.sendMessage(Constants.DEPOSIT_HELP);
+			else if (cmd == Constants.PURGE_CMD)
+				sender.sendMessage(Constants.PURGE_HELP);
+			else if (cmd == Constants.WITHDRAW_CMD)
+				sender.sendMessage(Constants.WITHDRAW_HELP);
 			else
-			{
-				String cmd = args[1].toLowerCase();
-				if (cmd == Constants.DEPOSIT_CMD)
-					sender.sendMessage(Constants.DEPOSIT_HELP);
-				else if (cmd == Constants.PURGE_CMD)
-					sender.sendMessage(Constants.PURGE_HELP);
-				else if (cmd == Constants.WITHDRAW_CMD)
-					sender.sendMessage(Constants.WITHDRAW_HELP);
-				else
-					sender.sendMessage(Constants.PREFIX + "Error: Command not recognized.");
-			}
-			return true;
+				sender.sendMessage(Constants.PREFIX + "Error: Command not recognized.");
 		}
+		return true;
 	}
 }

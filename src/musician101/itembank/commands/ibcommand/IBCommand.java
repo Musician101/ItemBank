@@ -40,17 +40,9 @@ public class IBCommand implements CommandExecutor
 			/** Base Command */
 			if (args.length == 0)
 			{
-				if (sender.hasPermission(Constants.DEPOSIT_PERM) || sender.hasPermission(Constants.PURGE_PERM) || sender.hasPermission(Constants.WITHDRAW_PERM))
-				{
-					sender.sendMessage(new String[]{Constants.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.6.4-R2.0.",
-							Constants.PREFIX + "Base command, type /itembank help for more info."});
-					return true;
-				}
-				else
-				{
-					sender.sendMessage(Constants.NO_PERMISSION);
-					return false;
-				}
+				sender.sendMessage(new String[]{Constants.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.6.4-R2.0.",
+						Constants.PREFIX + "Base command, type /itembank help for more info."});
+				return true;
 			}
 			
 			/** Account Command */
