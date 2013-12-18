@@ -44,6 +44,8 @@ public class ItemBank extends JavaPlugin
 		Update update = null; 
 		if (config.checkForUpdate)
 			update = new Update(59073, "72784c134bdbc3c2216591011a29df99fac08239");
+		else
+			getLogger().info("Updater is disabled.");
 	}
 	
 	/** Initializes the plugin, checks for the config, and register commands and listeners. */
