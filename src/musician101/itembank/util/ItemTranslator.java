@@ -1,13 +1,13 @@
 package musician101.itembank.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import musician101.itembank.ItemBank;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -17,9 +17,6 @@ public class ItemTranslator
 {
 	/** HashMap storing all of the aliases and their data values.*/
 	private final Map<String, Map<Integer, Short>> items = new HashMap<String, Map<Integer, Short>>();
-	
-	/** HashMap used to find aliases for a given block/item. */
-	private final Map<ItemData, List<String>> names = new HashMap<ItemData, List<String>>();
 	
 	/** HashMap storing all of the appropriate IDs and data values. */
 	private final List<Integer> ids = new ArrayList<Integer>();
@@ -67,20 +64,6 @@ public class ItemTranslator
 					plugin.getLogger().info("Error with data: " + s[2]);
 				}
 				
-				ItemData itemData = new ItemData(id, data);
-				if (names.containsKey(itemData))
-				{
-					List<String> aliases = names.get(itemData);
-					aliases.add(alias);
-					Collections.sort(aliases);
-				}
-				else
-				{
-					List<String> aliases = new ArrayList<String>();
-					aliases.add(alias);
-					names.put(itemData, aliases);
-				}
-				
 				Map<Integer, Short> itemIds = new HashMap<Integer, Short>();
 				itemIds.put(id, data);
 				ids.add(id);
@@ -120,63 +103,33 @@ public class ItemTranslator
 	/**
 	 * Get the list of aliases based on a given ItemStack.
 	 * 
-	 * @param item The item to search aliases for.
+	 * @param itemStack The item to search aliases for.
 	 * @return
 	 */
-	public String getAliases(ItemStack item)
+	public String getAliases(ItemStack itemStack)
 	{
+		List<String> aliases = new ArrayList<String>();
+		Map<Integer, Short> id = new HashMap<Integer, Short>();
 		/**
-		 * Deprecated mtehod ItemStack.getTypeId() in Bukkit.
+		 * Deprecated method ItemStack.getTypeId() in Bukkit.
 		 * Waiting for a proper alternative before fixing.
 		 */
-		ItemData itemData = new ItemData(item.getTypeId(), item.getDurability());
-		List<String> aliases = names.get(itemData);
-		if (aliases == null)
+		id.put(itemStack.getTypeId(), itemStack.getDurability());
+		for (Map.Entry<String, Map<Integer, Short>> item : items.entrySet())
 		{
-			itemData = new ItemData(item.getTypeId(), (short) 0);
-			aliases = names.get(itemData);
-			if (aliases == null)
-				return null;
+			for (Map.Entry<Integer, Short> itemID : item.getValue().entrySet())
+			{
+				if (itemID.getKey() == itemStack.getTypeId() && itemID.getValue() == itemStack.getDurability())
+				{
+					Bukkit.getLogger().info(item.getKey() + " " + itemID.getKey() + ":" + itemID.getValue());
+					aliases.add(item.getKey());
+				}
+			}
 		}
 		
 		if (aliases.size() > 15)
 			aliases = aliases.subList(0, 14);
 		
 		return IBUtils.joinList(", ", aliases);
-	}
-	
-	static class ItemData
-	{
-		final private int id;
-		final private short data;
-		
-		ItemData(final int id, final short data)
-		{
-			this.id = id;
-			this.data = data;
-		}
-		
-		public int getID()
-		{
-			return id;
-		}
-		
-		public short getData()
-		{
-			return data;
-		}
-		
-		@Override
-		public boolean equals(Object object)
-		{
-			if (object == null)
-				return false;
-			
-			if (!(object instanceof ItemData))
-				return false;
-			
-			ItemData pairo = (ItemData) object;
-			return this.id == pairo.getID() && this.getData() == pairo.getData();
-		}
 	}
 }
