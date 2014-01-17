@@ -19,15 +19,15 @@ public class HelpCommand
 		else
 		{
 			String cmd = args[1].toLowerCase();
-			if (cmd == Constants.ACCOUNT_CMD)
+			if (cmd.equals(Constants.ACCOUNT_CMD))
 				sender.sendMessage(Constants.ACCOUNT_HELP);
-			else if (cmd == Constants.DEPOSIT_CMD)
+			else if (cmd.equals(Constants.DEPOSIT_CMD))
 				sender.sendMessage(Constants.DEPOSIT_HELP);
-			else if (cmd == Constants.IA_CMD)
+			else if (cmd.equals(Constants.IA_CMD))
 				sender.sendMessage(Constants.IA_HELP);
-			else if (cmd == Constants.PURGE_CMD)
+			else if (cmd.equals(Constants.PURGE_CMD))
 				sender.sendMessage(Constants.PURGE_HELP);
-			else if (cmd == Constants.WITHDRAW_CMD)
+			else if (cmd.equals(Constants.WITHDRAW_CMD))
 				sender.sendMessage(Constants.WITHDRAW_HELP);
 			else
 				sender.sendMessage(Constants.PREFIX + "Error: Command not recognized.");
