@@ -142,10 +142,11 @@ public class AccountCommand
 	
 	public static boolean displayAccount(ItemBank plugin, CommandSender sender, String[] args)
 	{
-		if (args[1].equalsIgnoreCase(Constants.ADMIN_CMD))
+		if (args.length != 1 && args[1].equalsIgnoreCase(Constants.ADMIN_CMD))
 			sender.sendMessage("--------" + ChatColor.DARK_RED + args[2] + "'s ItemBank Account" + ChatColor.WHITE + "--------");
 		else
 			sender.sendMessage("--------" + ChatColor.DARK_RED + "Your ItemBank Account" + ChatColor.WHITE + "--------");
+		
 		for (Map.Entry<String, Object> entry : amounts.entrySet())
 		{
 			int amount = 0;
