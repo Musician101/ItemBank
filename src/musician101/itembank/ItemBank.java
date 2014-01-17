@@ -22,11 +22,11 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class ItemBank extends JavaPlugin
 {
+	public Config config;
 	public ItemTranslator translator;
 	public File playerDataDir;
 	public File playerFile;
 	public FileConfiguration playerData;
-	public Config config;
 	public static Econ economy = null;
 	
 	/** Loads the plugin's various configurations and reference files/folders. */

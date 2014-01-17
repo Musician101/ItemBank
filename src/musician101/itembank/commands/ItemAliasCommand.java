@@ -90,7 +90,7 @@ public class ItemAliasCommand implements CommandExecutor
 			}
 			
 			/**
-			 * Deprecated mtehod ItemStack.getTypeId() in Bukkit.
+			 * Deprecated method ItemStack.getTypeId() in Bukkit.
 			 * Waiting for a proper alternative before fixing.
 			 */
 			sender.sendMessage(Constants.PREFIX + "Material: " + item.getType().toString() + " ID: " + item.getTypeId() + ":" + item.getDurability());
