@@ -49,11 +49,11 @@ public class Admin
 		ItemStack item = null;
 		try
 		{
-			item = IBUtils.getIdFromAlias(plugin, name, amount);
+			item = IBUtils.getItemFromAlias(plugin, name, amount);
 		}
 		catch (InvalidAliasException e)
 		{
-			item = IBUtils.getItem(plugin, name, amount);
+			item = IBUtils.getItem(name, amount);
 		}
 		catch (NullPointerException e)
 		{
@@ -142,11 +142,11 @@ public class Admin
 		ItemStack item = null;
 		try
 		{
-			item = IBUtils.getIdFromAlias(plugin, name, amount);
+			item = IBUtils.getItemFromAlias(plugin, name, amount);
 		}
 		catch (InvalidAliasException e)
 		{
-			item = IBUtils.getItem(plugin, name, amount);
+			item = IBUtils.getItem(name, amount);
 		}
 		catch (NullPointerException e)
 		{

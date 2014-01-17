@@ -213,11 +213,11 @@ public class CustomItem
 		String name = args[1];
 		try
 		{
-			item = IBUtils.getIdFromAlias(plugin, name, 1);
+			item = IBUtils.getItemFromAlias(plugin, name, 1);
 		}
 		catch (InvalidAliasException e)
 		{
-			item = IBUtils.getItem(plugin, name, 1);
+			item = IBUtils.getItem(name, 1);
 		}
 		catch (NullPointerException e)
 		{

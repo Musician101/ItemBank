@@ -43,12 +43,11 @@ public class IBUtils
 	/**
 	 * Find's a material's ID and Damage value.
 	 * 
-	 * @param plugin Reference the plugin's main class.
-	 * @param name The id of the material.
-	 * @param amount The amount of the material.
-	 * @return Returns the ItemStack with the proper ID, Durability and the Amount.
+	 * @param name The alias or Material of an ItemStack.
+	 * @param amount The amount of the ItemStack.
+	 * @return item
 	 */
-	public static ItemStack getItem(ItemBank plugin, String name, int amount)
+	public static ItemStack getItem(String name, int amount)
 	{
 		if (name == null) return null;
 		short data;
@@ -72,33 +71,15 @@ public class IBUtils
 		{
 			data = Short.valueOf(datas);
 		}
-		catch (Exception e)
+		catch (NumberFormatException e)
 		{
 			if (datas != null) return null;
 			else data = 0;
 		}
 		
 		Material material = Material.getMaterial(name);
-		if (material == null)
-		{
-			try
-			{
-				/** 
-				 * Deprecated method Material.getMaterial(int) in Bukkit.
-				 * Waiting for a proper alternative before fixing.
-				 */
-				material = Material.getMaterial(Integer.valueOf(name));
-				if (material == null) return null;
-			}
-			catch (Exception e)
-			{
-				return null;
-			}
-		}
-		
-		ItemStack item = new ItemStack(material);
-		if (amount == 0) amount = 64;
-		item.setAmount(amount);
+		if (material == null) return null;
+		ItemStack item = new ItemStack(material, amount);
 		if (data != 0) item.setDurability(data);
 		return item;
 	}
@@ -107,22 +88,20 @@ public class IBUtils
 	 * Find's a material's ID and Damage value from an alias.
 	 * 
 	 * @param plugin Reference the plugin's main class.
-	 * @param name The alias of the material.
-	 * @param amount The amount of the material.
-	 * @return Returns the ItemStack with the proper ID, Durability and the Amount.
+	 * @param name The alias of the ItemStack.
+	 * @param amount The amount of the ItemStack.
+	 * @return item
 	 * @throws InvalidAliasException Alias not recognized.
 	 * @throws NullPointerException Translator failed to load on startup.
 	 */
-	public static ItemStack getIdFromAlias(ItemBank plugin, String alias, int amount) throws InvalidAliasException, NullPointerException
+	public static ItemStack getItemFromAlias(ItemBank plugin, String alias, int amount) throws InvalidAliasException, NullPointerException
 	{
 		ItemStack item;
-		if (plugin.translator == null)
-			throw new NullPointerException("Error: items.csv is not loaded.");
+		if (plugin.translator == null) throw new NullPointerException("Error: ItemTranslator is not loaded.");
+		item = plugin.translator.getItemStackFromAlias(alias);
+		if (item == null) throw new InvalidAliasException(alias + " is not a valid alias!");
 		
-		item = getItem(plugin, plugin.translator.getIdFromAlias(alias), amount);
-		if (item == null)
-			throw new InvalidAliasException(alias + " is not a valid alias!");
-		
+		item.setAmount(amount);
 		return item;
 	}
 	

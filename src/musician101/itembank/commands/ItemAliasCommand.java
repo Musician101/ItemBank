@@ -64,11 +64,11 @@ public class ItemAliasCommand implements CommandExecutor
 				String name = args[0].toLowerCase();
 				try
 				{
-					item = IBUtils.getIdFromAlias(plugin, name, amount);
+					item = IBUtils.getItemFromAlias(plugin, name, amount);
 				}
 				catch (InvalidAliasException e)
 				{
-					item = IBUtils.getItem(plugin, name, amount);
+					item = IBUtils.getItem(name, amount);
 				}
 				catch (NullPointerException e)
 				{
@@ -89,11 +89,7 @@ public class ItemAliasCommand implements CommandExecutor
 				return false;
 			}
 			
-			/**
-			 * Deprecated method ItemStack.getTypeId() in Bukkit.
-			 * Waiting for a proper alternative before fixing.
-			 */
-			sender.sendMessage(Constants.PREFIX + "Material: " + item.getType().toString() + " ID: " + item.getTypeId() + ":" + item.getDurability());
+			sender.sendMessage(Constants.PREFIX + "Material: " + item.getType().toString() + ":" + item.getDurability());
 			String aliases = plugin.translator.getAliases(item);
 			if (aliases != null)
 				sender.sendMessage(Constants.PREFIX + "Aliases: " + aliases);
