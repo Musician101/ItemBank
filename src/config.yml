@@ -8,6 +8,7 @@ blacklist:
 checkForUpdate: true
 
 # Vault related options.
+# Enable Vault integration?
 enableVault: true
 
 # How much it is to deposit/withdraw items.
