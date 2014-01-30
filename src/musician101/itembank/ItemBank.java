@@ -32,10 +32,11 @@ public class ItemBank extends JavaPlugin
 	/** Checks if a new version is available. */
 	public void versionCheck(Config config)
 	{
-		@SuppressWarnings("unused")
-		Update update = null; 
 		if (config.checkForUpdate)
-			update = new Update(59073, "72784c134bdbc3c2216591011a29df99fac08239");
+		{
+			@SuppressWarnings("unused")
+			Update update = new Update(59073, "72784c134bdbc3c2216591011a29df99fac08239");
+		}
 		else
 			getLogger().info("Updater is disabled.");
 	}
