@@ -29,14 +29,6 @@ public class ItemBank extends JavaPlugin
 	public FileConfiguration playerData;
 	public static Econ economy = null;
 	
-	/** Loads the plugin's various configurations and reference files/folders. */
-	public void loadConfiguration()
-	{
-		if (!new File(getDataFolder(), "config.yml").exists()) saveDefaultConfig();
-		if (!new File(getDataFolder(), "items.csv").exists()) saveResource("items.csv", false);
-		if (!playerDataDir.exists()) playerDataDir.mkdirs();
-	}
-	
 	/** Checks if a new version is available. */
 	public void versionCheck(Config config)
 	{
@@ -52,10 +44,7 @@ public class ItemBank extends JavaPlugin
 	public void onEnable()
 	{
 		playerDataDir = new File(getDataFolder() + "/PlayerData");
-		
-		loadConfiguration();
 		config = new Config(this);
-		
 		economy = new Econ();
 		if (economy.isEnabled() && config.enableVault)
 			getLogger().info("Vault detected and enabled in config. Using Vault for monetary transactions.");

@@ -33,17 +33,29 @@ public class Config
 	{
 		this.plugin = plugin;
 		File config = new File(plugin.getDataFolder(), "config.yml");
+		File items = new File(plugin.getDataFolder(), "items.csv");
 		if (!config.exists())
 		{
 			if (!config.getParentFile().mkdirs()) plugin.getLogger().warning("Could not create config.yml directory.");
 			plugin.saveDefaultConfig();
 		}
+		
+		if (!items.exists())
+		{
+			if (!items.getParentFile().mkdirs()) plugin.getLogger().warning("Could not create items.csv directory.");
+			plugin.saveResource("items.csv", false);
+		}
+		
+		if (!plugin.playerDataDir.exists())
+		{
+			if (!plugin.playerDataDir.mkdirs()) plugin.getLogger().warning("Could not create PlayerData directory.");
+			plugin.playerDataDir.mkdirs();
+		}
+		
 		reloadConfiguration();
 	}
 	
-	/**
-	 * Reloads the server's configuration file and items.csv.
-	 */
+	/** Reloads the server's configuration file and items.csv. */
 	public void reloadConfiguration()
 	{
 		plugin.reloadConfig();
