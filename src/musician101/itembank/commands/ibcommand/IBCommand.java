@@ -40,7 +40,7 @@ public class IBCommand implements CommandExecutor
 			/** Base Command */
 			if (args.length == 0)
 			{
-				sender.sendMessage(new String[]{Constants.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.6.4-R2.0.",
+				sender.sendMessage(new String[]{Constants.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.7.2-R0.2.",
 						Constants.PREFIX + "Base command, type /itembank help for more info."});
 				return true;
 			}
