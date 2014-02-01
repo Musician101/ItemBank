@@ -264,8 +264,6 @@ public class DepositCommand implements CommandExecutor
 			{
 				sender.sendMessage(Constants.IO_EXCEPTION);
 				plugin.playerData.set(itemPath, oldAmount);
-				if (plugin.getEconomy().isEnabled() && config.enableVault)
-					plugin.getEconomy().giveMoney(sender.getName(), config.transactionCost);
 				return false;
 			}
 			
@@ -273,7 +271,10 @@ public class DepositCommand implements CommandExecutor
 			((Player) sender).getInventory().removeItem(item);
 			sender.sendMessage(Constants.getDepositSuccess(item.getType().toString(), item.getAmount()));
 			if (plugin.getEconomy().isEnabled() && config.enableVault)
+			{
 				sender.sendMessage(Constants.getTransactionFeeMessage(config.transactionCost));
+				plugin.getEconomy().takeMoney(sender.getName(), config.transactionCost);
+			}
 			
 			return true;
 		}
