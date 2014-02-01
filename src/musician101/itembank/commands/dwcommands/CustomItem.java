@@ -38,6 +38,7 @@ public class CustomItem
 			player.sendMessage(Constants.PREFIX + "Error: You're not holding anything.");
 			return false;
 		}
+		
 		if (!item.hasItemMeta())
 		{
 			player.sendMessage(Constants.PREFIX + "Error: This is not a custom item.");
