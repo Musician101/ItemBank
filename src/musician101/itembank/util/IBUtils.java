@@ -163,7 +163,6 @@ public class IBUtils
 		double cost = config.transactionCost;
 		if (money < cost)
 		{
-			player.sendMessage(Constants.PREFIX + "You lack the money to cover the transaction fee.");
 			return false;
 		}
 		
