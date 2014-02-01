@@ -111,4 +111,21 @@ public class Constants
 	
 	/** Other */
 	public static final String CUSTOM_ITEM = "customItem";
+	public static String getTransactionFeeMessage(double cost)
+	{
+		return PREFIX + "A " + cost + " transaction fee has been deducted from your account.";
+	}
+	
+	/** Deposit messages */
+	public static final String NO_DEPOSIT = PREFIX + "Sorry, but that item is not depositable.";
+	public static final String PARTIAL_DEPOSIT = PREFIX + "Sorry, but there was not enough room for your full deposit.";
+	public static String getMaxedDepositMessage(String material)
+	{
+		return PREFIX + "Sorry, but your account cannot hold any more " + material + ".";
+	}
+	
+	public static String getDepositSuccess(String material, int amount)
+	{
+		return PREFIX + "You have deposited " + amount + " " + material + ".";
+	}
 }

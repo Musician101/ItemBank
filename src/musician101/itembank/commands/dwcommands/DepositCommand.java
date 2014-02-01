@@ -65,8 +65,84 @@ public class DepositCommand implements CommandExecutor
 			
 			if (args.length == 0)
 			{
-				sender.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
-				return false;
+				ItemStack item = ((Player) sender).getItemInHand();
+				if (item == null || item.getType() == Material.AIR)
+				{
+					sender.sendMessage(Constants.AIR_BLOCK);
+					return false;
+				}
+				
+				/** Custom Item Check */
+				if (item.hasItemMeta() || item.getType() == Material.FIREWORK || item.getType() == Material.WRITTEN_BOOK || (item.getType() == Material.SKULL_ITEM && item.getDurability() == 3))
+					return CustomItem.deposit(plugin, item, (Player) sender);
+				
+				String itemPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
+				plugin.playerFile = new File(plugin.playerDataDir + "/" + sender.getName().toLowerCase() + ".yml");
+				plugin.playerData = new YamlConfiguration();
+				try
+				{
+					plugin.playerData.load(plugin.playerFile);
+				}
+				catch (FileNotFoundException e)
+				{
+					sender.sendMessage(Constants.FILE_NOT_FOUND);
+					return false;
+				}
+				catch (IOException e)
+				{
+					sender.sendMessage(Constants.IO_EXCEPTION);
+					return false;
+				}
+				catch (InvalidConfigurationException e)
+				{
+					sender.sendMessage(Constants.YAML_EXCEPTION);
+					return false;
+				}
+				
+				int oldAmount = plugin.playerData.getInt(itemPath);
+				int amount = item.getAmount();
+				int newAmount = oldAmount + amount;
+				if (config.blacklist.isSet(itemPath))
+				{
+					int maxAmount = config.blacklist.getInt(itemPath);
+					if (maxAmount == 0)
+					{
+						sender.sendMessage(Constants.NO_DEPOSIT);
+						return false;
+					}
+					else if (maxAmount == oldAmount)
+					{
+						sender.sendMessage(Constants.getMaxedDepositMessage(item.getType().toString()));
+					}
+					else if (maxAmount < newAmount)
+					{
+						amount = maxAmount - oldAmount;
+						newAmount = oldAmount + amount;
+						sender.sendMessage(Constants.PARTIAL_DEPOSIT);
+					}
+				}
+				
+				plugin.playerData.set(itemPath, newAmount);
+				try
+				{
+					plugin.playerData.save(plugin.playerFile);
+				}
+				catch (IOException e)
+				{
+					sender.sendMessage(Constants.IO_EXCEPTION);
+					plugin.playerData.set(itemPath, oldAmount);
+					return false;
+				}
+				
+				item.setAmount(amount);
+				((Player) sender).getInventory().removeItem(item);
+				sender.sendMessage(Constants.getDepositSuccess(item.getType().toString(), item.getAmount()));
+				if (plugin.getEconomy().isEnabled() && config.enableVault)
+				{
+					sender.sendMessage(Constants.getTransactionFeeMessage(config.transactionCost));
+					plugin.getEconomy().takeMoney(sender.getName(), config.transactionCost);
+				}
+				return true;
 			}
 			
 			/** Admin Deposit Check */
@@ -163,19 +239,19 @@ public class DepositCommand implements CommandExecutor
 				int maxAmount = config.blacklist.getInt(itemPath);
 				if (maxAmount == 0)
 				{
-					sender.sendMessage(Constants.PREFIX + "Sorry, but that item is not depositable.");
+					sender.sendMessage(Constants.NO_DEPOSIT);
 					return false;
 				}
 				else if (maxAmount == oldAmount)
 				{
-					sender.sendMessage(Constants.PREFIX + "Sorry, but your account cannot hold any more " + item.getType().toString() + ".");
+					sender.sendMessage(Constants.getMaxedDepositMessage(item.getType().toString()));
 					return false;
 				}
 				else if (maxAmount < newAmount)
 				{
 					amount = maxAmount - oldAmount;
 					newAmount = oldAmount + amount;
-					sender.sendMessage(Constants.PREFIX + "Sorry, but there was not enough room for your full deposit.");
+					sender.sendMessage(Constants.PARTIAL_DEPOSIT);
 				}
 			}
 			
@@ -195,9 +271,9 @@ public class DepositCommand implements CommandExecutor
 			
 			item.setAmount(amount);
 			((Player) sender).getInventory().removeItem(item);
-			sender.sendMessage(Constants.PREFIX + "You have deposited " + amount + " " + item.getType().toString() + ".");
+			sender.sendMessage(Constants.getDepositSuccess(item.getType().toString(), item.getAmount()));
 			if (plugin.getEconomy().isEnabled() && config.enableVault)
-				sender.sendMessage(Constants.PREFIX + "A " + config.transactionCost + " transaction fee has been deducted from your account.");
+				sender.sendMessage(Constants.getTransactionFeeMessage(config.transactionCost));
 			
 			return true;
 		}
