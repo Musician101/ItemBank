@@ -76,7 +76,7 @@ public class WithdrawCommand implements CommandExecutor
 			/** Economy Check Check */
 			if (!IBUtils.checkEconomy(plugin, config, (Player) sender))
 			{
-				sender.sendMessage(Constants.PREFIX + "You lack the money to cover the transaction fee.");
+				sender.sendMessage(Constants.LACK_MONEY);
 				return false;
 			}
 			
