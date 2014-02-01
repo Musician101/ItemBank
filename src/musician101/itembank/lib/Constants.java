@@ -112,6 +112,7 @@ public class Constants
 	/** Other */
 	public static final String CUSTOM_ITEM = "customItem";
 	public static final String LACK_MONEY = PREFIX + "You lack the money to cover the transaction fee.";
+	public static final String ITEM_NOT_FOUND = PREFIX + "Error: You do not have any of the specified item.";
 	public static String getTransactionFeeMessage(double cost)
 	{
 		return PREFIX + "A " + cost + " transaction fee has been deducted from your account.";

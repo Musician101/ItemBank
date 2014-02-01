@@ -158,7 +158,25 @@ public class DepositCommand implements CommandExecutor
 			
 			/** Custom Item Check */
 			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
+			{
+				ItemStack item = ((Player) sender).getItemInHand();
+				if (args.length < 0)
+				{
+					for (ItemStack itemStack : ((Player) sender).getInventory())
+						if (itemStack.hasItemMeta())
+							if (itemStack.getItemMeta().hasDisplayName())
+								if (itemStack.getItemMeta().getDisplayName() == args[1])
+									item = itemStack;
+					
+					if (item == ((Player) sender).getItemInHand())
+					{
+						sender.sendMessage(Constants.ITEM_NOT_FOUND);
+						return false;
+					}
+				}
+				
 				return CustomItem.deposit(plugin, ((Player) sender).getItemInHand(), (Player) sender);
+			}
 			
 			String name = args[0].toLowerCase();
 			int amount = 64;
@@ -227,7 +245,7 @@ public class DepositCommand implements CommandExecutor
 			
 			if (!((Player) sender).getInventory().contains(item))
 			{
-				sender.sendMessage(Constants.PREFIX + "Error: You do not have any of the specified item.");
+				sender.sendMessage(Constants.ITEM_NOT_FOUND);
 				return false;
 			}
 			
