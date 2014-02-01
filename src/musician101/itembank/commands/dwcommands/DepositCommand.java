@@ -100,9 +100,10 @@ public class DepositCommand implements CommandExecutor
 					return false;
 				}
 				
-				int oldAmount = plugin.playerData.getInt(itemPath);
-				int amount = item.getAmount();
-				int newAmount = oldAmount + amount;
+				int amountInBank = plugin.playerData.getInt(itemPath);
+				int oldItemAmount = item.getAmount();
+				int newItemAmount = item.getAmount();
+				int newAmountInBank = amountInBank + oldItemAmount;
 				if (config.blacklist.isSet(itemPath))
 				{
 					int maxAmount = config.blacklist.getInt(itemPath);
@@ -111,19 +112,20 @@ public class DepositCommand implements CommandExecutor
 						sender.sendMessage(Messages.NO_DEPOSIT);
 						return false;
 					}
-					else if (maxAmount == oldAmount)
+					else if (maxAmount == amountInBank)
 					{
 						sender.sendMessage(Messages.getMaxedDepositMessage(item.getType().toString()));
+						return false;
 					}
-					else if (maxAmount < newAmount)
+					else if (maxAmount < newAmountInBank)
 					{
-						amount = maxAmount - oldAmount;
-						newAmount = oldAmount + amount;
+						oldItemAmount = maxAmount - amountInBank;
+						newAmountInBank = amountInBank + oldItemAmount;
 						sender.sendMessage(Messages.PARTIAL_DEPOSIT);
 					}
 				}
 				
-				plugin.playerData.set(itemPath, newAmount);
+				plugin.playerData.set(itemPath, newAmountInBank);
 				try
 				{
 					plugin.playerData.save(plugin.playerFile);
@@ -131,12 +133,17 @@ public class DepositCommand implements CommandExecutor
 				catch (IOException e)
 				{
 					sender.sendMessage(Messages.IO_EXCEPTION);
-					plugin.playerData.set(itemPath, oldAmount);
+					plugin.playerData.set(itemPath, amountInBank);
 					return false;
 				}
 				
-				item.setAmount(amount);
-				((Player) sender).getInventory().removeItem(item);
+				item.setAmount(oldItemAmount);
+				newItemAmount = newItemAmount - oldItemAmount;
+				if (newItemAmount == 0)
+					((Player) sender).getInventory().removeItem(item);
+				else
+					((Player) sender).getInventory().getItem(((Player) sender).getInventory().getHeldItemSlot()).setAmount(newItemAmount);
+				
 				sender.sendMessage(Messages.getDepositSuccess(item.getType().toString(), item.getAmount()));
 				if (plugin.getEconomy().isEnabled() && config.enableVault)
 				{
@@ -244,7 +251,7 @@ public class DepositCommand implements CommandExecutor
 				return false;
 			}
 			
-			if (!((Player) sender).getInventory().contains(item))
+			if (!((Player) sender).getInventory().containsAtLeast(item, item.getAmount()))
 			{
 				sender.sendMessage(Messages.ITEM_NOT_FOUND);
 				return false;
