@@ -7,7 +7,7 @@ import java.util.Map;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.Color;
@@ -34,13 +34,13 @@ public class CustomItem
 	{
 		if (item == null || item.getType() == Material.AIR)
 		{
-			player.sendMessage(Constants.PREFIX + "Error: You're not holding anything.");
+			player.sendMessage(Messages.PREFIX + "Error: You're not holding anything.");
 			return false;
 		}
 		
 		if (!item.hasItemMeta())
 		{
-			player.sendMessage(Constants.PREFIX + "Error: This is not a custom item.");
+			player.sendMessage(Messages.PREFIX + "Error: This is not a custom item.");
 			return false;
 		}
 		
@@ -52,17 +52,17 @@ public class CustomItem
 		}
 		catch (FileNotFoundException e)
 		{
-			player.sendMessage(Constants.FILE_NOT_FOUND);
+			player.sendMessage(Messages.FILE_NOT_FOUND);
 			return false;
 		}
 		catch (IOException e)
 		{
-			player.sendMessage(Constants.IO_EXCEPTION);
+			player.sendMessage(Messages.IO_EXCEPTION);
 			return false;
 		}
 		catch (InvalidConfigurationException e)
 		{
-			player.sendMessage(Constants.YAML_EXCEPTION);
+			player.sendMessage(Messages.YAML_EXCEPTION);
 			return false;
 		}
 		
@@ -73,7 +73,7 @@ public class CustomItem
 		
 		if (plugin.playerData.isSet(itemPath + ".amount") && plugin.playerData.getInt(itemPath + ".amount") > 0)
 		{
-			player.sendMessage(Constants.PREFIX + "Sorry but there's already an item with that name in your bank.");
+			player.sendMessage(Messages.PREFIX + "Sorry but there's already an item with that name in your bank.");
 			return false;
 		}
 		
@@ -84,7 +84,7 @@ public class CustomItem
 				itemPath = bookMeta.getTitle();
 			else
 			{
-				player.sendMessage(Constants.PREFIX + "Please sign your book before depositing it.");
+				player.sendMessage(Messages.PREFIX + "Please sign your book before depositing it.");
 				return false;
 			}
 			
@@ -161,20 +161,20 @@ public class CustomItem
 		}
 		catch (IOException e)
 		{
-			player.sendMessage(Constants.IO_EXCEPTION);
+			player.sendMessage(Messages.IO_EXCEPTION);
 			plugin.playerData.set(itemPath + ".amount", 0);
 			return false;
 		}
 		
 		player.setItemInHand(null);
 		if (item.getItemMeta().hasDisplayName())
-			player.sendMessage(Constants.PREFIX + "You have deposited " + item.getItemMeta().getDisplayName() + ".");
+			player.sendMessage(Messages.PREFIX + "You have deposited " + item.getItemMeta().getDisplayName() + ".");
 		else if (item.getType() == Material.WRITTEN_BOOK)
-			player.sendMessage(Constants.PREFIX + "You have deposited " + ((BookMeta) item.getItemMeta()).getTitle() + ".");
+			player.sendMessage(Messages.PREFIX + "You have deposited " + ((BookMeta) item.getItemMeta()).getTitle() + ".");
 		else if (item.getType() == Material.SKULL_ITEM && item.getDurability() == 3)
-			player.sendMessage(Constants.PREFIX + "You have deposited " + ((SkullMeta) item.getItemMeta()).getOwner() + "'s Head.");
+			player.sendMessage(Messages.PREFIX + "You have deposited " + ((SkullMeta) item.getItemMeta()).getOwner() + "'s Head.");
 		else
-			player.sendMessage(Constants.PREFIX + "You have deposited a " + item.getType().toString() + ".");
+			player.sendMessage(Messages.PREFIX + "You have deposited a " + item.getType().toString() + ".");
 		
 		return true;
 	}
@@ -183,7 +183,7 @@ public class CustomItem
 	{
 		if (args.length < 2)
 		{
-			player.sendMessage(Constants.PREFIX + "Error: Item not specified.");
+			player.sendMessage(Messages.PREFIX + "Error: Item not specified.");
 			return false;
 		}
 		
@@ -195,17 +195,17 @@ public class CustomItem
 		}
 		catch (FileNotFoundException e)
 		{
-			player.sendMessage(Constants.FILE_NOT_FOUND);
+			player.sendMessage(Messages.FILE_NOT_FOUND);
 			return false;
 		}
 		catch (IOException e)
 		{
-			player.sendMessage(Constants.IO_EXCEPTION);
+			player.sendMessage(Messages.IO_EXCEPTION);
 			return false;
 		}
 		catch (InvalidConfigurationException e)
 		{
-			player.sendMessage(Constants.YAML_EXCEPTION);
+			player.sendMessage(Messages.YAML_EXCEPTION);
 			return false;
 		}
 		
@@ -221,7 +221,7 @@ public class CustomItem
 		}
 		catch (NullPointerException e)
 		{
-				player.sendMessage(Constants.NULL_POINTER);
+				player.sendMessage(Messages.NULL_POINTER);
 				return false;
 		}
 		
@@ -233,7 +233,7 @@ public class CustomItem
 		{
 			if (!plugin.playerData.isSet(name))
 			{
-				player.sendMessage(new String[]{Constants.getAliasError(name), Constants.PREFIX + "Check for capitalization."});
+				player.sendMessage(new String[]{Messages.getAliasError(name), Messages.PREFIX + "Check for capitalization."});
 				return false;
 			}
 			item = new ItemStack(Material.getMaterial(plugin.playerData.getString(name + ".material").toUpperCase()));
@@ -246,7 +246,7 @@ public class CustomItem
 		}
 		catch (NumberFormatException e)
 		{
-			player.sendMessage(Constants.getCustomItemWithdrawError(name));
+			player.sendMessage(Messages.getCustomItemWithdrawError(name));
 			return false;
 		}
 		
@@ -265,7 +265,7 @@ public class CustomItem
 					}
 					catch (IllegalArgumentException e)
 					{
-						player.sendMessage(Constants.getCustomItemWithdrawError(name));
+						player.sendMessage(Messages.getCustomItemWithdrawError(name));
 						return false;
 					}
 				}
@@ -308,7 +308,7 @@ public class CustomItem
 				}
 				catch (IllegalArgumentException | NullPointerException e)
 				{
-					player.sendMessage(Constants.PREFIX + "Could not set FireworkEffect.Type.");
+					player.sendMessage(Messages.PREFIX + "Could not set FireworkEffect.Type.");
 					return false;
 				}
 				
@@ -341,7 +341,7 @@ public class CustomItem
 					}
 					catch (IllegalArgumentException e)
 					{
-						player.sendMessage(Constants.getCustomItemWithdrawError(name));
+						player.sendMessage(Messages.getCustomItemWithdrawError(name));
 						return false;
 					}
 				}
@@ -357,7 +357,7 @@ public class CustomItem
 		}
 		catch (NumberFormatException e)
 		{
-			player.sendMessage(Constants.getCustomItemWithdrawError(name));
+			player.sendMessage(Messages.getCustomItemWithdrawError(name));
 			return false;
 		}
 		
@@ -372,7 +372,7 @@ public class CustomItem
 		
 		if (freeSpace == 0)
 		{
-			player.sendMessage(Constants.FULL_INV);
+			player.sendMessage(Messages.FULL_INV);
 			return false;
 		}
 		
@@ -387,13 +387,13 @@ public class CustomItem
 		}
 		catch (IOException e)
 		{
-			player.sendMessage(Constants.IO_EXCEPTION);
+			player.sendMessage(Messages.IO_EXCEPTION);
 			plugin.playerData.set(name + ".amount", oldAmount);
 			return false;
 		}
 		
 		player.getInventory().addItem(item);
-		player.sendMessage(Constants.PREFIX + "You have withdrawn " + item.getAmount() + " " + name + " and now have a total of " + plugin.playerData.getInt(name + ".amount") + " left.");
+		player.sendMessage(Messages.PREFIX + "You have withdrawn " + item.getAmount() + " " + name + " and now have a total of " + plugin.playerData.getInt(name + ".amount") + " left.");
 		return true;
 	}
 }

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.opencsv.CSVReader;
 import musician101.itembank.util.ItemTranslator;
 
@@ -72,7 +72,7 @@ public class Config
 		}
 		catch (IOException e)
 		{
-			plugin.getLogger().warning(Constants.IO_EXCEPTION);
+			plugin.getLogger().warning(Messages.IO_EXCEPTION);
 		}
 	}
 }

@@ -1,7 +1,8 @@
 package musician101.itembank.commands.ibcommand;
 
 import musician101.itembank.ItemBank;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Commands;
+import musician101.itembank.lib.Messages;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -35,24 +36,24 @@ public class IBCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (command.getName().equalsIgnoreCase(Constants.BASE_CMD))
+		if (command.getName().equalsIgnoreCase(Commands.BASE_CMD))
 		{
 			/** Base Command */
 			if (args.length == 0)
 			{
-				sender.sendMessage(new String[]{Constants.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.7.2-R0.2.",
-						Constants.PREFIX + "Base command, type /itembank help for more info."});
+				sender.sendMessage(new String[]{Messages.PREFIX + "Version " + plugin.getDescription().getVersion() + " compiled with Bukkit 1.7.2-R0.2.",
+						Messages.PREFIX + "Base command, type /itembank help for more info."});
 				return true;
 			}
 			
 			/** Account Command */
-			if (args[0].equalsIgnoreCase(Constants.ACCOUNT_CMD))
+			if (args[0].equalsIgnoreCase(Commands.ACCOUNT_CMD))
 				return AccountCommand.execute(plugin, sender, args);
 			/** Help Command */
-			else if (args[0].equalsIgnoreCase(Constants.HELP_CMD))
+			else if (args[0].equalsIgnoreCase(Commands.HELP_CMD))
 				return HelpCommand.execute(plugin, sender, args);
 			/** Purge Command */
-			else if (args[0].equalsIgnoreCase(Constants.PURGE_CMD))
+			else if (args[0].equalsIgnoreCase(Commands.PURGE_CMD))
 				return PurgeCommand.execute(plugin, sender, args);
 		}
 		return false;

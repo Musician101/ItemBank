@@ -7,7 +7,8 @@ import java.io.IOException;
 import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Commands;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.Material;
@@ -49,17 +50,17 @@ public class DepositCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (command.getName().equalsIgnoreCase(Constants.DEPOSIT_CMD))
+		if (command.getName().equalsIgnoreCase(Commands.DEPOSIT_CMD))
 		{
-			if (!sender.hasPermission(Constants.DEPOSIT_PERM))
+			if (!sender.hasPermission(Commands.DEPOSIT_PERM))
 			{
-				sender.sendMessage(Constants.NO_PERMISSION);
+				sender.sendMessage(Messages.NO_PERMISSION);
 				return false;
 			}
 			
-			if (!(sender instanceof Player) && !args[0].equalsIgnoreCase(Constants.ADMIN_CMD))
+			if (!(sender instanceof Player) && !args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
 			{
-				sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
+				sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
 				return false;
 			}
 			
@@ -68,7 +69,7 @@ public class DepositCommand implements CommandExecutor
 				ItemStack item = ((Player) sender).getItemInHand();
 				if (item == null || item.getType() == Material.AIR)
 				{
-					sender.sendMessage(Constants.AIR_BLOCK);
+					sender.sendMessage(Messages.AIR_BLOCK);
 					return false;
 				}
 				
@@ -85,17 +86,17 @@ public class DepositCommand implements CommandExecutor
 				}
 				catch (FileNotFoundException e)
 				{
-					sender.sendMessage(Constants.FILE_NOT_FOUND);
+					sender.sendMessage(Messages.FILE_NOT_FOUND);
 					return false;
 				}
 				catch (IOException e)
 				{
-					sender.sendMessage(Constants.IO_EXCEPTION);
+					sender.sendMessage(Messages.IO_EXCEPTION);
 					return false;
 				}
 				catch (InvalidConfigurationException e)
 				{
-					sender.sendMessage(Constants.YAML_EXCEPTION);
+					sender.sendMessage(Messages.YAML_EXCEPTION);
 					return false;
 				}
 				
@@ -107,18 +108,18 @@ public class DepositCommand implements CommandExecutor
 					int maxAmount = config.blacklist.getInt(itemPath);
 					if (maxAmount == 0)
 					{
-						sender.sendMessage(Constants.NO_DEPOSIT);
+						sender.sendMessage(Messages.NO_DEPOSIT);
 						return false;
 					}
 					else if (maxAmount == oldAmount)
 					{
-						sender.sendMessage(Constants.getMaxedDepositMessage(item.getType().toString()));
+						sender.sendMessage(Messages.getMaxedDepositMessage(item.getType().toString()));
 					}
 					else if (maxAmount < newAmount)
 					{
 						amount = maxAmount - oldAmount;
 						newAmount = oldAmount + amount;
-						sender.sendMessage(Constants.PARTIAL_DEPOSIT);
+						sender.sendMessage(Messages.PARTIAL_DEPOSIT);
 					}
 				}
 				
@@ -129,35 +130,35 @@ public class DepositCommand implements CommandExecutor
 				}
 				catch (IOException e)
 				{
-					sender.sendMessage(Constants.IO_EXCEPTION);
+					sender.sendMessage(Messages.IO_EXCEPTION);
 					plugin.playerData.set(itemPath, oldAmount);
 					return false;
 				}
 				
 				item.setAmount(amount);
 				((Player) sender).getInventory().removeItem(item);
-				sender.sendMessage(Constants.getDepositSuccess(item.getType().toString(), item.getAmount()));
+				sender.sendMessage(Messages.getDepositSuccess(item.getType().toString(), item.getAmount()));
 				if (plugin.getEconomy().isEnabled() && config.enableVault)
 				{
-					sender.sendMessage(Constants.getTransactionFeeMessage(config.transactionCost));
+					sender.sendMessage(Messages.getTransactionFeeMessage(config.transactionCost));
 					plugin.getEconomy().takeMoney(sender.getName(), config.transactionCost);
 				}
 				return true;
 			}
 			
 			/** Admin Deposit Check */
-			if (args[0].equalsIgnoreCase(Constants.ADMIN_CMD))
+			if (args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
 				return Admin.deposit(plugin, (Player) sender, args);
 			
 			/** Economy Check */
 			if (!IBUtils.checkEconomy(plugin, config, (Player) sender))
 			{
-				sender.sendMessage(Constants.LACK_MONEY);
+				sender.sendMessage(Messages.LACK_MONEY);
 				return false;
 			}
 			
 			/** Custom Item Check */
-			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
+			if (args[0].equalsIgnoreCase(Commands.CUSTOM_ITEM_CMD))
 			{
 				ItemStack item = ((Player) sender).getItemInHand();
 				if (args.length < 0)
@@ -170,7 +171,7 @@ public class DepositCommand implements CommandExecutor
 					
 					if (item == ((Player) sender).getItemInHand())
 					{
-						sender.sendMessage(Constants.ITEM_NOT_FOUND);
+						sender.sendMessage(Messages.ITEM_NOT_FOUND);
 						return false;
 					}
 				}
@@ -188,7 +189,7 @@ public class DepositCommand implements CommandExecutor
 				}
 				catch (NumberFormatException e)
 				{
-					sender.sendMessage(Constants.NUMBER_FORMAT);
+					sender.sendMessage(Messages.NUMBER_FORMAT);
 					return false;
 				}
 			}
@@ -204,19 +205,19 @@ public class DepositCommand implements CommandExecutor
 			}
 			catch (NullPointerException e)
 			{
-				sender.sendMessage(Constants.NULL_POINTER);
+				sender.sendMessage(Messages.NULL_POINTER);
 				return false;
 			}
 			
 			if (item == null)
 			{
-				sender.sendMessage(Constants.getAliasError(name));
+				sender.sendMessage(Messages.getAliasError(name));
 				return false;
 			}
 			
 			if (item.getType() == Material.AIR)
 			{
-				sender.sendMessage(Constants.AIR_BLOCK);
+				sender.sendMessage(Messages.AIR_BLOCK);
 				return false;
 			}
 			
@@ -229,23 +230,23 @@ public class DepositCommand implements CommandExecutor
 			}
 			catch (FileNotFoundException e)
 			{
-				sender.sendMessage(Constants.FILE_NOT_FOUND);
+				sender.sendMessage(Messages.FILE_NOT_FOUND);
 				return false;
 			}
 			catch (IOException e)
 			{
-				sender.sendMessage(Constants.IO_EXCEPTION);
+				sender.sendMessage(Messages.IO_EXCEPTION);
 				return false;
 			}
 			catch (InvalidConfigurationException e)
 			{
-				sender.sendMessage(Constants.YAML_EXCEPTION);
+				sender.sendMessage(Messages.YAML_EXCEPTION);
 				return false;
 			}
 			
 			if (!((Player) sender).getInventory().contains(item))
 			{
-				sender.sendMessage(Constants.ITEM_NOT_FOUND);
+				sender.sendMessage(Messages.ITEM_NOT_FOUND);
 				return false;
 			}
 			
@@ -260,19 +261,19 @@ public class DepositCommand implements CommandExecutor
 				int maxAmount = config.blacklist.getInt(itemPath);
 				if (maxAmount == 0)
 				{
-					sender.sendMessage(Constants.NO_DEPOSIT);
+					sender.sendMessage(Messages.NO_DEPOSIT);
 					return false;
 				}
 				else if (maxAmount == oldAmount)
 				{
-					sender.sendMessage(Constants.getMaxedDepositMessage(item.getType().toString()));
+					sender.sendMessage(Messages.getMaxedDepositMessage(item.getType().toString()));
 					return false;
 				}
 				else if (maxAmount < newAmount)
 				{
 					amount = maxAmount - oldAmount;
 					newAmount = oldAmount + amount;
-					sender.sendMessage(Constants.PARTIAL_DEPOSIT);
+					sender.sendMessage(Messages.PARTIAL_DEPOSIT);
 				}
 			}
 			
@@ -283,17 +284,17 @@ public class DepositCommand implements CommandExecutor
 			}
 			catch (IOException e)
 			{
-				sender.sendMessage(Constants.IO_EXCEPTION);
+				sender.sendMessage(Messages.IO_EXCEPTION);
 				plugin.playerData.set(itemPath, oldAmount);
 				return false;
 			}
 			
 			item.setAmount(amount);
 			((Player) sender).getInventory().removeItem(item);
-			sender.sendMessage(Constants.getDepositSuccess(item.getType().toString(), item.getAmount()));
+			sender.sendMessage(Messages.getDepositSuccess(item.getType().toString(), item.getAmount()));
 			if (plugin.getEconomy().isEnabled() && config.enableVault)
 			{
-				sender.sendMessage(Constants.getTransactionFeeMessage(config.transactionCost));
+				sender.sendMessage(Messages.getTransactionFeeMessage(config.transactionCost));
 				plugin.getEconomy().takeMoney(sender.getName(), config.transactionCost);
 			}
 			

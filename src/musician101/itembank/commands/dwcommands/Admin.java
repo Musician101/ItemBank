@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.Material;
@@ -26,7 +26,7 @@ public class Admin
 	{
 		if (args.length < 3)
 		{
-			admin.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
+			admin.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
 			return false;
 		}
 		
@@ -41,7 +41,7 @@ public class Admin
 			}
 			catch (NumberFormatException e)
 			{
-				admin.sendMessage(Constants.NUMBER_FORMAT);
+				admin.sendMessage(Messages.NUMBER_FORMAT);
 				return false;
 			}
 		}
@@ -57,19 +57,19 @@ public class Admin
 		}
 		catch (NullPointerException e)
 		{
-			admin.sendMessage(Constants.NULL_POINTER);
+			admin.sendMessage(Messages.NULL_POINTER);
 			return false;
 		}
 		
 		if (item == null)
 		{
-			admin.sendMessage(Constants.getAliasError(name));
+			admin.sendMessage(Messages.getAliasError(name));
 			return false;
 		}
 		
 		if (item.getType() == Material.AIR)
 		{
-			admin.sendMessage(Constants.AIR_BLOCK);
+			admin.sendMessage(Messages.AIR_BLOCK);
 			return false;
 		}
 		
@@ -82,17 +82,17 @@ public class Admin
 		}
 		catch (FileNotFoundException e)
 		{
-			admin.sendMessage(Constants.FILE_NOT_FOUND);
+			admin.sendMessage(Messages.FILE_NOT_FOUND);
 			return false;
 		}
 		catch (IOException e)
 		{
-			admin.sendMessage(Constants.IO_EXCEPTION);
+			admin.sendMessage(Messages.IO_EXCEPTION);
 			return false;
 		}
 		catch (InvalidConfigurationException e)
 		{
-			admin.sendMessage(Constants.YAML_EXCEPTION);
+			admin.sendMessage(Messages.YAML_EXCEPTION);
 			return false;
 		}
 		
@@ -105,13 +105,13 @@ public class Admin
 		}
 		catch (IOException e)
 		{
-			admin.sendMessage(Constants.IO_EXCEPTION);
+			admin.sendMessage(Messages.IO_EXCEPTION);
 			plugin.playerData.set(itemPath, oldAmount);
 			return false;
 		}
 		
 		item.setAmount(amount);
-		admin.sendMessage(Constants.PREFIX + "Added " + amount + " " + item.getType().toString() + " to " + player + "'s account.");
+		admin.sendMessage(Messages.PREFIX + "Added " + amount + " " + item.getType().toString() + " to " + player + "'s account.");
 		return true;
 	}
 
@@ -119,7 +119,7 @@ public class Admin
 	{
 		if (args.length < 3)
 		{
-			admin.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
+			admin.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
 			return false;
 		}
 		
@@ -134,7 +134,7 @@ public class Admin
 			}
 			catch (NumberFormatException e)
 			{
-				admin.sendMessage(Constants.NUMBER_FORMAT);
+				admin.sendMessage(Messages.NUMBER_FORMAT);
 				return false;
 			}
 		}
@@ -150,19 +150,19 @@ public class Admin
 		}
 		catch (NullPointerException e)
 		{
-			admin.sendMessage(Constants.NULL_POINTER);
+			admin.sendMessage(Messages.NULL_POINTER);
 			return false;
 		}
 		
 		if (item == null)
 		{
-			admin.sendMessage(Constants.getAliasError(name));
+			admin.sendMessage(Messages.getAliasError(name));
 			return false;
 		}
 		
 		if (item.getType() == Material.AIR)
 		{
-			admin.sendMessage(Constants.AIR_BLOCK);
+			admin.sendMessage(Messages.AIR_BLOCK);
 			return false;
 		}
 		
@@ -175,17 +175,17 @@ public class Admin
 		}
 		catch (FileNotFoundException e)
 		{
-			admin.sendMessage(Constants.FILE_NOT_FOUND);
+			admin.sendMessage(Messages.FILE_NOT_FOUND);
 			return false;
 		}
 		catch (IOException e)
 		{
-			admin.sendMessage(Constants.IO_EXCEPTION);
+			admin.sendMessage(Messages.IO_EXCEPTION);
 			return false;
 		}
 		catch (InvalidConfigurationException e)
 		{
-			admin.sendMessage(Constants.YAML_EXCEPTION);
+			admin.sendMessage(Messages.YAML_EXCEPTION);
 			return false;
 		}
 		
@@ -201,12 +201,12 @@ public class Admin
 		}
 		catch (IOException e)
 		{
-			admin.sendMessage(Constants.IO_EXCEPTION);
+			admin.sendMessage(Messages.IO_EXCEPTION);
 			plugin.playerData.set(itemPath, oldAmount);
 			return false;
 		}
 		
-		admin.sendMessage(Constants.PREFIX + "Removed " + newAmount + " " + item.getType().toString() + " from " + player + "'s account.");
+		admin.sendMessage(Messages.PREFIX + "Removed " + newAmount + " " + item.getType().toString() + " from " + player + "'s account.");
 		return true;
 	}
 }

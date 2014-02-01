@@ -9,7 +9,7 @@ import java.util.Collection;
 import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.listeners.PlayerListener;
 
 import org.bukkit.Material;
@@ -124,7 +124,7 @@ public class IBUtils
 			}
 			catch (IOException e)
 			{
-				plugin.getLogger().warning(Constants.IO_EXCEPTION);
+				plugin.getLogger().warning(Messages.IO_EXCEPTION);
 			}
 		}
 	}

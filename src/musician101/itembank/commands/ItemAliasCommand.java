@@ -2,7 +2,8 @@ package musician101.itembank.commands;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Commands;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.command.Command;
@@ -39,11 +40,11 @@ public class ItemAliasCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (command.getName().equalsIgnoreCase(Constants.ALIAS_CMD))
+		if (command.getName().equalsIgnoreCase(Commands.ALIAS_CMD))
 		{
-			if (!sender.hasPermission(Constants.ALIAS_PERM))
+			if (!sender.hasPermission(Commands.ALIAS_PERM))
 			{
-				sender.sendMessage(Constants.NO_PERMISSION);
+				sender.sendMessage(Messages.NO_PERMISSION);
 				return false;
 			}
 			
@@ -53,7 +54,7 @@ public class ItemAliasCommand implements CommandExecutor
 			{
 				if (!(sender instanceof Player))
 				{
-					sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
+					sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
 					return false;
 				}
 				
@@ -72,27 +73,27 @@ public class ItemAliasCommand implements CommandExecutor
 				}
 				catch (NullPointerException e)
 				{
-					sender.sendMessage(Constants.NULL_POINTER);
+					sender.sendMessage(Messages.NULL_POINTER);
 					return false;
 				}
 				
 				if (item == null)
 				{
-					sender.sendMessage(Constants.getAliasError(name));
+					sender.sendMessage(Messages.getAliasError(name));
 					return false;
 				}
 			}
 			
 			if (item == null)
 			{
-				sender.sendMessage(Constants.PREFIX + "Error: Your hand is empty.");
+				sender.sendMessage(Messages.PREFIX + "Error: Your hand is empty.");
 				return false;
 			}
 			
-			sender.sendMessage(Constants.PREFIX + "Material: " + item.getType().toString() + ":" + item.getDurability());
+			sender.sendMessage(Messages.PREFIX + "Material: " + item.getType().toString() + ":" + item.getDurability());
 			String aliases = plugin.translator.getAliases(item);
 			if (aliases != null)
-				sender.sendMessage(Constants.PREFIX + "Aliases: " + aliases);
+				sender.sendMessage(Messages.PREFIX + "Aliases: " + aliases);
 			
 			return true;
 		}

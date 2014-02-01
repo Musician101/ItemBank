@@ -3,7 +3,8 @@ package musician101.itembank.commands.ibcommand;
 import java.io.File;
 
 import musician101.itembank.ItemBank;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Commands;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.Bukkit;
@@ -18,9 +19,9 @@ public class PurgeCommand
 {
 	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
 	{
-		if (!sender.hasPermission(Constants.PURGE_PERM))
+		if (!sender.hasPermission(Commands.PURGE_PERM))
 		{
-			sender.sendMessage(Constants.NO_PERMISSION);
+			sender.sendMessage(Messages.NO_PERMISSION);
 			return false;
 		}
 		else
@@ -31,14 +32,14 @@ public class PurgeCommand
 					file.delete();
 				
 				IBUtils.createPlayerFiles(plugin, Bukkit.getOnlinePlayers());
-				sender.sendMessage(Constants.PREFIX + "Purge complete.");
+				sender.sendMessage(Messages.PREFIX + "Purge complete.");
 			}
 			else if (args.length == 2)
 			{
 				plugin.playerFile = new File(plugin.playerDataDir + "/" + args[1].toLowerCase() + ".yml");
 				plugin.playerFile.delete();
 				IBUtils.createPlayerFile(plugin, plugin.playerFile);
-				sender.sendMessage(Constants.PREFIX + "Player file reset.");
+				sender.sendMessage(Messages.PREFIX + "Player file reset.");
 			}
 			return true;
 		}

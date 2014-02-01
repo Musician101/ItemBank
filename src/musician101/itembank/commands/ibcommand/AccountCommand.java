@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import musician101.itembank.ItemBank;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Commands;
+import musician101.itembank.lib.Messages;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -30,9 +31,9 @@ public class AccountCommand
 	
 	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
 	{
-		if (!sender.hasPermission(Constants.ACCOUNT_PERM))
+		if (!sender.hasPermission(Commands.ACCOUNT_PERM))
 		{
-			sender.sendMessage(Constants.NO_PERMISSION);
+			sender.sendMessage(Messages.NO_PERMISSION);
 			return false;
 		}
 		
@@ -40,7 +41,7 @@ public class AccountCommand
 		{
 			if (!(sender instanceof Player))
 			{
-				sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
+				sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
 				return false;
 			}
 			
@@ -53,19 +54,19 @@ public class AccountCommand
 		{
 			if (!(sender instanceof Player))
 			{
-				sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
+				sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
 				return false;
 			}
 			
 			if (!getAccount(plugin, (Player) sender, sender.getName()))
 				return false;
 			
-			if (args[1].equalsIgnoreCase(Constants.ADMIN_CMD))
+			if (args[1].equalsIgnoreCase(Commands.ADMIN_CMD))
 			{
-				if (!sender.hasPermission(Constants.ADMIN_PERM))
-					sender.sendMessage(Constants.NO_PERMISSION);
+				if (!sender.hasPermission(Commands.ADMIN_PERM))
+					sender.sendMessage(Messages.NO_PERMISSION);
 				else
-					sender.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
+					sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
 				
 				return false;
 			}
@@ -73,7 +74,7 @@ public class AccountCommand
 			String name = args[1];
 			if (!plugin.playerData.isSet(name))
 			{
-				sender.sendMessage(Constants.PREFIX + "You have 0 " + name + ".");
+				sender.sendMessage(Messages.PREFIX + "You have 0 " + name + ".");
 				return true;
 			}
 			
@@ -99,7 +100,7 @@ public class AccountCommand
 						}
 						else
 						{
-							sender.sendMessage(Constants.getFileDurabilityError(pathSplit[0]));
+							sender.sendMessage(Messages.getFileDurabilityError(pathSplit[0]));
 							return false;
 						}
 					}
@@ -116,18 +117,18 @@ public class AccountCommand
 							item.setItemMeta(meta);
 						}
 					}
-					sender.sendMessage(Constants.PREFIX + getName(item) + ChatColor.WHITE + ": " + item.getAmount());
+					sender.sendMessage(Messages.PREFIX + getName(item) + ChatColor.WHITE + ": " + item.getAmount());
 				}
 			}
 			return true;
 		}
 		else if (args.length == 3)
 		{
-			if (args[1].equalsIgnoreCase(Constants.ADMIN_CMD))
+			if (args[1].equalsIgnoreCase(Commands.ADMIN_CMD))
 			{
-				if (!sender.hasPermission(Constants.ADMIN_PERM))
+				if (!sender.hasPermission(Commands.ADMIN_PERM))
 				{
-					sender.sendMessage(Constants.NO_PERMISSION);
+					sender.sendMessage(Messages.NO_PERMISSION);
 					return false;
 				}
 				
@@ -142,7 +143,7 @@ public class AccountCommand
 	
 	public static boolean displayAccount(ItemBank plugin, CommandSender sender, String[] args)
 	{
-		if (args.length != 1 && args[1].equalsIgnoreCase(Constants.ADMIN_CMD))
+		if (args.length != 1 && args[1].equalsIgnoreCase(Commands.ADMIN_CMD))
 			sender.sendMessage("--------" + ChatColor.DARK_RED + args[2] + "'s ItemBank Account" + ChatColor.WHITE + "--------");
 		else
 			sender.sendMessage("--------" + ChatColor.DARK_RED + "Your ItemBank Account" + ChatColor.WHITE + "--------");
@@ -157,7 +158,7 @@ public class AccountCommand
 			}
 			catch (NumberFormatException e)
 			{
-				sender.sendMessage(Constants.getFileAmountError(entry.getKey().toUpperCase()));
+				sender.sendMessage(Messages.getFileAmountError(entry.getKey().toUpperCase()));
 				return false;
 			}
 			
@@ -179,7 +180,7 @@ public class AccountCommand
 					}
 					else
 					{
-						sender.sendMessage(Constants.getFileDurabilityError(pathSplit[0]));
+						sender.sendMessage(Messages.getFileDurabilityError(pathSplit[0]));
 						return false;
 					}
 				}
@@ -213,17 +214,17 @@ public class AccountCommand
 		}
 		catch (FileNotFoundException e)
 		{
-			sender.sendMessage(Constants.FILE_NOT_FOUND);
+			sender.sendMessage(Messages.FILE_NOT_FOUND);
 			return false;
 		}
 		catch (IOException e)
 		{
-			sender.sendMessage(Constants.IO_EXCEPTION);
+			sender.sendMessage(Messages.IO_EXCEPTION);
 			return false;
 		}
 		catch (InvalidConfigurationException e)
 		{
-			sender.sendMessage(Constants.YAML_EXCEPTION);
+			sender.sendMessage(Messages.YAML_EXCEPTION);
 			return false;
 		}
 		
@@ -250,7 +251,7 @@ public class AccountCommand
 							amounts.put(entry.getKey(), entry.getValue());
 						else if (!children.contains(entry.getKey().split("\\.")[1]))
 						{
-							sender.sendMessage(Constants.getFileAmountError(entry.getKey().split("\\.")[0]));
+							sender.sendMessage(Messages.getFileAmountError(entry.getKey().split("\\.")[0]));
 							return false;
 						}
 					}

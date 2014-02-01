@@ -7,7 +7,8 @@ import java.io.IOException;
 import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Commands;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.Material;
@@ -49,39 +50,39 @@ public class WithdrawCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (command.getName().equalsIgnoreCase(Constants.WITHDRAW_CMD))
+		if (command.getName().equalsIgnoreCase(Commands.WITHDRAW_CMD))
 		{
-			if (!sender.hasPermission(Constants.WITHDRAW_PERM))
+			if (!sender.hasPermission(Commands.WITHDRAW_PERM))
 			{
-				sender.sendMessage(Constants.NO_PERMISSION);
+				sender.sendMessage(Messages.NO_PERMISSION);
 				return false;
 			}
 			
-			if (!(sender instanceof Player) && !args[0].equalsIgnoreCase(Constants.ADMIN_CMD))
+			if (!(sender instanceof Player) && !args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
 			{
-				sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
+				sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
 				return false;
 			}
 			
 			if (args.length == 0)
 			{
-				sender.sendMessage(Constants.NOT_ENOUGH_ARGUMENTS);
+				sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
 				return false;
 			}
 			
 			/** Admin Withdraw Check */
-			if (args[0].equalsIgnoreCase(Constants.ADMIN_CMD))
+			if (args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
 				return Admin.withdraw(plugin, (Player) sender, args);
 			
 			/** Economy Check Check */
 			if (!IBUtils.checkEconomy(plugin, config, (Player) sender))
 			{
-				sender.sendMessage(Constants.LACK_MONEY);
+				sender.sendMessage(Messages.LACK_MONEY);
 				return false;
 			}
 			
 			/** "Custom Item" Check */
-			if (args[0].equalsIgnoreCase(Constants.CUSTOM_ITEM))
+			if (args[0].equalsIgnoreCase(Commands.CUSTOM_ITEM_CMD))
 				return CustomItem.withdraw(plugin, (Player) sender, args);
 			
 			String name = args[0].toLowerCase();
@@ -94,7 +95,7 @@ public class WithdrawCommand implements CommandExecutor
 				}
 				catch (NumberFormatException e)
 				{
-					sender.sendMessage(Constants.NUMBER_FORMAT);
+					sender.sendMessage(Messages.NUMBER_FORMAT);
 					return false;
 				}
 			}
@@ -110,19 +111,19 @@ public class WithdrawCommand implements CommandExecutor
 			}
 			catch (NullPointerException e)
 			{
-				sender.sendMessage(Constants.NULL_POINTER);
+				sender.sendMessage(Messages.NULL_POINTER);
 				return false;
 			}
 			
 			if (item == null)
 			{
-				sender.sendMessage(Constants.getAliasError(name));
+				sender.sendMessage(Messages.getAliasError(name));
 				return false;
 			}
 			
 			if (item.getType() == Material.AIR)
 			{
-				sender.sendMessage(Constants.AIR_BLOCK);
+				sender.sendMessage(Messages.AIR_BLOCK);
 				return false;
 			}
 			
@@ -135,17 +136,17 @@ public class WithdrawCommand implements CommandExecutor
 			}
 			catch (FileNotFoundException e)
 			{
-				sender.sendMessage(Constants.FILE_NOT_FOUND);
+				sender.sendMessage(Messages.FILE_NOT_FOUND);
 				return false;
 			}
 			catch (IOException e)
 			{
-				sender.sendMessage(Constants.IO_EXCEPTION);
+				sender.sendMessage(Messages.IO_EXCEPTION);
 				return false;
 			}
 			catch (InvalidConfigurationException e)
 			{
-				sender.sendMessage(Constants.YAML_EXCEPTION);
+				sender.sendMessage(Messages.YAML_EXCEPTION);
 				return false;
 			}
 			
@@ -164,7 +165,7 @@ public class WithdrawCommand implements CommandExecutor
 			
 			if (freeSpace == 0)
 			{
-				sender.sendMessage(Constants.FULL_INV);
+				sender.sendMessage(Messages.FULL_INV);
 				return false;
 			}
 			
@@ -179,7 +180,7 @@ public class WithdrawCommand implements CommandExecutor
 			}
 			catch (IOException e)
 			{
-				sender.sendMessage(Constants.IO_EXCEPTION);
+				sender.sendMessage(Messages.IO_EXCEPTION);
 				plugin.playerData.set(itemPath, oldAmount);
 				if (plugin.getEconomy().isEnabled() && config.enableVault)
 					plugin.getEconomy().giveMoney(sender.getName(), config.transactionCost);
@@ -188,9 +189,9 @@ public class WithdrawCommand implements CommandExecutor
 			
 			item.setAmount(amount);
 			((Player) sender).getInventory().addItem(item);
-			sender.sendMessage(Constants.PREFIX + "You have withdrawn " + amount + " " + item.getType().toString() + " and now have a total of " + newAmount + " left.");
+			sender.sendMessage(Messages.PREFIX + "You have withdrawn " + amount + " " + item.getType().toString() + " and now have a total of " + newAmount + " left.");
 			if (plugin.getEconomy().isEnabled() && config.enableVault)
-				sender.sendMessage(Constants.PREFIX + "A " + config.transactionCost + " transaction fee has been deducted from your account.");
+				sender.sendMessage(Messages.PREFIX + "A " + config.transactionCost + " transaction fee has been deducted from your account.");
 			
 			return true;
 		}
