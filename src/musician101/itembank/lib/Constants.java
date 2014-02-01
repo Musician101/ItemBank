@@ -74,13 +74,13 @@ public class Constants
 		ChatColor.DARK_RED + "Deposit Custom Item: " + ChatColor.WHITE + DEPOSIT_USAGE[1], ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + DEPOSIT_USAGE[2]};
 	
 	/** ItemAlias command */
-	public static final String IA_CMD = "itemalias";
-	public static final String IA_PERM = BASE_CMD + "." + IA_CMD;
-	public static final String IA_DESC = "Check the aliases of a given block/item.";
-	public static final String IA_USAGE = "/itemalias <material|alias|id:data>";
-	public static final String[] IA_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
+	public static final String ALIAS_CMD = "itemalias";
+	public static final String ALIAS_PERM = BASE_CMD + "." + ALIAS_CMD;
+	public static final String ALIAS_DESC = "Check the aliases of a given block/item.";
+	public static final String ALIAS_USAGE = "/itemalias <material|alias|id:data>";
+	public static final String[] ALIAS_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "ItemAlias" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
-		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + IA_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + IA_USAGE};
+		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + ALIAS_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + ALIAS_USAGE};
 	
 	/** Purge command */
 	public static final String PURGE_CMD = "purge";

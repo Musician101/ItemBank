@@ -23,8 +23,8 @@ public class HelpCommand
 				sender.sendMessage(Constants.ACCOUNT_HELP);
 			else if (cmd.equals(Constants.DEPOSIT_CMD))
 				sender.sendMessage(Constants.DEPOSIT_HELP);
-			else if (cmd.equals(Constants.IA_CMD))
-				sender.sendMessage(Constants.IA_HELP);
+			else if (cmd.equals(Constants.ALIAS_CMD))
+				sender.sendMessage(Constants.ALIAS_HELP);
 			else if (cmd.equals(Constants.PURGE_CMD))
 				sender.sendMessage(Constants.PURGE_HELP);
 			else if (cmd.equals(Constants.WITHDRAW_CMD))

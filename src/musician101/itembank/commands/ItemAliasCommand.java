@@ -39,9 +39,9 @@ public class ItemAliasCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (command.getName().equalsIgnoreCase(Constants.IA_CMD))
+		if (command.getName().equalsIgnoreCase(Constants.ALIAS_CMD))
 		{
-			if (!sender.hasPermission(Constants.IA_PERM))
+			if (!sender.hasPermission(Constants.ALIAS_PERM))
 			{
 				sender.sendMessage(Constants.NO_PERMISSION);
 				return false;
