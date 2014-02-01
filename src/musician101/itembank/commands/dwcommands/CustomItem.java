@@ -32,7 +32,6 @@ public class CustomItem
 {
 	public static boolean deposit(ItemBank plugin, ItemStack item, Player player)
 	{
-		item = player.getItemInHand();
 		if (item == null || item.getType() == Material.AIR)
 		{
 			player.sendMessage(Constants.PREFIX + "Error: You're not holding anything.");
