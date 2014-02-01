@@ -30,7 +30,7 @@ public class ItemBank extends JavaPlugin
 	public static Econ economy = null;
 	
 	/** Checks if a new version is available. */
-	public void versionCheck(Config config)
+	public void versionCheck()
 	{
 		if (config.checkForUpdate)
 		{
@@ -63,7 +63,7 @@ public class ItemBank extends JavaPlugin
 		getCommand("withdraw").setExecutor(new WithdrawCommand(this, config));
 		getCommand("itembank").setExecutor(new IBCommand(this));
 		
-		versionCheck(config);
+		versionCheck();
 	}
 	
 	/** Shuts off the plugin */
