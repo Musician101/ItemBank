@@ -31,14 +31,14 @@ public class Commands
 	public static final String PURGE_DESC = "Delete all or a specified account.";
 	public static final String WITHDRAW_DESC = "Withdraw blocks/items from your account";
 	
-	/** Command usages */
+	/** Command Usages */
 	public static final String[] ACCOUNT_USAGE = {"/itembank account <block|item|custom name>", "/itembank account admin [player]"};
 	public static final String ALIAS_USAGE = "/itemalias <material|alias|id:data>";
 	public static final String[] DEPOSIT_USAGE = {"/deposit [item] <amount>", "/deposit customItem", "/deposit admin [player] [item] <amount>"};
 	public static final String PURGE_USAGE = "/itembank purge <player>";
 	public static final String[] WITHDRAW_USAGE = {"/withdraw [item] <amount>", "/withdraw customItem [item]", "/withdraw admin [player] [item] <amount>"};
 	
-	/** Command help info */
+	/** Command Help Info */
 	public static final String[] ACCOUNT_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "Account" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + ACCOUNT_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + ACCOUNT_USAGE[0],
