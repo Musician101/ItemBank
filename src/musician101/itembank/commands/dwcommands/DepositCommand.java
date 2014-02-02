@@ -64,94 +64,9 @@ public class DepositCommand implements CommandExecutor
 				return false;
 			}
 			
+			/** Standard Check (w/o arguments) */
 			if (args.length == 0)
-			{
-				ItemStack item = ((Player) sender).getItemInHand();
-				if (item == null || item.getType() == Material.AIR)
-				{
-					sender.sendMessage(Messages.AIR_BLOCK);
-					return false;
-				}
-				
-				/** Custom Item Check */
-				if (item.hasItemMeta() || item.getType() == Material.FIREWORK || item.getType() == Material.WRITTEN_BOOK || (item.getType() == Material.SKULL_ITEM && item.getDurability() == 3))
-					return CustomItem.deposit(plugin, item, (Player) sender);
-				
-				String itemPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
-				plugin.playerFile = new File(plugin.playerDataDir + "/" + sender.getName().toLowerCase() + ".yml");
-				plugin.playerData = new YamlConfiguration();
-				try
-				{
-					plugin.playerData.load(plugin.playerFile);
-				}
-				catch (FileNotFoundException e)
-				{
-					sender.sendMessage(Messages.FILE_NOT_FOUND);
-					return false;
-				}
-				catch (IOException e)
-				{
-					sender.sendMessage(Messages.IO_EXCEPTION);
-					return false;
-				}
-				catch (InvalidConfigurationException e)
-				{
-					sender.sendMessage(Messages.YAML_EXCEPTION);
-					return false;
-				}
-				
-				int amountInBank = plugin.playerData.getInt(itemPath);
-				int oldItemAmount = item.getAmount();
-				int newItemAmount = item.getAmount();
-				int newAmountInBank = amountInBank + oldItemAmount;
-				if (config.blacklist.isSet(itemPath))
-				{
-					int maxAmount = config.blacklist.getInt(itemPath);
-					if (maxAmount == 0)
-					{
-						sender.sendMessage(Messages.NO_DEPOSIT);
-						return false;
-					}
-					else if (maxAmount == amountInBank)
-					{
-						sender.sendMessage(Messages.getMaxedDepositMessage(item.getType().toString()));
-						return false;
-					}
-					else if (maxAmount < newAmountInBank)
-					{
-						oldItemAmount = maxAmount - amountInBank;
-						newAmountInBank = amountInBank + oldItemAmount;
-						sender.sendMessage(Messages.PARTIAL_DEPOSIT);
-					}
-				}
-				
-				plugin.playerData.set(itemPath, newAmountInBank);
-				try
-				{
-					plugin.playerData.save(plugin.playerFile);
-				}
-				catch (IOException e)
-				{
-					sender.sendMessage(Messages.IO_EXCEPTION);
-					plugin.playerData.set(itemPath, amountInBank);
-					return false;
-				}
-				
-				item.setAmount(oldItemAmount);
-				newItemAmount = newItemAmount - oldItemAmount;
-				if (newItemAmount == 0)
-					((Player) sender).getInventory().removeItem(item);
-				else
-					((Player) sender).getInventory().getItem(((Player) sender).getInventory().getHeldItemSlot()).setAmount(newItemAmount);
-				
-				sender.sendMessage(Messages.getDepositSuccess(item.getType().toString(), item.getAmount()));
-				if (plugin.getEconomy().isEnabled() && config.enableVault)
-				{
-					sender.sendMessage(Messages.getTransactionFeeMessage(config.transactionCost));
-					plugin.getEconomy().takeMoney(sender.getName(), config.transactionCost);
-				}
-				return true;
-			}
+				return execute((Player) sender, ((Player) sender).getItemInHand());
 			
 			/** Admin Deposit Check */
 			if (args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
@@ -186,127 +101,140 @@ public class DepositCommand implements CommandExecutor
 				return CustomItem.deposit(plugin, ((Player) sender).getItemInHand(), (Player) sender);
 			}
 			
-			String name = args[0].toLowerCase();
-			int amount = 64;
-			if (args.length == 2)
-			{
-				try
-				{
-					amount = Integer.parseInt(args[1]);
-				}
-				catch (NumberFormatException e)
-				{
-					sender.sendMessage(Messages.NUMBER_FORMAT);
-					return false;
-				}
-			}
-			
-			ItemStack item = null;
-			try
-			{
-				item = IBUtils.getItemFromAlias(plugin, name, amount);
-			}
-			catch (InvalidAliasException e)
-			{
-				item = IBUtils.getItem(name, amount);
-			}
-			catch (NullPointerException e)
-			{
-				sender.sendMessage(Messages.NULL_POINTER);
-				return false;
-			}
-			
-			if (item == null)
-			{
-				sender.sendMessage(Messages.getAliasError(name));
-				return false;
-			}
-			
-			if (item.getType() == Material.AIR)
-			{
-				sender.sendMessage(Messages.AIR_BLOCK);
-				return false;
-			}
-			
-			String itemPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
-			plugin.playerFile = new File(plugin.playerDataDir + "/" + sender.getName().toLowerCase() + ".yml");
-			plugin.playerData = new YamlConfiguration();
-			try
-			{
-				plugin.playerData.load(plugin.playerFile);
-			}
-			catch (FileNotFoundException e)
-			{
-				sender.sendMessage(Messages.FILE_NOT_FOUND);
-				return false;
-			}
-			catch (IOException e)
-			{
-				sender.sendMessage(Messages.IO_EXCEPTION);
-				return false;
-			}
-			catch (InvalidConfigurationException e)
-			{
-				sender.sendMessage(Messages.YAML_EXCEPTION);
-				return false;
-			}
-			
-			if (!((Player) sender).getInventory().containsAtLeast(item, item.getAmount()))
-			{
-				sender.sendMessage(Messages.ITEM_NOT_FOUND);
-				return false;
-			}
-			
-			int oldAmount = plugin.playerData.getInt(itemPath);
-			int amountInInv = IBUtils.getAmount((Player) sender, item.getType(), item.getDurability());
-			if (amountInInv < amount)
-				amount = amountInInv;
-			
-			int newAmount = oldAmount + amount;
-			if (config.blacklist.isSet(itemPath))
-			{
-				int maxAmount = config.blacklist.getInt(itemPath);
-				if (maxAmount == 0)
-				{
-					sender.sendMessage(Messages.NO_DEPOSIT);
-					return false;
-				}
-				else if (maxAmount == oldAmount)
-				{
-					sender.sendMessage(Messages.getMaxedDepositMessage(item.getType().toString()));
-					return false;
-				}
-				else if (maxAmount < newAmount)
-				{
-					amount = maxAmount - oldAmount;
-					newAmount = oldAmount + amount;
-					sender.sendMessage(Messages.PARTIAL_DEPOSIT);
-				}
-			}
-			
-			plugin.playerData.set(itemPath, newAmount);
-			try
-			{
-				plugin.playerData.save(plugin.playerFile);
-			}
-			catch (IOException e)
-			{
-				sender.sendMessage(Messages.IO_EXCEPTION);
-				plugin.playerData.set(itemPath, oldAmount);
-				return false;
-			}
-			
-			item.setAmount(amount);
-			((Player) sender).getInventory().removeItem(item);
-			sender.sendMessage(Messages.getDepositSuccess(item.getType().toString(), item.getAmount()));
-			if (plugin.getEconomy().isEnabled() && config.enableVault)
-			{
-				sender.sendMessage(Messages.getTransactionFeeMessage(config.transactionCost));
-				plugin.getEconomy().takeMoney(sender.getName(), config.transactionCost);
-			}
+			/** Standard Check */
+			execute((Player) sender, args);
 			
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean execute(Player player, ItemStack item)
+	{
+		return execute(player, new String[]{item.getType().toString(), String.valueOf(item.getAmount())});
+	}
+	
+	public boolean execute(Player player, String[] args)
+	{
+		String name = args[0].toLowerCase();
+		int amount = 64;
+		if (args.length == 2)
+		{
+			try
+			{
+				amount = Integer.parseInt(args[1]);
+			}
+			catch (NumberFormatException e)
+			{
+				player.sendMessage(Messages.NUMBER_FORMAT);
+				return false;
+			}
+		}
+		
+		ItemStack item = null;
+		try
+		{
+			item = IBUtils.getItemFromAlias(plugin, name, amount);
+		}
+		catch (InvalidAliasException e)
+		{
+			item = IBUtils.getItem(name, amount);
+		}
+		catch (NullPointerException e)
+		{
+			player.sendMessage(Messages.NULL_POINTER);
+			return false;
+		}
+		
+		if (item == null)
+		{
+			player.sendMessage(Messages.getAliasError(name));
+			return false;
+		}
+		
+		if (item.getType() == Material.AIR)
+		{
+			player.sendMessage(Messages.AIR_BLOCK);
+			return false;
+		}
+		
+		String itemPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
+		plugin.playerFile = new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml");
+		plugin.playerData = new YamlConfiguration();
+		try
+		{
+			plugin.playerData.load(plugin.playerFile);
+		}
+		catch (FileNotFoundException e)
+		{
+			player.sendMessage(Messages.FILE_NOT_FOUND);
+			return false;
+		}
+		catch (IOException e)
+		{
+			player.sendMessage(Messages.IO_EXCEPTION);
+			return false;
+		}
+		catch (InvalidConfigurationException e)
+		{
+			player.sendMessage(Messages.YAML_EXCEPTION);
+			return false;
+		}
+		
+		if (!player.getInventory().containsAtLeast(item, item.getAmount()))
+		{
+			player.sendMessage(Messages.ITEM_NOT_FOUND);
+			return false;
+		}
+		
+		int oldAmount = plugin.playerData.getInt(itemPath);
+		int amountInInv = IBUtils.getAmount(player, item.getType(), item.getDurability());
+		if (amountInInv < amount)
+			amount = amountInInv;
+		
+		int newAmount = oldAmount + amount;
+		if (config.blacklist.isSet(itemPath))
+		{
+			int maxAmount = config.blacklist.getInt(itemPath);
+			if (maxAmount == 0)
+			{
+				player.sendMessage(Messages.NO_DEPOSIT);
+				return false;
+			}
+			else if (maxAmount == oldAmount)
+			{
+				player.sendMessage(Messages.getMaxedDepositMessage(item.getType().toString()));
+				return false;
+			}
+			else if (maxAmount < newAmount)
+			{
+				amount = maxAmount - oldAmount;
+				newAmount = oldAmount + amount;
+				player.sendMessage(Messages.PARTIAL_DEPOSIT);
+			}
+		}
+		
+		plugin.playerData.set(itemPath, newAmount);
+		try
+		{
+			plugin.playerData.save(plugin.playerFile);
+		}
+		catch (IOException e)
+		{
+			player.sendMessage(Messages.IO_EXCEPTION);
+			plugin.playerData.set(itemPath, oldAmount);
+			return false;
+		}
+		
+		item.setAmount(amount);
+		player.getInventory().removeItem(item);
+		player.sendMessage(Messages.getDepositSuccess(item.getType().toString(), item.getAmount()));
+		if (plugin.getEconomy().isEnabled() && config.enableVault)
+		{
+			player.sendMessage(Messages.getTransactionFeeMessage(config.transactionCost));
+			plugin.getEconomy().takeMoney(player.getName(), config.transactionCost);
+		}
+		
+		return true;
 	}
 }
