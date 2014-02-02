@@ -58,6 +58,7 @@ public class IBCommand implements CommandExecutor
 			else if (args[0].equalsIgnoreCase("reload"))
 			{
 				plugin.config.reloadConfiguration();
+				sender.sendMessage(Messages.PREFIX + "Config and item translator reloaded.");
 				return true;
 			}
 		}
