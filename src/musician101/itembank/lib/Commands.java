@@ -13,6 +13,7 @@ public class Commands
 	public static final String DEPOSIT_CMD = "deposit";
 	public static final String HELP_CMD = "help";
 	public static final String PURGE_CMD = "purge";
+	public static final String RELOAD_CMD = "reload";
 	public static final String WITHDRAW_CMD = "withdraw";
 
 	/** Permissions */
@@ -21,6 +22,7 @@ public class Commands
 	public static final String ALIAS_PERM = BASE_CMD + "." + ALIAS_CMD;
 	public static final String DEPOSIT_PERM = BASE_CMD + "." + DEPOSIT_CMD;
 	public static final String PURGE_PERM = BASE_CMD + "." + PURGE_CMD;
+	public static final String RELOAD_PERM = BASE_CMD + "." + RELOAD_CMD;
 	public static final String WITHDRAW_PERM = BASE_CMD + "." + WITHDRAW_CMD;
 	
 	/** Command Descriptions */
@@ -29,6 +31,7 @@ public class Commands
 	public static final String DEPOSIT_DESC = "Deposit blocks/items into your account.";
 	public static final String HELP_DESC = "Gives a list of commands for the plugin, how they're used and what they do.";
 	public static final String PURGE_DESC = "Delete all or a specified account.";
+	public static final String RELOAD_DESC = "Reload the config and item aliases.";
 	public static final String WITHDRAW_DESC = "Withdraw blocks/items from your account";
 	
 	/** Command Usages */
@@ -36,6 +39,7 @@ public class Commands
 	public static final String ALIAS_USAGE = "/itemalias <material|alias|id:data>";
 	public static final String[] DEPOSIT_USAGE = {"/deposit [item] <amount>", "/deposit customItem", "/deposit admin [player] [item] <amount>"};
 	public static final String PURGE_USAGE = "/itembank purge <player>";
+	public static final String RELOAD_USAGE = "/itembank reload";
 	public static final String[] WITHDRAW_USAGE = {"/withdraw [item] <amount>", "/withdraw customItem [item]", "/withdraw admin [player] [item] <amount>"};
 	
 	/** Command Help Info */
@@ -53,6 +57,9 @@ public class Commands
 	public static final String[] PURGE_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "Purge" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + PURGE_DESC, ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + PURGE_USAGE};
+	public static final String[] RELOAD_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
+		"Help for the " + ChatColor.DARK_RED + "Reload" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
+		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + ALIAS_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + RELOAD_USAGE};
 	public static final String[] WITHDRAW_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "Withdraw" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + WITHDRAW_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + WITHDRAW_USAGE[0],
