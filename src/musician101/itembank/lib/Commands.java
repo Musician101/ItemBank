@@ -47,13 +47,17 @@ public class Commands
 		"Help for the " + ChatColor.DARK_RED + "Account" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + ACCOUNT_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + ACCOUNT_USAGE[0],
 		ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + ACCOUNT_USAGE[1]};
+	public static final String[] ALIAS_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
+		"Help for the " + ChatColor.DARK_RED + "ItemAlias" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
+		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + ALIAS_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + ALIAS_USAGE};
 	public static final String[] DEPOSIT_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "Deposit" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + DEPOSIT_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + DEPOSIT_USAGE[0],
 		ChatColor.DARK_RED + "Deposit Custom Item: " + ChatColor.WHITE + DEPOSIT_USAGE[1], ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + DEPOSIT_USAGE[2]};
-	public static final String[] ALIAS_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
-		"Help for the " + ChatColor.DARK_RED + "ItemAlias" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
-		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + ALIAS_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + ALIAS_USAGE};
+	public static final String[] HELP_LIST = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
+		"Type " + ChatColor.DARK_RED + "/itembank help <command> " + ChatColor.WHITE + "for specific info.",
+		ChatColor.DARK_RED + "Deposit: " + ChatColor.WHITE  + DEPOSIT_DESC, ChatColor.DARK_RED + "Purge: " + ChatColor.WHITE + PURGE_DESC,
+		ChatColor.DARK_RED + "Withdraw: " + ChatColor.WHITE + WITHDRAW_DESC};
 	public static final String[] PURGE_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "Purge" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + PURGE_DESC, ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + PURGE_USAGE};
@@ -64,8 +68,4 @@ public class Commands
 		"Help for the " + ChatColor.DARK_RED + "Withdraw" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + WITHDRAW_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + WITHDRAW_USAGE[0],
 		ChatColor.DARK_RED + "Withdraw Custom Item: " + ChatColor.WHITE + WITHDRAW_USAGE[1], ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + WITHDRAW_USAGE[2]};
-	public static final String[] HELP_LIST = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
-		"Type " + ChatColor.DARK_RED + "/itembank help <command> " + ChatColor.WHITE + "for specific info.",
-		ChatColor.DARK_RED + "Deposit: " + ChatColor.WHITE  + DEPOSIT_DESC, ChatColor.DARK_RED + "Purge: " + ChatColor.WHITE + PURGE_DESC,
-		ChatColor.DARK_RED + "Withdraw: " + ChatColor.WHITE + WITHDRAW_DESC};
 }
