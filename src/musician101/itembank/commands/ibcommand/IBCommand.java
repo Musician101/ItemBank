@@ -62,6 +62,7 @@ public class IBCommand implements CommandExecutor
 				return true;
 			}
 		}
+		sender.sendMessage(Messages.PREFIX + "Error: Unrecognized arguments.");
 		return false;
 	}
 }
