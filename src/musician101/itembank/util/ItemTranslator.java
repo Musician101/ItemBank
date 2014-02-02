@@ -33,26 +33,26 @@ public class ItemTranslator
 				if (s.length < 1) continue;
 				Material material;
 				ItemStack item;
-				String alias = s[0].toLowerCase();
+				String alias = s[0].toLowerCase().replace(" ", "");
 				try
 				{
-					material = Material.valueOf(s[1].toUpperCase());
+					material = Material.valueOf(s[1].toUpperCase().replace(" ", ""));
 					item = new ItemStack(material);
 				}
 				catch (IllegalArgumentException e)
 				{
-					plugin.getLogger().warning("Error with Material: " + s[1].toUpperCase());
+					plugin.getLogger().warning("Error with Material: " + s[1].toUpperCase().replace(" ", ""));
 					continue;
 				}
 				
 				try
 				{
-					short data = Short.valueOf(s[2]);
+					short data = Short.valueOf(s[2].replace(" ", ""));
 					item.setDurability(data);
 				}
 				catch (NumberFormatException e)
 				{
-					plugin.getLogger().info("Error with data: " + s[2]);
+					plugin.getLogger().info("Error with data: " + s[2].replace(" ", ""));
 					continue;
 				}
 				
