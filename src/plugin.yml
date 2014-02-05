@@ -49,7 +49,7 @@ permissions:
    itembank.purge:
       default: op
       description: Allows user/group to use the purge command.
-   itembank.reload
+   itembank.reload:
       default: op
       description: Allows user/group to use the reload command.
    itembank.version:
