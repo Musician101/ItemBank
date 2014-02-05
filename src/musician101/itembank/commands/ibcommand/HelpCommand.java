@@ -28,6 +28,8 @@ public class HelpCommand
 				sender.sendMessage(Commands.ALIAS_HELP);
 			else if (cmd.equals(Commands.PURGE_CMD))
 				sender.sendMessage(Commands.PURGE_HELP);
+			else if (cmd.equals(Commands.RELOAD_CMD))
+				sender.sendMessage(Commands.RELOAD_HELP);
 			else if (cmd.equals(Commands.WITHDRAW_CMD))
 				sender.sendMessage(Commands.WITHDRAW_HELP);
 			else

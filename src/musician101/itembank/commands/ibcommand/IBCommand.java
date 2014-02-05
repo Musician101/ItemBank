@@ -57,6 +57,11 @@ public class IBCommand implements CommandExecutor
 				return PurgeCommand.execute(plugin, sender, args);
 			else if (args[0].equalsIgnoreCase("reload"))
 			{
+				if (!sender.hasPermission(Commands.RELOAD_PERM))
+				{
+					sender.sendMessage(Messages.NO_PERMISSION);
+					return false;
+				}
 				plugin.config.reloadConfiguration();
 				sender.sendMessage(Messages.PREFIX + "Config and item translator reloaded.");
 				return true;
