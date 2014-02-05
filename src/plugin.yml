@@ -31,6 +31,7 @@ permissions:
          itembank.itemalias: true
          itembank.help: true
          itembank.purge: true
+         itembank.reload: true
          itembank.version: true
          itembank.withdraw: true
    itembank.account:
@@ -48,6 +49,9 @@ permissions:
    itembank.purge:
       default: op
       description: Allows user/group to use the purge command.
+   itembank.reload
+      default: op
+      description: Allows user/group to use the reload command.
    itembank.version:
       default: op
       description: Allows user/group to use the version command.
