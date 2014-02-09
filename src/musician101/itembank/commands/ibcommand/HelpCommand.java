@@ -20,17 +20,19 @@ public class HelpCommand
 		else
 		{
 			String cmd = args[1].toLowerCase();
-			if (cmd.equals(Commands.ACCOUNT_CMD))
+			if (cmd.equalsIgnoreCase(Commands.ACCOUNT_CMD))
 				sender.sendMessage(Commands.ACCOUNT_HELP);
-			else if (cmd.equals(Commands.DEPOSIT_CMD))
-				sender.sendMessage(Commands.DEPOSIT_HELP);
-			else if (cmd.equals(Commands.ALIAS_CMD))
+			else if (cmd.equalsIgnoreCase(Commands.ALIAS_CMD))
 				sender.sendMessage(Commands.ALIAS_HELP);
-			else if (cmd.equals(Commands.PURGE_CMD))
+			else if (cmd.equalsIgnoreCase(Commands.CONFIG_CMD))
+				sender.sendMessage(Commands.CONFIG_HELP);
+			else if (cmd.equalsIgnoreCase(Commands.DEPOSIT_CMD))
+				sender.sendMessage(Commands.DEPOSIT_HELP);
+			else if (cmd.equalsIgnoreCase(Commands.PURGE_CMD))
 				sender.sendMessage(Commands.PURGE_HELP);
-			else if (cmd.equals(Commands.RELOAD_CMD))
+			else if (cmd.equalsIgnoreCase(Commands.RELOAD_CMD))
 				sender.sendMessage(Commands.RELOAD_HELP);
-			else if (cmd.equals(Commands.WITHDRAW_CMD))
+			else if (cmd.equalsIgnoreCase(Commands.WITHDRAW_CMD))
 				sender.sendMessage(Commands.WITHDRAW_HELP);
 			else
 				sender.sendMessage(Messages.PREFIX + "Error: Command not recognized.");
