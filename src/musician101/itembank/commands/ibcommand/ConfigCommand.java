@@ -56,160 +56,165 @@ public class ConfigCommand
 			return true;
 		}
 		
-		if (args[1].equalsIgnoreCase("blacklist"))
+		if (args.length > 1)
 		{
-			if (args.length > 2)
+			if (args[1].equalsIgnoreCase("blacklist"))
 			{
-				if (args[2].equalsIgnoreCase("set"))
+				if (args.length > 2)
 				{
-					if (args.length < 3)
+					if (args[2].equalsIgnoreCase("set"))
 					{
-						sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
-						return false;
-					}
-					
-					String material = args[3].toLowerCase();
-					ItemStack item = null;
-					try
-					{
-						item = IBUtils.getItemFromAlias(plugin, material, 0);
-					}
-					catch (InvalidAliasException e)
-					{
-						item = IBUtils.getItem(material, 0);
-					}
-					catch (NullPointerException e)
-					{
-						sender.sendMessage(Messages.NULL_POINTER);
-						return false;
-					}
-					
-					int value = 0;
-					if (args.length > 4)
-					{
-						sender.sendMessage("quack");
-						try
+						if (args.length < 3)
 						{
-							value = Integer.valueOf(args[4]);
-						}
-						catch (NumberFormatException e)
-						{
-							sender.sendMessage(Messages.NUMBER_FORMAT);
+							sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
 							return false;
 						}
+						
+						String material = args[3].toLowerCase();
+						ItemStack item = null;
+						try
+						{
+							item = IBUtils.getItemFromAlias(plugin, material, 0);
+						}
+						catch (InvalidAliasException e)
+						{
+							item = IBUtils.getItem(material, 0);
+						}
+						catch (NullPointerException e)
+						{
+							sender.sendMessage(Messages.NULL_POINTER);
+							return false;
+						}
+						
+						int value = 0;
+						if (args.length > 4)
+						{
+							sender.sendMessage("quack");
+							try
+							{
+								value = Integer.valueOf(args[4]);
+							}
+							catch (NumberFormatException e)
+							{
+								sender.sendMessage(Messages.NUMBER_FORMAT);
+								return false;
+							}
+						}
+						
+						plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability(), Integer.valueOf(value));
+						plugin.saveConfig();
+						config.reloadConfiguration();
+						sender.sendMessage(Messages.PREFIX + "blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability() + " set to " + value + ".");
+						return true;
+					}
+					else if (args[2].equalsIgnoreCase("remove"))
+					{
+						ItemStack item = null;
+						try
+						{
+							item = IBUtils.getItemFromAlias(plugin, args[3].toLowerCase(), 0);
+						}
+						catch (InvalidAliasException e)
+						{
+							item = IBUtils.getItem(args[3].toLowerCase(), 0);
+						}
+						catch (NullPointerException e)
+						{
+							sender.sendMessage(Messages.NULL_POINTER);
+							return false;
+						}
+						
+						if (plugin.getConfig().getConfigurationSection("blacklist.").getValues(true).size() == 1)
+							plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase(), null);
+						else
+							plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability(), null);
+						
+						plugin.saveConfig();
+						config.reloadConfiguration();
+						sender.sendMessage(Messages.PREFIX + "Config: blacklist." + item.getType().toString() + "." + item.getDurability() + " removed.");
+						return true;
 					}
 					
-					plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability(), Integer.valueOf(value));
-					plugin.saveConfig();
-					config.reloadConfiguration();
-					sender.sendMessage(Messages.PREFIX + "blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability() + " set to " + value + ".");
-					return true;
+					sender.sendMessage(Messages.getInvalidArgumentError(args[2]));
+					return false;
 				}
-				else if (args[2].equalsIgnoreCase("remove"))
+			}
+			else if (args[1].equalsIgnoreCase("checkForUpdate"))
+			{
+				if (args.length > 2)
 				{
-					ItemStack item = null;
-					try
+					String bool = args[2].toLowerCase();
+					if (bool.equalsIgnoreCase("true"))
+						plugin.getConfig().set("checkForUpdate", true);
+					else if (bool.equalsIgnoreCase("false"))
+						plugin.getConfig().set("checkForUpdate", false);
+					else
 					{
-						item = IBUtils.getItemFromAlias(plugin, args[3].toLowerCase(), 0);
-					}
-					catch (InvalidAliasException e)
-					{
-						item = IBUtils.getItem(args[3].toLowerCase(), 0);
-					}
-					catch (NullPointerException e)
-					{
-						sender.sendMessage(Messages.NULL_POINTER);
+						sender.sendMessage(Messages.PREFIX + "Error: " + bool + " is not a valid argument.");
 						return false;
 					}
 					
-					if (plugin.getConfig().getConfigurationSection("blacklist.").getValues(true).size() == 1)
-						plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase(), null);
+					plugin.saveConfig();
+					config.reloadConfiguration();
+					sender.sendMessage(Messages.PREFIX + "Config: checkForUpdate set to " + bool + ".");
+					return true;
+				}
+			}
+			else if (args[1].equalsIgnoreCase("enableVault"))
+			{
+				if (args.length > 2)
+				{
+					String bool = args[2];
+					if (bool.equalsIgnoreCase("true"))
+						plugin.getConfig().set("enableVault", true);
+					else if (bool.equalsIgnoreCase("false"))
+						plugin.getConfig().set("enableVault", false);
 					else
-						plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability(), null);
+					{
+						sender.sendMessage(Messages.PREFIX + "Error: " + bool + " is not a vaild argument.");
+						return false;
+					}
 					
 					plugin.saveConfig();
 					config.reloadConfiguration();
-					sender.sendMessage(Messages.PREFIX + "Config: blacklist." + item.getType().toString() + "." + item.getDurability() + " removed.");
+					sender.sendMessage(Messages.PREFIX + "Config: enableVault set to " + bool + ".");
 					return true;
 				}
-				
-				sender.sendMessage(Messages.getInvalidArgumentError(args[2]));
-				return false;
 			}
-		}
-		else if (args[1].equalsIgnoreCase("checkForUpdate"))
-		{
-			if (args.length > 2)
+			else if (args[1].equalsIgnoreCase("transactionCost"))
 			{
-				String bool = args[2].toLowerCase();
-				if (bool.equalsIgnoreCase("true"))
-					plugin.getConfig().set("checkForUpdate", true);
-				else if (bool.equalsIgnoreCase("false"))
-					plugin.getConfig().set("checkForUpdate", false);
-				else
+				if (args.length > 2)
 				{
-					sender.sendMessage(Messages.PREFIX + "Error: " + bool + " is not a valid argument.");
-					return false;
+					Double amount = 0.0;
+					try
+					{
+						amount = Double.valueOf(args[2]);
+					}
+					catch (NumberFormatException e)
+					{
+						sender.sendMessage(Messages.NUMBER_FORMAT);
+						return false;
+					}
+					
+					if (amount <= 0)
+					{
+						sender.sendMessage(Messages.AMOUNT_ERROR);
+						return false;
+					}
+					
+					plugin.getConfig().set("transactionCost", amount);
+					plugin.saveConfig();
+					config.reloadConfiguration();
+					sender.sendMessage(Messages.PREFIX + "Config: transactionCost set to " + amount + ".");
+					return true;
 				}
-				
-				plugin.saveConfig();
-				config.reloadConfiguration();
-				sender.sendMessage(Messages.PREFIX + "Config: checkForUpdate set to " + bool + ".");
-				return true;
 			}
-		}
-		else if (args[1].equalsIgnoreCase("enableVault"))
-		{
-			if (args.length > 2)
-			{
-				String bool = args[2];
-				if (bool.equalsIgnoreCase("true"))
-					plugin.getConfig().set("enableVault", true);
-				else if (bool.equalsIgnoreCase("false"))
-					plugin.getConfig().set("enableVault", false);
-				else
-				{
-					sender.sendMessage(Messages.PREFIX + "Error: " + bool + " is not a vaild argument.");
-					return false;
-				}
-				
-				plugin.saveConfig();
-				config.reloadConfiguration();
-				sender.sendMessage(Messages.PREFIX + "Config: enableVault set to " + bool + ".");
-				return true;
-			}
-		}
-		else if (args[1].equalsIgnoreCase("transactionCost"))
-		{
-			if (args.length > 2)
-			{
-				Double amount = 0.0;
-				try
-				{
-					amount = Double.valueOf(args[2]);
-				}
-				catch (NumberFormatException e)
-				{
-					sender.sendMessage(Messages.NUMBER_FORMAT);
-					return false;
-				}
-				
-				if (amount <= 0)
-				{
-					sender.sendMessage(Messages.AMOUNT_ERROR);
-					return false;
-				}
-				
-				plugin.getConfig().set("transactionCost", amount);
-				plugin.saveConfig();
-				config.reloadConfiguration();
-				sender.sendMessage(Messages.PREFIX + "Config: transactionCost set to " + amount + ".");
-				return true;
-			}
+			
+			sender.sendMessage(Messages.getInvalidArgumentError(args[1]));
+			return false;
 		}
 		
 		sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
 		return false;
 	}
-	//TODO finish config command
 }
