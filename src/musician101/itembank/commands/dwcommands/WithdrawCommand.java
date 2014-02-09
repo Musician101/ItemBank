@@ -100,6 +100,12 @@ public class WithdrawCommand implements CommandExecutor
 				}
 			}
 			
+			if (amount <= 0)
+			{
+				sender.sendMessage(Messages.AMOUNT_ERROR);
+				return false;
+			}
+			
 			ItemStack item = null;
 			try
 			{

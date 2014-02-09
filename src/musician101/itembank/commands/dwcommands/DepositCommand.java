@@ -131,6 +131,12 @@ public class DepositCommand implements CommandExecutor
 			}
 		}
 		
+		if (amount <= 0)
+		{
+			player.sendMessage(Messages.AMOUNT_ERROR);
+			return false;
+		}
+		
 		ItemStack item = null;
 		try
 		{
