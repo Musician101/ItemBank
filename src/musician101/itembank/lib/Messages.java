@@ -14,6 +14,7 @@ public class Messages
 	
 	/** Error messages. */
 	public static final String AIR_BLOCK = PREFIX + "Silly player, you can't use air. :3";
+	public static final String AMOUNT_ERROR = PREFIX + "Error: Amount must be greater than 0.";
 	public static final String FULL_INV = PREFIX + "Sorry, but you're invenotry is to full to accept any more items.";
 	public static final String ITEM_NOT_FOUND = PREFIX + "Error: You do not have any of the specified item.";
 	public static final String LACK_MONEY = PREFIX + "You lack the money to cover the transaction fee.";
@@ -26,6 +27,11 @@ public class Messages
 	public static String getAliasError(String alias)
 	{
 		return PREFIX + "Error: " + alias.toUpperCase() + " is not a valid alias.";
+	}
+	
+	public static String getConfigValueError(String key, String value)
+	{
+		return PREFIX + "Error with '" + key + ":" + value + "'.";
 	}
 	
 	public static String getCustomItemWithdrawError(String name)
@@ -41,6 +47,11 @@ public class Messages
 	public static String getFileDurabilityError(String name)
 	{
 		return PREFIX + "Error getting durability for " + name + ". Check that the durability is a number greater than -1.";
+	}
+	
+	public static String getInvalidArgumentError(String arg)
+	{
+		return PREFIX + "Error: " + arg + " is not a valid argument.";
 	}
 	
 	public static String getMaxedDepositMessage(String material)

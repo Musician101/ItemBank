@@ -61,7 +61,7 @@ public class ItemBank extends JavaPlugin
 		getCommand("deposit").setExecutor(new DepositCommand(this, config));
 		getCommand("itemalias").setExecutor(new ItemAliasCommand(this));
 		getCommand("withdraw").setExecutor(new WithdrawCommand(this, config));
-		getCommand("itembank").setExecutor(new IBCommand(this));
+		getCommand("itembank").setExecutor(new IBCommand(this, config));
 		
 		versionCheck();
 	}

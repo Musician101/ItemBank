@@ -1,5 +1,6 @@
 package musician101.itembank.commands.ibcommand;
 
+import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Commands;
 import musician101.itembank.lib.Messages;
@@ -16,14 +17,16 @@ import org.bukkit.command.CommandSender;
 public class IBCommand implements CommandExecutor
 {
 	ItemBank plugin;
+	Config config;
 	
 	/**
 	 * @param plugin References the plugin's main class.
 	 * @param config References the config options.
 	 */
-	public IBCommand(ItemBank plugin)
+	public IBCommand(ItemBank plugin, Config config)
 	{
 		this.plugin = plugin;
+		this.config = config;
 	}
 	
 	/**
@@ -49,6 +52,9 @@ public class IBCommand implements CommandExecutor
 			/** Account Command */
 			if (args[0].equalsIgnoreCase(Commands.ACCOUNT_CMD))
 				return AccountCommand.execute(plugin, sender, args);
+			/** Config command */
+			else if (args[0].equalsIgnoreCase(Commands.CONFIG_CMD))
+				return ConfigCommand.excute(plugin, config, sender, args);
 			/** Help Command */
 			else if (args[0].equalsIgnoreCase(Commands.HELP_CMD))
 				return HelpCommand.execute(plugin, sender, args);

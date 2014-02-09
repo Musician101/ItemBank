@@ -9,6 +9,7 @@ public class Commands
 	public static final String ACCOUNT_CMD = "account";
 	public static final String ADMIN_CMD = "admin";
 	public static final String ALIAS_CMD = "itemalias";
+	public static final String CONFIG_CMD = "config";
 	public static final String CUSTOM_ITEM_CMD = "customItem";
 	public static final String DEPOSIT_CMD = "deposit";
 	public static final String HELP_CMD = "help";
@@ -20,6 +21,7 @@ public class Commands
 	public static final String ACCOUNT_PERM = BASE_CMD + "." + ACCOUNT_CMD;
 	public static final String ADMIN_PERM = BASE_CMD + "." + ADMIN_CMD;
 	public static final String ALIAS_PERM = BASE_CMD + "." + ALIAS_CMD;
+	public static final String CONFIG_PERM = BASE_CMD + "." + CONFIG_CMD;
 	public static final String DEPOSIT_PERM = BASE_CMD + "." + DEPOSIT_CMD;
 	public static final String PURGE_PERM = BASE_CMD + "." + PURGE_CMD;
 	public static final String RELOAD_PERM = BASE_CMD + "." + RELOAD_CMD;
@@ -28,6 +30,7 @@ public class Commands
 	/** Command Descriptions */
 	public static final String ACCOUNT_DESC = "Used for viewing a player's account.";
 	public static final String ALIAS_DESC = "Check the aliases of a given block/item.";
+	public static final String CONFIG_DESC = "Config management.";
 	public static final String DEPOSIT_DESC = "Deposit blocks/items into your account.";
 	public static final String HELP_DESC = "Gives a list of commands for the plugin, how they're used and what they do.";
 	public static final String PURGE_DESC = "Delete all or a specified account.";
@@ -37,6 +40,8 @@ public class Commands
 	/** Command Usages */
 	public static final String[] ACCOUNT_USAGE = {"/itembank account <block|item|custom name>", "/itembank account admin [player]"};
 	public static final String ALIAS_USAGE = "/itemalias <material|alias|id:data>";
+	public static final String[] CONFIG_USAGE = {"/itembank config", "/itembank config blacklist [set [material:durability] [amount]|remove [material:durability]]",
+		"/itembank config updateCheck [true|false]", "/itembank config enableVault [true|false]", "/itembank config transactionCost [amount]"};
 	public static final String[] DEPOSIT_USAGE = {"/deposit [item] <amount>", "/deposit customItem", "/deposit admin [player] [item] <amount>"};
 	public static final String PURGE_USAGE = "/itembank purge <player>";
 	public static final String RELOAD_USAGE = "/itembank reload";
