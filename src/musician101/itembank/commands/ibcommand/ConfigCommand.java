@@ -1,5 +1,6 @@
 package musician101.itembank.commands.ibcommand;
 
+import java.io.File;
 import java.util.Map;
 
 import musician101.itembank.Config;
@@ -208,6 +209,15 @@ public class ConfigCommand
 					sender.sendMessage(Messages.PREFIX + "Config: transactionCost set to " + amount + ".");
 					return true;
 				}
+			}
+			else if (args[1].equalsIgnoreCase("regen"))
+			{
+				File configFile = new File(plugin.getDataFolder(), "config.yml");
+				configFile.delete();
+				plugin.saveDefaultConfig();
+				config.reloadConfiguration();
+				sender.sendMessage(Messages.PREFIX + "Regenerated config file.");
+				return true;
 			}
 			
 			sender.sendMessage(Messages.getInvalidArgumentError(args[1]));
