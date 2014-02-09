@@ -38,14 +38,15 @@ public class Commands
 	public static final String WITHDRAW_DESC = "Withdraw blocks/items from your account";
 	
 	/** Command Usages */
-	public static final String[] ACCOUNT_USAGE = {"/itembank account <block|item|custom name>", "/itembank account admin [player]"};
-	public static final String ALIAS_USAGE = "/itemalias <material|alias|id:data>";
-	public static final String[] CONFIG_USAGE = {"/itembank config", "/itembank config blacklist [set [material:durability] [amount]|remove [material:durability]]",
-		"/itembank config updateCheck [true|false]", "/itembank config enableVault [true|false]", "/itembank config transactionCost [amount]"};
-	public static final String[] DEPOSIT_USAGE = {"/deposit [item] <amount>", "/deposit customItem", "/deposit admin [player] [item] <amount>"};
+	public static final String[] ACCOUNT_USAGE = {"/itembank account <block | item | custom name>", "/itembank account admin [player]"};
+	public static final String ALIAS_USAGE = "/itemalias <material | alias | material:durability | alias:durability>";
+	public static final String[] CONFIG_USAGE = {"/itembank config", "/itembank config blacklist set [material | material:durability] <amount>",
+		"/itembank config blacklist remove [material | material:durability]",	"/itembank config updateCheck [true | false]", "/itembank config enableVault [true | false]",
+		"/itembank config transactionCost amount"};
+	public static final String[] DEPOSIT_USAGE = {"/deposit, /deposit item <amount>, /deposit customItem", "/deposit admin player item <amount>"};
 	public static final String PURGE_USAGE = "/itembank purge <player>";
 	public static final String RELOAD_USAGE = "/itembank reload";
-	public static final String[] WITHDRAW_USAGE = {"/withdraw [item] <amount>", "/withdraw customItem [item]", "/withdraw admin [player] [item] <amount>"};
+	public static final String[] WITHDRAW_USAGE = {"/withdraw [item] <amount>, /withdraw customItem [item]", "/withdraw admin [player] [item] <amount>"};
 	
 	/** Command Help Info */
 	public static final String[] ACCOUNT_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
@@ -55,10 +56,16 @@ public class Commands
 	public static final String[] ALIAS_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "ItemAlias" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + ALIAS_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + ALIAS_USAGE};
+	public static final String[] CONFIG_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
+		"Help for the " + ChatColor.DARK_RED + "Config" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
+		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + CONFIG_DESC, ChatColor.DARK_RED + "Show current settings: " + ChatColor.WHITE + CONFIG_USAGE[0],
+		ChatColor.DARK_RED + "Add to blacklist: " + ChatColor.WHITE + CONFIG_USAGE[1], ChatColor.DARK_RED + "Remove from blacklist: " + ChatColor.WHITE + CONFIG_USAGE[2],
+		ChatColor.DARK_RED + "Enable/disable update checker: " + ChatColor.WHITE + CONFIG_USAGE[3], ChatColor.DARK_RED + "Enable/disable Vault implementation: " + ChatColor.WHITE + CONFIG_USAGE[4],
+		ChatColor.DARK_RED + "Set transaction cost: " + ChatColor.WHITE + CONFIG_USAGE[5]};
 	public static final String[] DEPOSIT_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "Deposit" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + DEPOSIT_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + DEPOSIT_USAGE[0],
-		ChatColor.DARK_RED + "Deposit Custom Item: " + ChatColor.WHITE + DEPOSIT_USAGE[1], ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + DEPOSIT_USAGE[2]};
+		ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + DEPOSIT_USAGE[1]};
 	public static final String[] HELP_LIST = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Type " + ChatColor.DARK_RED + "/itembank help <command> " + ChatColor.WHITE + "for specific info.",
 		ChatColor.DARK_RED + "Deposit: " + ChatColor.WHITE  + DEPOSIT_DESC, ChatColor.DARK_RED + "Purge: " + ChatColor.WHITE + PURGE_DESC,
@@ -72,5 +79,5 @@ public class Commands
 	public static final String[] WITHDRAW_HELP = {"--------" + ChatColor.DARK_RED + "ItemBank" + ChatColor.WHITE + "--------",
 		"Help for the " + ChatColor.DARK_RED + "Withdraw" + ChatColor.WHITE + " command.", "[] are required and <> are optional.",
 		ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + WITHDRAW_DESC, ChatColor.DARK_RED + "Player Usage: " + ChatColor.WHITE + WITHDRAW_USAGE[0],
-		ChatColor.DARK_RED + "Withdraw Custom Item: " + ChatColor.WHITE + WITHDRAW_USAGE[1], ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + WITHDRAW_USAGE[2]};
+		ChatColor.DARK_RED + "Admin Usage: " + ChatColor.WHITE + WITHDRAW_USAGE[1]};
 }
