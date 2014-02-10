@@ -8,6 +8,7 @@ import musician101.itembank.lib.Messages;
 import musician101.itembank.opencsv.CSVReader;
 import musician101.itembank.util.ItemTranslator;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -60,6 +61,47 @@ public class Config
 	{
 		plugin.reloadConfig();
 		final FileConfiguration config = plugin.getConfig();
+		
+		if (!config.isSet("checkForUpdate"))
+		{
+			config.set("checkForUpdate", true);
+			plugin.getLogger().info("Config: Missing option 'checkForUpdate' added. Value set to 'true'.");
+		}
+		
+		if (!config.isSet("blacklist"))
+		{
+			config.set("blacklist.bedrock.0", 0);
+			plugin.getLogger().info("Config: Missing option 'blacklist' added. Value set to 'bedrock.0: 0'.");
+		}
+		
+		boolean match = false;
+		for (Material m : Material.values())
+		{
+			for (short data = 0; data > m.getMaxDurability(); data++)
+				if (!config.isSet("blacklist." + m.toString().toLowerCase() + "." + data))
+					match = true;
+		}
+		
+		if (!match)
+		{
+			config.set("blacklist.bedrock.0", 0);
+			plugin.getLogger().info("Config: Incomplete blacklist. 'bedrock.0: 0' has been added.");
+		}
+		
+		if (!config.isSet("enableVault"))
+		{
+			config.set("enableVault", true);
+			plugin.getLogger().info("Config: Missing option 'enableVault' added. Value set to 'true'.");
+		}
+		
+		if (!config.isSet("transactionCost"))
+		{
+			config.set("transactionCost", 5.0);
+			plugin.getLogger().info("Config: Missing option 'TransactionCost' added. Value set to 5.0");
+		}
+		
+		plugin.saveConfig();
+		plugin.reloadConfig();
 		
 		checkForUpdate = config.getBoolean("checkForUpdate", true);
 		blacklist = config.getConfigurationSection("blacklist");
