@@ -7,6 +7,7 @@ import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Commands;
+import musician101.itembank.lib.ConfigConstants;
 import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
@@ -40,7 +41,7 @@ public class ConfigCommand
 						try
 						{
 							Short.valueOf(entry.getValue().toString());
-							sender.sendMessage(ChatColor.DARK_RED + "blacklist." + entry.getKey() + ChatColor.WHITE + ": " + entry.getValue());
+							sender.sendMessage(ChatColor.DARK_RED + ConfigConstants.BLACKLIST + "." + entry.getKey() + ChatColor.WHITE + ": " + entry.getValue());
 						}
 						catch (NumberFormatException e)
 						{
@@ -50,16 +51,16 @@ public class ConfigCommand
 				}
 			}
 			
-			sender.sendMessage(new String[]{ChatColor.DARK_RED + "checkForUpdate" + ChatColor.WHITE + ": " + config.checkForUpdate,
-					ChatColor.DARK_RED + "enableVault" + ChatColor.WHITE + ": " + config.enableVault,
-					ChatColor.DARK_RED + "transactionCost" + ChatColor.WHITE + ": " + config.transactionCost});
+			sender.sendMessage(new String[]{ChatColor.DARK_RED + ConfigConstants.CHECK_FOR_UPDATE + ChatColor.WHITE + ": " + config.checkForUpdate,
+					ChatColor.DARK_RED + ConfigConstants.ENABLE_VAULT + ChatColor.WHITE + ": " + config.enableVault,
+					ChatColor.DARK_RED + ConfigConstants.TRANSACTION_COST + ChatColor.WHITE + ": " + config.transactionCost});
 			
 			return true;
 		}
 		
 		if (args.length > 1)
 		{
-			if (args[1].equalsIgnoreCase("blacklist"))
+			if (args[1].equalsIgnoreCase(ConfigConstants.BLACKLIST))
 			{
 				if (args.length > 2)
 				{
@@ -90,7 +91,6 @@ public class ConfigCommand
 						int value = 0;
 						if (args.length > 4)
 						{
-							sender.sendMessage("quack");
 							try
 							{
 								value = Integer.valueOf(args[4]);
@@ -102,10 +102,10 @@ public class ConfigCommand
 							}
 						}
 						
-						plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability(), Integer.valueOf(value));
+						plugin.getConfig().set(ConfigConstants.BLACKLIST + "." + item.getType().toString().toLowerCase() + "." + item.getDurability(), Integer.valueOf(value));
 						plugin.saveConfig();
 						config.reloadConfiguration();
-						sender.sendMessage(Messages.PREFIX + "blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability() + " set to " + value + ".");
+						sender.sendMessage(Messages.PREFIX + ConfigConstants.BLACKLIST + "." + item.getType().toString().toLowerCase() + "." + item.getDurability() + " set to " + value + ".");
 						return true;
 					}
 					else if (args[2].equalsIgnoreCase("remove"))
@@ -125,14 +125,14 @@ public class ConfigCommand
 							return false;
 						}
 						
-						if (plugin.getConfig().getConfigurationSection("blacklist.").getValues(true).size() == 1)
-							plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase(), null);
+						if (plugin.getConfig().getConfigurationSection(ConfigConstants.BLACKLIST).getValues(true).size() == 1)
+							plugin.getConfig().set(ConfigConstants.BLACKLIST + "." + item.getType().toString().toLowerCase(), null);
 						else
-							plugin.getConfig().set("blacklist." + item.getType().toString().toLowerCase() + "." + item.getDurability(), null);
+							plugin.getConfig().set(ConfigConstants.BLACKLIST + "." + item.getType().toString().toLowerCase() + "." + item.getDurability(), null);
 						
 						plugin.saveConfig();
 						config.reloadConfiguration();
-						sender.sendMessage(Messages.PREFIX + "Config: blacklist." + item.getType().toString() + "." + item.getDurability() + " removed.");
+						sender.sendMessage(Messages.PREFIX + "Config: " + ConfigConstants.BLACKLIST + "." + item.getType().toString() + "." + item.getDurability() + " removed.");
 						return true;
 					}
 					
@@ -140,15 +140,15 @@ public class ConfigCommand
 					return false;
 				}
 			}
-			else if (args[1].equalsIgnoreCase("checkForUpdate"))
+			else if (args[1].equalsIgnoreCase(ConfigConstants.CHECK_FOR_UPDATE))
 			{
 				if (args.length > 2)
 				{
 					String bool = args[2].toLowerCase();
 					if (bool.equalsIgnoreCase("true"))
-						plugin.getConfig().set("checkForUpdate", true);
+						plugin.getConfig().set(ConfigConstants.CHECK_FOR_UPDATE, true);
 					else if (bool.equalsIgnoreCase("false"))
-						plugin.getConfig().set("checkForUpdate", false);
+						plugin.getConfig().set(ConfigConstants.CHECK_FOR_UPDATE, false);
 					else
 					{
 						sender.sendMessage(Messages.PREFIX + "Error: " + bool + " is not a valid argument.");
@@ -157,19 +157,19 @@ public class ConfigCommand
 					
 					plugin.saveConfig();
 					config.reloadConfiguration();
-					sender.sendMessage(Messages.PREFIX + "Config: checkForUpdate set to " + bool + ".");
+					sender.sendMessage(Messages.PREFIX + "Config: " + ConfigConstants.CHECK_FOR_UPDATE + " set to " + bool + ".");
 					return true;
 				}
 			}
-			else if (args[1].equalsIgnoreCase("enableVault"))
+			else if (args[1].equalsIgnoreCase(ConfigConstants.ENABLE_VAULT))
 			{
 				if (args.length > 2)
 				{
 					String bool = args[2];
 					if (bool.equalsIgnoreCase("true"))
-						plugin.getConfig().set("enableVault", true);
+						plugin.getConfig().set(ConfigConstants.ENABLE_VAULT, true);
 					else if (bool.equalsIgnoreCase("false"))
-						plugin.getConfig().set("enableVault", false);
+						plugin.getConfig().set(ConfigConstants.ENABLE_VAULT, false);
 					else
 					{
 						sender.sendMessage(Messages.PREFIX + "Error: " + bool + " is not a vaild argument.");
@@ -178,11 +178,11 @@ public class ConfigCommand
 					
 					plugin.saveConfig();
 					config.reloadConfiguration();
-					sender.sendMessage(Messages.PREFIX + "Config: enableVault set to " + bool + ".");
+					sender.sendMessage(Messages.PREFIX + "Config: " + ConfigConstants.ENABLE_VAULT + " set to " + bool + ".");
 					return true;
 				}
 			}
-			else if (args[1].equalsIgnoreCase("transactionCost"))
+			else if (args[1].equalsIgnoreCase(ConfigConstants.TRANSACTION_COST))
 			{
 				if (args.length > 2)
 				{
@@ -203,10 +203,10 @@ public class ConfigCommand
 						return false;
 					}
 					
-					plugin.getConfig().set("transactionCost", amount);
+					plugin.getConfig().set(ConfigConstants.TRANSACTION_COST, amount);
 					plugin.saveConfig();
 					config.reloadConfiguration();
-					sender.sendMessage(Messages.PREFIX + "Config: transactionCost set to " + amount + ".");
+					sender.sendMessage(Messages.PREFIX + "Config: " + ConfigConstants.TRANSACTION_COST + " set to " + amount + ".");
 					return true;
 				}
 			}
