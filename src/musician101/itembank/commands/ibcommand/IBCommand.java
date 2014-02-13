@@ -61,6 +61,7 @@ public class IBCommand implements CommandExecutor
 			/** Purge Command */
 			else if (args[0].equalsIgnoreCase(Commands.PURGE_CMD))
 				return PurgeCommand.execute(plugin, sender, args);
+			/** Reload Command */
 			else if (args[0].equalsIgnoreCase("reload"))
 			{
 				if (!sender.hasPermission(Commands.RELOAD_PERM))
