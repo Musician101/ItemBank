@@ -12,6 +12,7 @@ import java.util.Map;
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Commands;
 import musician101.itembank.lib.Messages;
+import musician101.itembank.util.IBUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -38,24 +39,10 @@ public class AccountCommand
 		}
 		
 		if (args.length == 1)
-		{
-			if (!(sender instanceof Player))
-			{
-				sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
-				return false;
-			}
-			
-			return getAccount(plugin, (Player) sender, sender.getName()) && displayAccount(plugin, sender, args);
-		}
+			return IBUtils.isPlayer(sender) && getAccount(plugin, (Player) sender, sender.getName()) && displayAccount(plugin, sender, args);
 		else if (args.length == 2)
 		{
-			if (!(sender instanceof Player))
-			{
-				sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
-				return false;
-			}
-			
-			if (!getAccount(plugin, (Player) sender, sender.getName()))
+			if (IBUtils.isPlayer(sender) || !getAccount(plugin, (Player) sender, sender.getName()))
 				return false;
 			
 			if (args[1].equalsIgnoreCase(Commands.ADMIN_CMD))

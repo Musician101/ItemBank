@@ -13,6 +13,7 @@ import musician101.itembank.lib.Messages;
 import musician101.itembank.listeners.PlayerListener;
 
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -192,5 +193,22 @@ public class IBUtils
 		}
 		
 		return sb.toString();
+	}
+	
+	/**
+	 * Check if a command sender is a player or the console.
+	 * 
+	 * @param sender Who sent the command.
+	 * @return false if the sender is the console, else true.
+	 */
+	public static boolean isPlayer(CommandSender sender)
+	{
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
+			return false;
+		}
+		
+		return true;
 	}
 }

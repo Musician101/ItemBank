@@ -58,11 +58,8 @@ public class DepositCommand implements CommandExecutor
 				return false;
 			}
 			
-			if (!(sender instanceof Player) && !args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
-			{
-				sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
+			if (!IBUtils.isPlayer(sender) && !args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
 				return false;
-			}
 			
 			/** Standard Check (w/o arguments) */
 			if (args.length == 0)

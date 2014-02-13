@@ -52,11 +52,8 @@ public class ItemAliasCommand implements CommandExecutor
 			int amount = 0;
 			if (args.length == 0)
 			{
-				if (!(sender instanceof Player))
-				{
-					sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
+				if (!IBUtils.isPlayer(sender))
 					return false;
-				}
 				
 				item = ((Player) sender).getItemInHand();
 			}
