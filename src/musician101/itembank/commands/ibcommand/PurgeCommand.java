@@ -17,31 +17,34 @@ import org.bukkit.command.CommandSender;
  */
 public class PurgeCommand
 {
-	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
+	public static boolean execute(ItemBank plugin, CommandSender sender, String player)
 	{
 		if (!sender.hasPermission(Commands.PURGE_PERM))
 		{
 			sender.sendMessage(Messages.NO_PERMISSION);
 			return false;
 		}
-		else
+		
+		plugin.playerFile = new File(plugin.playerDataDir + "/" + player + ".yml");
+		plugin.playerFile.delete();
+		IBUtils.createPlayerFile(plugin, plugin.playerFile);
+		sender.sendMessage(Messages.PREFIX + "Player file reset.");
+		return true;
+	}
+	
+	public static boolean execute(ItemBank plugin, CommandSender sender)
+	{
+		if (!sender.hasPermission(Commands.PURGE_PERM))
 		{
-			if (args.length == 1)
-			{
-				for (File file : plugin.playerDataDir.listFiles())
-					file.delete();
-				
-				IBUtils.createPlayerFiles(plugin, Bukkit.getOnlinePlayers());
-				sender.sendMessage(Messages.PREFIX + "Purge complete.");
-			}
-			else if (args.length == 2)
-			{
-				plugin.playerFile = new File(plugin.playerDataDir + "/" + args[1].toLowerCase() + ".yml");
-				plugin.playerFile.delete();
-				IBUtils.createPlayerFile(plugin, plugin.playerFile);
-				sender.sendMessage(Messages.PREFIX + "Player file reset.");
-			}
-			return true;
+			sender.sendMessage(Messages.NO_PERMISSION);
+			return false;
 		}
+		
+		for (File file : plugin.playerDataDir.listFiles())
+			file.delete();
+		
+		IBUtils.createPlayerFiles(plugin, Bukkit.getOnlinePlayers());
+		sender.sendMessage(Messages.PREFIX + "Purge complete.");
+		return true;
 	}
 }

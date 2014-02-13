@@ -22,29 +22,10 @@ import org.bukkit.inventory.ItemStack;
  */
 public class Admin
 {
-	public static boolean deposit(ItemBank plugin, Player admin, String[] args)
-	{
-		if (args.length < 3)
-		{
-			admin.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
-			return false;
-		}
-		
-		String player = args[1].toLowerCase();
-		String name = args[2].toLowerCase();
-		int amount = 64;
-		if (args.length == 4)
-		{
-			try
-			{
-				amount = Integer.parseInt(args[3]);
-			}
-			catch (NumberFormatException e)
-			{
-				admin.sendMessage(Messages.NUMBER_FORMAT);
-				return false;
-			}
-		}
+	public static boolean deposit(ItemBank plugin, Player admin, String player, String name, int amount)
+	{	
+		if (amount == 0)
+			amount = 64;
 		
 		ItemStack item = null;
 		try
@@ -115,29 +96,10 @@ public class Admin
 		return true;
 	}
 
-	public static boolean withdraw(ItemBank plugin, Player admin, String[] args)
+	public static boolean withdraw(ItemBank plugin, Player admin, String player, String name, int amount)
 	{
-		if (args.length < 3)
-		{
-			admin.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
-			return false;
-		}
-		
-		String player = args[1].toLowerCase();
-		String name = args[2].toLowerCase();
-		int amount = 64;
-		if (args.length == 4)
-		{
-			try
-			{
-				amount = Integer.parseInt(args[3]);
-			}
-			catch (NumberFormatException e)
-			{
-				admin.sendMessage(Messages.NUMBER_FORMAT);
-				return false;
-			}
-		}
+		if (amount == 0)
+			amount = 64;
 		
 		ItemStack item = null;
 		try

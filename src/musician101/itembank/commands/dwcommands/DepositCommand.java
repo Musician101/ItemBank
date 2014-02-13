@@ -66,11 +66,32 @@ public class DepositCommand implements CommandExecutor
 			
 			/** Standard Check (w/o arguments) */
 			if (args.length == 0)
-				return execute((Player) sender, ((Player) sender).getItemInHand());
+				return execute((Player) sender, ((Player) sender).getItemInHand().getType().toString(), ((Player) sender).getItemInHand().getAmount());
 			
 			/** Admin Deposit Check */
 			if (args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
-				return Admin.deposit(plugin, (Player) sender, args);
+			{
+				if (args.length < 3)
+				{
+					sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
+					return false;
+				}
+				
+				if (args.length == 4)
+				{
+					try
+					{
+						return Admin.deposit(plugin, (Player) sender, args[1].toLowerCase(), args[2].toLowerCase(), Integer.valueOf(args[3]));
+					}
+					catch (NumberFormatException e)
+					{
+						sender.sendMessage(Messages.NUMBER_FORMAT);
+						return false;
+					}
+				}
+				
+				return Admin.deposit(plugin, (Player) sender, args[1].toLowerCase(), args[2].toLowerCase(), 0);
+			}
 			
 			/** Economy Check */
 			if (!IBUtils.checkEconomy(plugin, config, (Player) sender))
@@ -102,36 +123,31 @@ public class DepositCommand implements CommandExecutor
 			}
 			
 			/** Standard Check */
-			execute((Player) sender, args);
+			if (args.length == 2)
+			{
+				try
+				{
+					return execute((Player) sender, args[0], Integer.valueOf(args[1]));
+				}
+				catch (NumberFormatException e)
+				{
+					sender.sendMessage(Messages.NUMBER_FORMAT);
+					return false;
+				}
+			}
 			
-			return true;
+			return execute((Player) sender, args[0], 0);
 		}
 		return false;
 	}
 	
-	public boolean execute(Player player, ItemStack item)
+	public boolean execute(Player player, String name, int amount)
 	{
-		return execute(player, new String[]{item.getType().toString(), String.valueOf(item.getAmount())});
-	}
-	
-	public boolean execute(Player player, String[] args)
-	{
-		String name = args[0].toLowerCase();
-		int amount = 64;
-		if (args.length == 2)
-		{
-			try
-			{
-				amount = Integer.parseInt(args[1]);
-			}
-			catch (NumberFormatException e)
-			{
-				player.sendMessage(Messages.NUMBER_FORMAT);
-				return false;
-			}
-		}
+		name = name.toLowerCase();
+		if (amount == 0)
+			amount = 64;
 		
-		if (amount <= 0)
+		if (amount < 0)
 		{
 			player.sendMessage(Messages.AMOUNT_ERROR);
 			return false;

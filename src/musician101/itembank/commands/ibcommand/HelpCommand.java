@@ -13,30 +13,45 @@ import org.bukkit.command.CommandSender;
  */
 public class HelpCommand
 {
-	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
+	public static boolean execute(ItemBank plugin, CommandSender sender, String cmd)
 	{
-		if (args.length == 1)
-			sender.sendMessage(Commands.HELP_LIST);
-		else
+		if (cmd.equalsIgnoreCase(Commands.ACCOUNT_CMD))
 		{
-			String cmd = args[1].toLowerCase();
-			if (cmd.equalsIgnoreCase(Commands.ACCOUNT_CMD))
-				sender.sendMessage(Commands.ACCOUNT_HELP);
-			else if (cmd.equalsIgnoreCase(Commands.ALIAS_CMD))
-				sender.sendMessage(Commands.ALIAS_HELP);
-			else if (cmd.equalsIgnoreCase(Commands.CONFIG_CMD))
-				sender.sendMessage(Commands.CONFIG_HELP);
-			else if (cmd.equalsIgnoreCase(Commands.DEPOSIT_CMD))
-				sender.sendMessage(Commands.DEPOSIT_HELP);
-			else if (cmd.equalsIgnoreCase(Commands.PURGE_CMD))
-				sender.sendMessage(Commands.PURGE_HELP);
-			else if (cmd.equalsIgnoreCase(Commands.RELOAD_CMD))
-				sender.sendMessage(Commands.RELOAD_HELP);
-			else if (cmd.equalsIgnoreCase(Commands.WITHDRAW_CMD))
-				sender.sendMessage(Commands.WITHDRAW_HELP);
-			else
-				sender.sendMessage(Messages.PREFIX + "Error: Command not recognized.");
+			sender.sendMessage(Commands.ACCOUNT_HELP);
+			return true;
 		}
-		return true;
+		else if (cmd.equalsIgnoreCase(Commands.ALIAS_CMD))
+		{
+			sender.sendMessage(Commands.ALIAS_HELP);
+			return true;
+		}
+		else if (cmd.equalsIgnoreCase(Commands.CONFIG_CMD))
+		{
+			sender.sendMessage(Commands.CONFIG_HELP);
+			return true;
+		}
+		else if (cmd.equalsIgnoreCase(Commands.DEPOSIT_CMD))
+		{
+			sender.sendMessage(Commands.DEPOSIT_HELP);
+			return true;
+		}
+		else if (cmd.equalsIgnoreCase(Commands.PURGE_CMD))
+		{
+			sender.sendMessage(Commands.PURGE_HELP);
+			return true;
+		}
+		else if (cmd.equalsIgnoreCase(Commands.RELOAD_CMD))
+		{
+			sender.sendMessage(Commands.RELOAD_HELP);
+			return true;
+		}
+		else if (cmd.equalsIgnoreCase(Commands.WITHDRAW_CMD))
+		{
+			sender.sendMessage(Commands.WITHDRAW_HELP);
+			return true;
+		}
+		
+		sender.sendMessage(Messages.PREFIX + "Error: Command not recognized.");
+		return false;
 	}
 }

@@ -72,7 +72,28 @@ public class WithdrawCommand implements CommandExecutor
 			
 			/** Admin Withdraw Check */
 			if (args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
-				return Admin.withdraw(plugin, (Player) sender, args);
+			{
+				if (args.length < 3)
+				{
+					sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
+					return false;
+				}
+				
+				if (args.length == 4)
+				{
+					try
+					{
+						return Admin.withdraw(plugin, (Player) sender, args[1].toLowerCase(), args[2].toLowerCase(), Integer.valueOf(args[3]));
+					}
+					catch (NumberFormatException e)
+					{
+						sender.sendMessage(Messages.NUMBER_FORMAT);
+						return false;
+					}
+				}
+				
+				return Admin.withdraw(plugin, (Player) sender, args[1].toLowerCase(), args[2].toLowerCase(), 0);
+			}
 			
 			/** Economy Check Check */
 			if (!IBUtils.checkEconomy(plugin, config, (Player) sender))
@@ -83,7 +104,15 @@ public class WithdrawCommand implements CommandExecutor
 			
 			/** "Custom Item" Check */
 			if (args[0].equalsIgnoreCase(Commands.CUSTOM_ITEM_CMD))
-				return CustomItem.withdraw(plugin, (Player) sender, args);
+			{
+				if (args.length < 2)
+				{
+					sender.sendMessage(Messages.PREFIX + "Error: Item not specified.");
+					return false;
+				}
+				
+				return CustomItem.withdraw(plugin, (Player) sender, args[1]);
+			}
 			
 			String name = args[0].toLowerCase();
 			int amount = 64;

@@ -179,14 +179,8 @@ public class CustomItem
 		return true;
 	}
 
-	public static boolean withdraw(ItemBank plugin, Player player, String[] args)
+	public static boolean withdraw(ItemBank plugin, Player player, String name)
 	{
-		if (args.length < 2)
-		{
-			player.sendMessage(Messages.PREFIX + "Error: Item not specified.");
-			return false;
-		}
-		
 		plugin.playerFile = new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml");
 		plugin.playerData = new YamlConfiguration();
 		try
@@ -210,14 +204,13 @@ public class CustomItem
 		}
 		
 		ItemStack item = null;
-		String name = args[1];
 		try
 		{
-			item = IBUtils.getItemFromAlias(plugin, name, 1);
+			item = IBUtils.getItemFromAlias(plugin, name.toLowerCase(), 1);
 		}
 		catch (InvalidAliasException e)
 		{
-			item = IBUtils.getItem(name, 1);
+			item = IBUtils.getItem(name.toLowerCase(), 1);
 		}
 		catch (NullPointerException e)
 		{
@@ -236,6 +229,7 @@ public class CustomItem
 				player.sendMessage(new String[]{Messages.getAliasError(name), Messages.PREFIX + "Check for capitalization."});
 				return false;
 			}
+			
 			item = new ItemStack(Material.getMaterial(plugin.playerData.getString(name + ".material").toUpperCase()));
 		}
 		

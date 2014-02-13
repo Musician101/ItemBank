@@ -45,10 +45,7 @@ public class AccountCommand
 				return false;
 			}
 			
-			if (!getAccount(plugin, (Player) sender, sender.getName()))
-				return false;
-			
-			return displayAccount(plugin, sender, args);
+			return getAccount(plugin, (Player) sender, sender.getName()) && displayAccount(plugin, sender, args);
 		}
 		else if (args.length == 2)
 		{
@@ -132,10 +129,7 @@ public class AccountCommand
 					return false;
 				}
 				
-				if (!getAccount(plugin, sender, args[2]))
-					return false;
-				
-				return displayAccount(plugin, sender, args);
+				return getAccount(plugin, sender, args[2]) && displayAccount(plugin, sender, args);
 			}
 		}
 		return false;

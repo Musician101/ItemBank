@@ -57,10 +57,23 @@ public class IBCommand implements CommandExecutor
 				return ConfigCommand.excute(plugin, config, sender, args);
 			/** Help Command */
 			else if (args[0].equalsIgnoreCase(Commands.HELP_CMD))
-				return HelpCommand.execute(plugin, sender, args);
+			{
+				if (args.length == 1)
+				{
+					sender.sendMessage(Commands.HELP_LIST);
+					return true;
+				}
+				
+				return HelpCommand.execute(plugin, sender, args[1].toLowerCase());
+			}
 			/** Purge Command */
 			else if (args[0].equalsIgnoreCase(Commands.PURGE_CMD))
-				return PurgeCommand.execute(plugin, sender, args);
+			{
+				if (args.length == 1)
+					return PurgeCommand.execute(plugin, sender);
+				
+				return PurgeCommand.execute(plugin, sender, args[1].toLowerCase());
+			}
 			/** Reload Command */
 			else if (args[0].equalsIgnoreCase("reload"))
 			{
@@ -69,7 +82,8 @@ public class IBCommand implements CommandExecutor
 					sender.sendMessage(Messages.NO_PERMISSION);
 					return false;
 				}
-				plugin.config.reloadConfiguration();
+				
+				config.reloadConfiguration();
 				sender.sendMessage(Messages.PREFIX + "Config and item translator reloaded.");
 				return true;
 			}
