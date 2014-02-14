@@ -215,6 +215,14 @@ public class IBUtils
 		return true;
 	}
 	
+	/**
+	 * Loads a player's data file.
+	 * 
+	 * @param plugin Plugin instance.
+	 * @param player Player modifying the account.
+	 * @param playerName Player who's account is being modified.
+	 * @return false if an exception is thrown, else true.
+	 */
 	public static boolean loadPlayerFile(ItemBank plugin, Player player, String playerName)
 	{
 		plugin.playerFile = new File(plugin.playerDataDir + "/" + playerName + ".yml");
@@ -242,6 +250,15 @@ public class IBUtils
 		return true;
 	}
 	
+	/**
+	 * Saves the player's data file.
+	 * 
+	 * @param plugin Plugin instance.
+	 * @param player Player who's modifying the account.
+	 * @param path The ItemPath, in case an exception occurs.
+	 * @param amount The old amount, in case an exception occurs.
+	 * @return false if an exception is thrown, else true.
+	 */
 	public static boolean savePlayerFile(ItemBank plugin, Player player, String path, int amount)
 	{
 		try
