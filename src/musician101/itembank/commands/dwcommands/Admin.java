@@ -1,7 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import java.io.IOException;
-
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Messages;
@@ -57,16 +55,8 @@ public class Admin
 		int oldAmount = plugin.playerData.getInt(itemPath);
 		int newAmount = oldAmount + amount;
 		plugin.playerData.set(itemPath, newAmount);
-		try
-		{
-			plugin.playerData.save(plugin.playerFile);
-		}
-		catch (IOException e)
-		{
-			admin.sendMessage(Messages.IO_EXCEPTION);
-			plugin.playerData.set(itemPath, oldAmount);
+		if (!IBUtils.savePlayerFile(plugin, admin, itemPath, oldAmount))
 			return false;
-		}
 		
 		item.setAmount(amount);
 		admin.sendMessage(Messages.PREFIX + "Added " + amount + " " + item.getType().toString() + " to " + player + "'s account.");
@@ -115,16 +105,8 @@ public class Admin
 		
 		int newAmount = oldAmount - amount;
 		plugin.playerData.set(itemPath, amount);
-		try
-		{
-			plugin.playerData.save(plugin.playerFile);
-		}
-		catch (IOException e)
-		{
-			admin.sendMessage(Messages.IO_EXCEPTION);
-			plugin.playerData.set(itemPath, oldAmount);
+		if (!IBUtils.savePlayerFile(plugin, admin, itemPath, oldAmount))
 			return false;
-		}
 		
 		admin.sendMessage(Messages.PREFIX + "Removed " + newAmount + " " + item.getType().toString() + " from " + player + "'s account.");
 		return true;

@@ -1,7 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import java.io.IOException;
-
 import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
@@ -211,16 +209,8 @@ public class DepositCommand implements CommandExecutor
 		}
 		
 		plugin.playerData.set(itemPath, newAmount);
-		try
-		{
-			plugin.playerData.save(plugin.playerFile);
-		}
-		catch (IOException e)
-		{
-			player.sendMessage(Messages.IO_EXCEPTION);
-			plugin.playerData.set(itemPath, oldAmount);
+		if (!IBUtils.savePlayerFile(plugin, player, itemPath, oldAmount))
 			return false;
-		}
 		
 		item.setAmount(amount);
 		player.getInventory().removeItem(item);

@@ -1,7 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import java.io.IOException;
-
 import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
@@ -183,18 +181,8 @@ public class WithdrawCommand implements CommandExecutor
 			
 			int newAmount = oldAmount - amount;
 			plugin.playerData.set(itemPath, newAmount);
-			try
-			{
-				plugin.playerData.save(plugin.playerFile);
-			}
-			catch (IOException e)
-			{
-				sender.sendMessage(Messages.IO_EXCEPTION);
-				plugin.playerData.set(itemPath, oldAmount);
-				if (plugin.getEconomy().isEnabled() && config.enableVault)
-					plugin.getEconomy().giveMoney(sender.getName(), config.transactionCost);
+			if (!IBUtils.savePlayerFile(plugin, (Player) sender, itemPath, oldAmount))
 				return false;
-			}
 			
 			item.setAmount(amount);
 			((Player) sender).getInventory().addItem(item);

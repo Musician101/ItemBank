@@ -241,4 +241,20 @@ public class IBUtils
 		
 		return true;
 	}
+	
+	public static boolean savePlayerFile(ItemBank plugin, Player player, String path, int amount)
+	{
+		try
+		{
+			plugin.playerData.save(plugin.playerFile);
+		}
+		catch (IOException e)
+		{
+			player.sendMessage(Messages.IO_EXCEPTION);
+			plugin.playerData.set(path, amount);
+			return false;
+		}
+		
+		return true;
+	}
 }

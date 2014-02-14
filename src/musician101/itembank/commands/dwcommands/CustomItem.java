@@ -1,6 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import java.io.IOException;
 import java.util.Map;
 
 import musician101.itembank.ItemBank;
@@ -132,16 +131,8 @@ public class CustomItem
 			for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
 				plugin.playerData.set(itemPath + ".enchantments." + entry.getKey().getName(), entry.getValue());
 		
-		try
-		{
-			plugin.playerData.save(plugin.playerFile);
-		}
-		catch (IOException e)
-		{
-			player.sendMessage(Messages.IO_EXCEPTION);
-			plugin.playerData.set(itemPath + ".amount", 0);
+		if (!IBUtils.savePlayerFile(plugin, player, itemPath, 0))
 			return false;
-		}
 		
 		player.setItemInHand(null);
 		if (item.getItemMeta().hasDisplayName())
@@ -333,16 +324,8 @@ public class CustomItem
 		
 		int oldAmount = plugin.playerData.getInt(name + ".amount");
 		plugin.playerData.set(name + ".amount", oldAmount - item.getAmount());
-		try
-		{
-			plugin.playerData.save(plugin.playerFile);
-		}
-		catch (IOException e)
-		{
-			player.sendMessage(Messages.IO_EXCEPTION);
-			plugin.playerData.set(name + ".amount", oldAmount);
+		if (!IBUtils.savePlayerFile(plugin, player, name, oldAmount))
 			return false;
-		}
 		
 		player.getInventory().addItem(item);
 		player.sendMessage(Messages.PREFIX + "You have withdrawn " + item.getAmount() + " " + name + " and now have a total of " + plugin.playerData.getInt(name + ".amount") + " left.");
