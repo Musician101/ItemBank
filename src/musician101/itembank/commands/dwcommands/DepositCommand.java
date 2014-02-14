@@ -57,7 +57,7 @@ public class DepositCommand implements CommandExecutor
 			
 			/** Standard Check (w/o arguments) */
 			if (args.length == 0)
-				return execute((Player) sender, ((Player) sender).getItemInHand().getType().toString(), ((Player) sender).getItemInHand().getAmount());
+				return execute((Player) sender, ((Player) sender).getItemInHand().getType().toString().toLowerCase(), ((Player) sender).getItemInHand().getAmount());
 			
 			/** Admin Deposit Check */
 			if (args[0].equalsIgnoreCase(Commands.ADMIN_CMD))
@@ -118,7 +118,7 @@ public class DepositCommand implements CommandExecutor
 			{
 				try
 				{
-					return execute((Player) sender, args[0], Integer.valueOf(args[1]));
+					return execute((Player) sender, args[0].toLowerCase(), Integer.valueOf(args[1]));
 				}
 				catch (NumberFormatException e)
 				{
@@ -127,14 +127,13 @@ public class DepositCommand implements CommandExecutor
 				}
 			}
 			
-			return execute((Player) sender, args[0], 0);
+			return execute((Player) sender, args[0].toLowerCase(), 0);
 		}
 		return false;
 	}
 	
 	public boolean execute(Player player, String name, int amount)
 	{
-		name = name.toLowerCase();
 		if (amount == 0)
 			amount = 64;
 		
