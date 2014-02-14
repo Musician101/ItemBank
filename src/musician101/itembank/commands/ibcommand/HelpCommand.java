@@ -13,7 +13,18 @@ import org.bukkit.command.CommandSender;
  */
 public class HelpCommand
 {
-	public static boolean execute(ItemBank plugin, CommandSender sender, String cmd)
+	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
+	{
+		if (args.length == 1)
+		{
+			sender.sendMessage(Commands.HELP_LIST);
+			return true;
+		}
+		
+		return execute(plugin, sender, args[1].toLowerCase());
+	}
+	
+	private static boolean execute(ItemBank plugin, CommandSender sender, String cmd)
 	{
 		if (cmd.equalsIgnoreCase(Commands.ACCOUNT_CMD))
 		{

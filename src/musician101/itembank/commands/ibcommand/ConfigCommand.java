@@ -28,86 +28,90 @@ public class ConfigCommand
 		}
 		
 		if (args.length == 1)
-		{
-			sender.sendMessage("--------" + ChatColor.DARK_RED + "ItemBank Config" + ChatColor.WHITE + "--------");
-			for (Map.Entry<String, Object> entry : config.blacklist.getValues(true).entrySet())
-			{
-				if (!(entry.getValue() instanceof MemorySection))
-				{
-					if (Material.getMaterial(entry.getKey().split("\\.")[0].toUpperCase()) == null)
-						sender.sendMessage(Messages.getConfigValueError(entry.getKey(), entry.getValue().toString()));
-					else
-					{
-						try
-						{
-							Short.valueOf(entry.getValue().toString());
-							sender.sendMessage(ChatColor.DARK_RED + ConfigConstants.BLACKLIST + "." + entry.getKey() + ChatColor.WHITE + ": " + entry.getValue());
-						}
-						catch (NumberFormatException e)
-						{
-							sender.sendMessage(Messages.getConfigValueError(entry.getKey(), entry.getValue().toString()));
-						}
-					}
-				}
-			}
-			
-			sender.sendMessage(new String[]{ChatColor.DARK_RED + ConfigConstants.CHECK_FOR_UPDATE + ChatColor.WHITE + ": " + config.checkForUpdate,
-					ChatColor.DARK_RED + ConfigConstants.ENABLE_VAULT + ChatColor.WHITE + ": " + config.enableVault,
-					ChatColor.DARK_RED + ConfigConstants.TRANSACTION_COST + ChatColor.WHITE + ": " + config.transactionCost});
-			
-			return true;
-		}
+			return execute(plugin, config, sender);
 		
 		if (args.length > 2)
+			return execute(plugin, config, sender, args);
+		
+		sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
+		return false;
+	}
+
+	private static boolean execute(ItemBank plugin, Config config, CommandSender sender)
+	{
+		sender.sendMessage("--------" + ChatColor.DARK_RED + "ItemBank Config" + ChatColor.WHITE + "--------");
+		for (Map.Entry<String, Object> entry : config.blacklist.getValues(true).entrySet())
 		{
-			if (args[1].equalsIgnoreCase(ConfigConstants.BLACKLIST))
+			if (!(entry.getValue() instanceof MemorySection))
 			{
-				if (args[2].equalsIgnoreCase("set"))
+				if (Material.getMaterial(entry.getKey().split("\\.")[0].toUpperCase()) == null)
+					sender.sendMessage(Messages.getConfigValueError(entry.getKey(), entry.getValue().toString()));
+				else
 				{
-					if (args.length < 3)
+					try
 					{
-						sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
-						return false;
+						Short.valueOf(entry.getValue().toString());
+						sender.sendMessage(ChatColor.DARK_RED + ConfigConstants.BLACKLIST + "." + entry.getKey() + ChatColor.WHITE + ": " + entry.getValue());
 					}
-					
-					if (args.length > 4)
+					catch (NumberFormatException e)
 					{
-						try
-						{
-							return blacklistSet(plugin, config, sender, args[3].toLowerCase(), Integer.valueOf(args[4]));
-						}
-						catch (NumberFormatException e)
-						{
-							sender.sendMessage(Messages.NUMBER_FORMAT);
-							return false;
-						}
+						sender.sendMessage(Messages.getConfigValueError(entry.getKey(), entry.getValue().toString()));
 					}
-					
-					return blacklistSet(plugin, config, sender, args[3].toLowerCase(), 0);
 				}
-				else if (args[2].equalsIgnoreCase("remove"))
-				{
-					if (args.length < 3)
-					{
-						sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
-						return false;
-					}
-					
-					return blacklistRemove(plugin, config, sender, args[3].toLowerCase());
-				}
-				
-				sender.sendMessage(Messages.getInvalidArgumentError(args[2]));
+			}
+		}
+		
+		sender.sendMessage(new String[]{ChatColor.DARK_RED + ConfigConstants.CHECK_FOR_UPDATE + ChatColor.WHITE + ": " + config.checkForUpdate,
+				ChatColor.DARK_RED + ConfigConstants.ENABLE_VAULT + ChatColor.WHITE + ": " + config.enableVault,
+				ChatColor.DARK_RED + ConfigConstants.TRANSACTION_COST + ChatColor.WHITE + ": " + config.transactionCost});
+		
+		return true;
+	}
+	
+	private static boolean execute(ItemBank plugin, Config config, CommandSender sender, String[] args)
+	{
+		if (args[1].equalsIgnoreCase(ConfigConstants.BLACKLIST))
+			return blacklist(plugin, config, sender, args.length, args[2].toLowerCase(), args[3].toLowerCase(), args[4]);
+		else if (args[1].equalsIgnoreCase(ConfigConstants.CHECK_FOR_UPDATE))
+			return checkForUpdate(plugin, config, sender, args[2].toLowerCase());
+		else if (args[1].equalsIgnoreCase(ConfigConstants.ENABLE_VAULT))
+			return enableVault(plugin, config, sender, args[2].toLowerCase());
+		else if (args[1].equalsIgnoreCase(ConfigConstants.TRANSACTION_COST))
+		{
+			try
+			{
+				return transactionCost(plugin, config, sender, Double.valueOf(args[2]));
+			}
+			catch (NumberFormatException e)
+			{
+				sender.sendMessage(Messages.NUMBER_FORMAT);
 				return false;
 			}
-			else if (args[1].equalsIgnoreCase(ConfigConstants.CHECK_FOR_UPDATE))
-				return checkForUpdate(plugin, config, sender, args[2].toLowerCase());
-			else if (args[1].equalsIgnoreCase(ConfigConstants.ENABLE_VAULT))
-				return enableVault(plugin, config, sender, args[2].toLowerCase());
-			else if (args[1].equalsIgnoreCase(ConfigConstants.TRANSACTION_COST))
+		}
+		else if (args[1].equalsIgnoreCase("regen"))
+		{
+			return regen(plugin, config, sender);
+		}
+		
+		sender.sendMessage(Messages.getInvalidArgumentError(args[1]));
+		return false;
+	}
+	
+	private static boolean blacklist(ItemBank plugin, Config config, CommandSender sender, int args, String operation, String material, String value)
+	{
+		if (operation.equals("set"))
+		{
+			if (args < 3)
+			{
+				sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
+				return false;
+			}
+			
+			if (args > 4)
 			{
 				try
 				{
-					return transactionCost(plugin, config, sender, Double.valueOf(args[2]));
+					return blacklistSet(plugin, config, sender, operation, Integer.valueOf(value));
 				}
 				catch (NumberFormatException e)
 				{
@@ -115,20 +119,25 @@ public class ConfigCommand
 					return false;
 				}
 			}
-			else if (args[1].equalsIgnoreCase("regen"))
+			
+			return blacklistSet(plugin, config, sender, operation, 0);
+		}
+		else if (operation.equals("remove"))
+		{
+			if (args < 3)
 			{
-				return regen(plugin, config, sender);
+				sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
+				return false;
 			}
 			
-			sender.sendMessage(Messages.getInvalidArgumentError(args[1]));
-			return false;
+			return blacklistRemove(plugin, config, sender, material);
 		}
 		
-		sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
+		sender.sendMessage(Messages.getInvalidArgumentError(operation));
 		return false;
 	}
-
-	public static boolean blacklistSet(ItemBank plugin, Config config, CommandSender sender, String material, int value)
+	
+	private static boolean blacklistSet(ItemBank plugin, Config config, CommandSender sender, String material, int value)
 	{
 		ItemStack item = null;
 		try
@@ -152,7 +161,7 @@ public class ConfigCommand
 		return true;
 	}
 	
-	public static boolean blacklistRemove(ItemBank plugin, Config config, CommandSender sender, String material)
+	private static boolean blacklistRemove(ItemBank plugin, Config config, CommandSender sender, String material)
 	{
 		ItemStack item = null;
 		try
@@ -180,7 +189,7 @@ public class ConfigCommand
 		return true;
 	}
 	
-	public static boolean checkForUpdate(ItemBank plugin, Config config, CommandSender sender, String bool)
+	private static boolean checkForUpdate(ItemBank plugin, Config config, CommandSender sender, String bool)
 	{
 		if (bool.equalsIgnoreCase("true"))
 			plugin.getConfig().set(ConfigConstants.CHECK_FOR_UPDATE, true);
@@ -198,7 +207,7 @@ public class ConfigCommand
 		return true;
 	}
 	
-	public static boolean enableVault(ItemBank plugin, Config config, CommandSender sender, String bool)
+	private static boolean enableVault(ItemBank plugin, Config config, CommandSender sender, String bool)
 	{
 		if (bool.equalsIgnoreCase("true"))
 			plugin.getConfig().set(ConfigConstants.ENABLE_VAULT, true);
@@ -216,7 +225,7 @@ public class ConfigCommand
 		return true;
 	}
 	
-	public static boolean transactionCost(ItemBank plugin, Config config, CommandSender sender, Double amount)
+	private static boolean transactionCost(ItemBank plugin, Config config, CommandSender sender, Double amount)
 	{
 		if (amount <= 0)
 		{
@@ -231,7 +240,7 @@ public class ConfigCommand
 		return true;
 	}
 	
-	public static boolean regen(ItemBank plugin, Config config, CommandSender sender)
+	private static boolean regen(ItemBank plugin, Config config, CommandSender sender)
 	{
 		File configFile = new File(plugin.getDataFolder(), "config.yml");
 		configFile.delete();

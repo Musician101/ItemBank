@@ -122,17 +122,21 @@ public class AccountCommand
 		return false;
 	}
 	
-	public static boolean displayAccount(ItemBank plugin, CommandSender sender, String[] args)
+	private static boolean displayAccount(ItemBank plugin, CommandSender sender, String[] args)
 	{
 		if (args.length != 1 && args[1].equalsIgnoreCase(Commands.ADMIN_CMD))
 			sender.sendMessage("--------" + ChatColor.DARK_RED + args[2] + "'s ItemBank Account" + ChatColor.WHITE + "--------");
 		else
 			sender.sendMessage("--------" + ChatColor.DARK_RED + "Your ItemBank Account" + ChatColor.WHITE + "--------");
 		
+		return displayFormat(plugin, sender);
+	}
+	
+	private static boolean displayFormat(ItemBank plugin, CommandSender sender)
+	{
 		for (Map.Entry<String, Object> entry : amounts.entrySet())
 		{
 			int amount = 0;
-			
 			try
 			{
 				amount = Integer.valueOf(entry.getValue().toString());
@@ -185,7 +189,7 @@ public class AccountCommand
 		return true;
 	}
 	
-	public static boolean getAccount(ItemBank plugin, CommandSender sender, String playerName)
+ 	private static boolean getAccount(ItemBank plugin, CommandSender sender, String playerName)
 	{
 		plugin.playerFile = new File(plugin.playerDataDir + "/" + playerName.toLowerCase() + ".yml");
 		plugin.playerData = new YamlConfiguration();
@@ -242,7 +246,7 @@ public class AccountCommand
 		return true;
 	}
 	
-	public static String getName(ItemStack item)
+	private static String getName(ItemStack item)
 	{
 		List<Material> generalBlocksItems = new ArrayList<Material>(Arrays.asList(Material.SANDSTONE, Material.LONG_GRASS, Material.STEP, Material.SMOOTH_BRICK, Material.ANVIL,
 			Material.QUARTZ_BLOCK, Material.COAL, Material.GOLDEN_APPLE, Material.INK_SACK, Material.POTION, Material.SKULL_ITEM));

@@ -17,7 +17,15 @@ import org.bukkit.command.CommandSender;
  */
 public class PurgeCommand
 {
-	public static boolean execute(ItemBank plugin, CommandSender sender, String player)
+	public static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
+	{
+		if (args.length == 1)
+			return execute(plugin, sender);
+		
+		return execute(plugin, sender, args[1].toLowerCase());
+	}
+	
+	private static boolean execute(ItemBank plugin, CommandSender sender, String player)
 	{
 		if (!sender.hasPermission(Commands.PURGE_PERM))
 		{
@@ -32,7 +40,7 @@ public class PurgeCommand
 		return true;
 	}
 	
-	public static boolean execute(ItemBank plugin, CommandSender sender)
+	private static boolean execute(ItemBank plugin, CommandSender sender)
 	{
 		if (!sender.hasPermission(Commands.PURGE_PERM))
 		{

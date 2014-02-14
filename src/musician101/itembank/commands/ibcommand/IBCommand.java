@@ -57,23 +57,10 @@ public class IBCommand implements CommandExecutor
 				return ConfigCommand.excute(plugin, config, sender, args);
 			/** Help Command */
 			else if (args[0].equalsIgnoreCase(Commands.HELP_CMD))
-			{
-				if (args.length == 1)
-				{
-					sender.sendMessage(Commands.HELP_LIST);
-					return true;
-				}
-				
-				return HelpCommand.execute(plugin, sender, args[1].toLowerCase());
-			}
+				return HelpCommand.execute(plugin, sender, args);
 			/** Purge Command */
 			else if (args[0].equalsIgnoreCase(Commands.PURGE_CMD))
-			{
-				if (args.length == 1)
-					return PurgeCommand.execute(plugin, sender);
-				
-				return PurgeCommand.execute(plugin, sender, args[1].toLowerCase());
-			}
+				return PurgeCommand.execute(plugin, sender, args);
 			/** Reload Command */
 			else if (args[0].equalsIgnoreCase("reload"))
 			{
