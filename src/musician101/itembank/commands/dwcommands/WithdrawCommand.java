@@ -188,10 +188,13 @@ public class WithdrawCommand implements CommandExecutor
 			((Player) sender).getInventory().addItem(item);
 			sender.sendMessage(Messages.PREFIX + "You have withdrawn " + amount + " " + item.getType().toString() + " and now have a total of " + newAmount + " left.");
 			if (plugin.getEconomy().isEnabled() && config.enableVault)
+			{
 				sender.sendMessage(Messages.PREFIX + "A " + config.transactionCost + " transaction fee has been deducted from your account.");
-			
+				plugin.getEconomy().takeMoney(sender.getName(), config.transactionCost);
+			}
 			return true;
 		}
+		
 		return false;
 	}
 }
