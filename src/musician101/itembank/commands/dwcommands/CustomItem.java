@@ -1,7 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -13,8 +11,6 @@ import musician101.itembank.util.IBUtils;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -44,27 +40,8 @@ public class CustomItem
 			return false;
 		}
 		
-		plugin.playerFile = new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml");
-		plugin.playerData = new YamlConfiguration();
-		try
-		{
-			plugin.playerData.load(plugin.playerFile);
-		}
-		catch (FileNotFoundException e)
-		{
-			player.sendMessage(Messages.FILE_NOT_FOUND);
+		if (!IBUtils.loadPlayerFile(plugin, player, player.getName()))
 			return false;
-		}
-		catch (IOException e)
-		{
-			player.sendMessage(Messages.IO_EXCEPTION);
-			return false;
-		}
-		catch (InvalidConfigurationException e)
-		{
-			player.sendMessage(Messages.YAML_EXCEPTION);
-			return false;
-		}
 		
 		ItemMeta meta = item.getItemMeta();
 		String itemPath = item.getType().toString().toLowerCase();
@@ -181,27 +158,8 @@ public class CustomItem
 
 	public static boolean withdraw(ItemBank plugin, Player player, String name)
 	{
-		plugin.playerFile = new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml");
-		plugin.playerData = new YamlConfiguration();
-		try
-		{
-			plugin.playerData.load(plugin.playerFile);
-		}
-		catch (FileNotFoundException e)
-		{
-			player.sendMessage(Messages.FILE_NOT_FOUND);
+		if (!IBUtils.loadPlayerFile(plugin, player, player.getName()))
 			return false;
-		}
-		catch (IOException e)
-		{
-			player.sendMessage(Messages.IO_EXCEPTION);
-			return false;
-		}
-		catch (InvalidConfigurationException e)
-		{
-			player.sendMessage(Messages.YAML_EXCEPTION);
-			return false;
-		}
 		
 		ItemStack item = null;
 		try

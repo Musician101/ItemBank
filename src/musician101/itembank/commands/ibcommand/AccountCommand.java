@@ -1,8 +1,5 @@
 package musician101.itembank.commands.ibcommand;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,9 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -191,27 +186,7 @@ public class AccountCommand
 	
  	private static boolean getAccount(ItemBank plugin, CommandSender sender, String playerName)
 	{
-		plugin.playerFile = new File(plugin.playerDataDir + "/" + playerName.toLowerCase() + ".yml");
-		plugin.playerData = new YamlConfiguration();
-		try
-		{
-			plugin.playerData.load(plugin.playerFile);
-		}
-		catch (FileNotFoundException e)
-		{
-			sender.sendMessage(Messages.FILE_NOT_FOUND);
-			return false;
-		}
-		catch (IOException e)
-		{
-			sender.sendMessage(Messages.IO_EXCEPTION);
-			return false;
-		}
-		catch (InvalidConfigurationException e)
-		{
-			sender.sendMessage(Messages.YAML_EXCEPTION);
-			return false;
-		}
+		if (!IBUtils.loadPlayerFile(plugin, (Player) sender, playerName));
 		
 		for (Map.Entry<String, Object> entry : plugin.playerData.getValues(true).entrySet())
 		{

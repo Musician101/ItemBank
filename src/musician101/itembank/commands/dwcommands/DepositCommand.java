@@ -1,7 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import musician101.itembank.Config;
@@ -15,8 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -178,27 +174,8 @@ public class DepositCommand implements CommandExecutor
 		}
 		
 		String itemPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
-		plugin.playerFile = new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml");
-		plugin.playerData = new YamlConfiguration();
-		try
-		{
-			plugin.playerData.load(plugin.playerFile);
-		}
-		catch (FileNotFoundException e)
-		{
-			player.sendMessage(Messages.FILE_NOT_FOUND);
+		if (!IBUtils.loadPlayerFile(plugin, player, player.getName()))
 			return false;
-		}
-		catch (IOException e)
-		{
-			player.sendMessage(Messages.IO_EXCEPTION);
-			return false;
-		}
-		catch (InvalidConfigurationException e)
-		{
-			player.sendMessage(Messages.YAML_EXCEPTION);
-			return false;
-		}
 		
 		if (!player.getInventory().containsAtLeast(item, item.getAmount()))
 		{

@@ -2,6 +2,7 @@ package musician101.itembank.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
@@ -14,6 +15,8 @@ import musician101.itembank.listeners.PlayerListener;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -206,6 +209,33 @@ public class IBUtils
 		if (!(sender instanceof Player))
 		{
 			sender.sendMessage(Messages.PLAYER_COMMAND_ONLY);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public static boolean loadPlayerFile(ItemBank plugin, Player player, String playerName)
+	{
+		plugin.playerFile = new File(plugin.playerDataDir + "/" + playerName + ".yml");
+		plugin.playerData = new YamlConfiguration();
+		try
+		{
+			plugin.playerData.load(plugin.playerFile);
+		}
+		catch (FileNotFoundException e)
+		{
+			player.sendMessage(Messages.FILE_NOT_FOUND);
+			return false;
+		}
+		catch (IOException e)
+		{
+			player.sendMessage(Messages.IO_EXCEPTION);
+			return false;
+		}
+		catch (InvalidConfigurationException e)
+		{
+			player.sendMessage(Messages.YAML_EXCEPTION);
 			return false;
 		}
 		

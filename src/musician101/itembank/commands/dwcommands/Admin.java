@@ -1,7 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import musician101.itembank.ItemBank;
@@ -10,8 +8,6 @@ import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -55,27 +51,8 @@ public class Admin
 		}
 		
 		String itemPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
-		plugin.playerFile = new File(plugin.playerDataDir + "/" + player + ".yml");
-		plugin.playerData = new YamlConfiguration();
-		try
-		{
-			plugin.playerData.load(plugin.playerFile);
-		}
-		catch (FileNotFoundException e)
-		{
-			admin.sendMessage(Messages.FILE_NOT_FOUND);
+		if (!IBUtils.loadPlayerFile(plugin, admin, player))
 			return false;
-		}
-		catch (IOException e)
-		{
-			admin.sendMessage(Messages.IO_EXCEPTION);
-			return false;
-		}
-		catch (InvalidConfigurationException e)
-		{
-			admin.sendMessage(Messages.YAML_EXCEPTION);
-			return false;
-		}
 		
 		int oldAmount = plugin.playerData.getInt(itemPath);
 		int newAmount = oldAmount + amount;
@@ -129,27 +106,8 @@ public class Admin
 		}
 		
 		String itemPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
-		plugin.playerFile = new File(plugin.playerDataDir + "/" + player + ".yml");
-		plugin.playerData = new YamlConfiguration();
-		try
-		{
-			plugin.playerData.load(plugin.playerFile);
-		}
-		catch (FileNotFoundException e)
-		{
-			admin.sendMessage(Messages.FILE_NOT_FOUND);
+		if (!IBUtils.loadPlayerFile(plugin, admin, player))
 			return false;
-		}
-		catch (IOException e)
-		{
-			admin.sendMessage(Messages.IO_EXCEPTION);
-			return false;
-		}
-		catch (InvalidConfigurationException e)
-		{
-			admin.sendMessage(Messages.YAML_EXCEPTION);
-			return false;
-		}
 		
 		int oldAmount = plugin.playerData.getInt(itemPath);
 		if (amount > oldAmount)
