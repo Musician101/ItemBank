@@ -43,6 +43,6 @@ public class PlayerListener implements Listener
 		plugin.playerFile = new File(plugin.playerDataDir + "/" + player.getName().toLowerCase() + ".yml");
 		IBUtils.createPlayerFile(plugin, plugin.playerFile);
 		if (!plugin.playerFile.exists())
-			player.sendMessage(Messages.PREFIX + " Error: The plugin failed to create your account. Please aleart an admin.");
+			player.sendMessage(Messages.PREFIX + "Error: The plugin failed to create your account. Please aleart an admin.");
 	}
 }

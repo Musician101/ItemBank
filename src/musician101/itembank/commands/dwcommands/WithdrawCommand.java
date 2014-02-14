@@ -105,6 +105,7 @@ public class WithdrawCommand implements CommandExecutor
 				return CustomItem.withdraw(plugin, (Player) sender, args[1]);
 			}
 			
+			/** Standard Check */
 			String name = args[0].toLowerCase();
 			int amount = 64;
 			if (args.length == 2)
