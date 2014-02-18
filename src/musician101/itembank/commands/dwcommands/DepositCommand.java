@@ -137,12 +137,6 @@ public class DepositCommand implements CommandExecutor
 		if (amount == 0)
 			amount = 64;
 		
-		if (amount < 0)
-		{
-			player.sendMessage(Messages.AMOUNT_ERROR);
-			return false;
-		}
-		
 		ItemStack item = null;
 		try
 		{
@@ -174,16 +168,22 @@ public class DepositCommand implements CommandExecutor
 		if (!IBUtils.loadPlayerFile(plugin, player, player.getName()))
 			return false;
 		
-		if (!player.getInventory().containsAtLeast(item, item.getAmount()))
+		int oldAmount = plugin.playerData.getInt(itemPath);
+		int amountInInv = IBUtils.getAmount(player, item.getType(), item.getDurability());
+		if (amountInInv < amount)
+			amount = amountInInv;
+		
+		if (!player.getInventory().containsAtLeast(item, amount))
 		{
 			player.sendMessage(Messages.ITEM_NOT_FOUND);
 			return false;
 		}
 		
-		int oldAmount = plugin.playerData.getInt(itemPath);
-		int amountInInv = IBUtils.getAmount(player, item.getType(), item.getDurability());
-		if (amountInInv < amount)
-			amount = amountInInv;
+		if (amount < 0)
+		{
+			player.sendMessage(Messages.AMOUNT_ERROR);
+			return false;
+		}
 		
 		int newAmount = oldAmount + amount;
 		if (config.blacklist.isSet(itemPath))
