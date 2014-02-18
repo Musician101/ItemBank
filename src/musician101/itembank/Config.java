@@ -9,7 +9,6 @@ import musician101.itembank.lib.Messages;
 import musician101.itembank.opencsv.CSVReader;
 import musician101.itembank.util.ItemTranslator;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -62,48 +61,6 @@ public class Config
 	{
 		plugin.reloadConfig();
 		final FileConfiguration config = plugin.getConfig();
-		
-		if (!config.isSet(ConfigConstants.CHECK_FOR_UPDATE))
-		{
-			config.set(ConfigConstants.CHECK_FOR_UPDATE, true);
-			plugin.getLogger().info("Config: Missing option '" + ConfigConstants.CHECK_FOR_UPDATE + "' added. Value set to 'true'.");
-		}
-		
-		if (!config.isSet(ConfigConstants.BLACKLIST))
-		{
-			config.set(ConfigConstants.BLACKLIST + ".bedrock.0", 0);
-			plugin.getLogger().info("Config: Missing option '" + ConfigConstants.BLACKLIST + "' added. Value set to 'bedrock.0: 0'.");
-		}
-		
-		boolean match = false;
-		for (Material m : Material.values())
-		{
-			for (short data = 0; data > m.getMaxDurability(); data++)
-				if (!config.isSet(ConfigConstants.BLACKLIST + "." + m.toString().toLowerCase() + "." + data))
-					match = true;
-		}
-		
-		if (!match)
-		{
-			config.set(ConfigConstants.BLACKLIST + ".bedrock.0", 0);
-			plugin.getLogger().info("Config: Incomplete " + ConfigConstants.BLACKLIST + ". 'bedrock.0: 0' has been added.");
-		}
-		
-		if (!config.isSet(ConfigConstants.ENABLE_VAULT))
-		{
-			config.set(ConfigConstants.ENABLE_VAULT, true);
-			plugin.getLogger().info("Config: Missing option '" + ConfigConstants.ENABLE_VAULT + "' added. Value set to 'true'.");
-		}
-		
-		if (!config.isSet(ConfigConstants.TRANSACTION_COST))
-		{
-			config.set(ConfigConstants.TRANSACTION_COST, 5.0);
-			plugin.getLogger().info("Config: Missing option '" + ConfigConstants.TRANSACTION_COST + "' added. Value set to 5.0");
-		}
-		
-		plugin.saveConfig();
-		plugin.reloadConfig();
-		
 		checkForUpdate = config.getBoolean(ConfigConstants.CHECK_FOR_UPDATE, true);
 		blacklist = config.getConfigurationSection(ConfigConstants.BLACKLIST);
 		enableVault = config.getBoolean(ConfigConstants.ENABLE_VAULT, true);
