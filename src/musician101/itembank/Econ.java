@@ -22,13 +22,15 @@ public class Econ
 	{
 		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") == null)
 			enabled = false;
+		else
+		{	
+			RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
+			if (rsp == null)
+				enabled = false;
 		
-		RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
-		if (rsp == null)
-			enabled = false;
-		
-		econ = rsp.getProvider();
-		enabled = econ != null;
+			econ = rsp.getProvider();
+			enabled = econ != null;
+		}
 	}
 	
 	protected void clearData()
