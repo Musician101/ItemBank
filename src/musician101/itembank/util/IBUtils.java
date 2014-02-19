@@ -166,11 +166,8 @@ public class IBUtils
 		double money = plugin.getEconomy().getMoney(player.getName());
 		double cost = config.transactionCost;
 		if (money < cost)
-		{
 			return false;
-		}
 		
-		plugin.getEconomy().takeMoney(player.getName(), cost);
 		return true;
 	}
 	
