@@ -3,7 +3,6 @@ package musician101.itembank.commands.ibcommand;
 import java.io.File;
 import java.util.Map;
 
-import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Commands;
@@ -19,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ConfigCommand
 {
-	public static boolean excute(ItemBank plugin, Config config, CommandSender sender, String[] args)
+	public static boolean excute(ItemBank plugin, CommandSender sender, String[] args)
 	{
 		if (!sender.hasPermission(Commands.CONFIG_PERM))
 		{
@@ -28,19 +27,19 @@ public class ConfigCommand
 		}
 		
 		if (args.length == 1)
-			return execute(plugin, config, sender);
+			return execute(plugin, sender);
 		
 		if (args.length > 2)
-			return execute(plugin, config, sender, args);
+			return execute(plugin, sender, args);
 		
 		sender.sendMessage(Messages.NOT_ENOUGH_ARGUMENTS);
 		return false;
 	}
 
-	private static boolean execute(ItemBank plugin, Config config, CommandSender sender)
+	private static boolean execute(ItemBank plugin, CommandSender sender)
 	{
 		sender.sendMessage("--------" + ChatColor.DARK_RED + "ItemBank Config" + ChatColor.WHITE + "--------");
-		for (Map.Entry<String, Object> entry : config.blacklist.getValues(true).entrySet())
+		for (Map.Entry<String, Object> entry : plugin.config.blacklist.getValues(true).entrySet())
 		{
 			if (!(entry.getValue() instanceof MemorySection))
 			{
@@ -61,26 +60,26 @@ public class ConfigCommand
 			}
 		}
 		
-		sender.sendMessage(new String[]{ChatColor.DARK_RED + ConfigConstants.CHECK_FOR_UPDATE + ChatColor.WHITE + ": " + config.checkForUpdate,
-				ChatColor.DARK_RED + ConfigConstants.ENABLE_VAULT + ChatColor.WHITE + ": " + config.enableVault,
-				ChatColor.DARK_RED + ConfigConstants.TRANSACTION_COST + ChatColor.WHITE + ": " + config.transactionCost});
+		sender.sendMessage(new String[]{ChatColor.DARK_RED + ConfigConstants.CHECK_FOR_UPDATE + ChatColor.WHITE + ": " + plugin.config.checkForUpdate,
+				ChatColor.DARK_RED + ConfigConstants.ENABLE_VAULT + ChatColor.WHITE + ": " + plugin.config.enableVault,
+				ChatColor.DARK_RED + ConfigConstants.TRANSACTION_COST + ChatColor.WHITE + ": " + plugin.config.transactionCost});
 		
 		return true;
 	}
 	
-	private static boolean execute(ItemBank plugin, Config config, CommandSender sender, String[] args)
+	private static boolean execute(ItemBank plugin, CommandSender sender, String[] args)
 	{
 		if (args[1].equalsIgnoreCase(ConfigConstants.BLACKLIST))
-			return blacklist(plugin, config, sender, args.length, args[2].toLowerCase(), args[3].toLowerCase(), args[4]);
+			return blacklist(plugin, sender, args.length, args[2].toLowerCase(), args[3].toLowerCase(), args[4]);
 		else if (args[1].equalsIgnoreCase(ConfigConstants.CHECK_FOR_UPDATE))
-			return checkForUpdate(plugin, config, sender, args[2].toLowerCase());
+			return checkForUpdate(plugin, sender, args[2].toLowerCase());
 		else if (args[1].equalsIgnoreCase(ConfigConstants.ENABLE_VAULT))
-			return enableVault(plugin, config, sender, args[2].toLowerCase());
+			return enableVault(plugin, sender, args[2].toLowerCase());
 		else if (args[1].equalsIgnoreCase(ConfigConstants.TRANSACTION_COST))
 		{
 			try
 			{
-				return transactionCost(plugin, config, sender, Double.valueOf(args[2]));
+				return transactionCost(plugin, sender, Double.valueOf(args[2]));
 			}
 			catch (NumberFormatException e)
 			{
@@ -90,14 +89,14 @@ public class ConfigCommand
 		}
 		else if (args[1].equalsIgnoreCase("regen"))
 		{
-			return regen(plugin, config, sender);
+			return regen(plugin, sender);
 		}
 		
 		sender.sendMessage(Messages.getInvalidArgumentError(args[1]));
 		return false;
 	}
 	
-	private static boolean blacklist(ItemBank plugin, Config config, CommandSender sender, int args, String operation, String material, String value)
+	private static boolean blacklist(ItemBank plugin, CommandSender sender, int args, String operation, String material, String value)
 	{
 		if (operation.equals("set"))
 		{
@@ -111,7 +110,7 @@ public class ConfigCommand
 			{
 				try
 				{
-					return blacklistSet(plugin, config, sender, operation, Integer.valueOf(value));
+					return blacklistSet(plugin, sender, operation, Integer.valueOf(value));
 				}
 				catch (NumberFormatException e)
 				{
@@ -120,7 +119,7 @@ public class ConfigCommand
 				}
 			}
 			
-			return blacklistSet(plugin, config, sender, operation, 0);
+			return blacklistSet(plugin, sender, operation, 0);
 		}
 		else if (operation.equals("remove"))
 		{
@@ -130,14 +129,14 @@ public class ConfigCommand
 				return false;
 			}
 			
-			return blacklistRemove(plugin, config, sender, material);
+			return blacklistRemove(plugin, sender, material);
 		}
 		
 		sender.sendMessage(Messages.getInvalidArgumentError(operation));
 		return false;
 	}
 	
-	private static boolean blacklistSet(ItemBank plugin, Config config, CommandSender sender, String material, int value)
+	private static boolean blacklistSet(ItemBank plugin, CommandSender sender, String material, int value)
 	{
 		ItemStack item = null;
 		try
@@ -156,12 +155,12 @@ public class ConfigCommand
 		
 		plugin.getConfig().set(ConfigConstants.BLACKLIST + "." + item.getType().toString().toLowerCase() + "." + item.getDurability(), Integer.valueOf(value));
 		plugin.saveConfig();
-		config.reloadConfiguration();
+		plugin.config.reloadConfiguration();
 		sender.sendMessage(Messages.PREFIX + ConfigConstants.BLACKLIST + "." + item.getType().toString().toLowerCase() + "." + item.getDurability() + " set to " + value + ".");
 		return true;
 	}
 	
-	private static boolean blacklistRemove(ItemBank plugin, Config config, CommandSender sender, String material)
+	private static boolean blacklistRemove(ItemBank plugin, CommandSender sender, String material)
 	{
 		ItemStack item = null;
 		try
@@ -184,12 +183,12 @@ public class ConfigCommand
 			plugin.getConfig().set(ConfigConstants.BLACKLIST + "." + item.getType().toString().toLowerCase() + "." + item.getDurability(), null);
 		
 		plugin.saveConfig();
-		config.reloadConfiguration();
+		plugin.config.reloadConfiguration();
 		sender.sendMessage(Messages.PREFIX + "Config: " + ConfigConstants.BLACKLIST + "." + item.getType().toString() + "." + item.getDurability() + " removed.");
 		return true;
 	}
 	
-	private static boolean checkForUpdate(ItemBank plugin, Config config, CommandSender sender, String bool)
+	private static boolean checkForUpdate(ItemBank plugin, CommandSender sender, String bool)
 	{
 		if (bool.equalsIgnoreCase("true"))
 			plugin.getConfig().set(ConfigConstants.CHECK_FOR_UPDATE, true);
@@ -202,12 +201,12 @@ public class ConfigCommand
 		}
 		
 		plugin.saveConfig();
-		config.reloadConfiguration();
+		plugin.config.reloadConfiguration();
 		sender.sendMessage(Messages.PREFIX + "Config: " + ConfigConstants.CHECK_FOR_UPDATE + " set to " + bool + ".");
 		return true;
 	}
 	
-	private static boolean enableVault(ItemBank plugin, Config config, CommandSender sender, String bool)
+	private static boolean enableVault(ItemBank plugin, CommandSender sender, String bool)
 	{
 		if (bool.equalsIgnoreCase("true"))
 			plugin.getConfig().set(ConfigConstants.ENABLE_VAULT, true);
@@ -220,12 +219,12 @@ public class ConfigCommand
 		}
 		
 		plugin.saveConfig();
-		config.reloadConfiguration();
+		plugin.config.reloadConfiguration();
 		sender.sendMessage(Messages.PREFIX + "Config: " + ConfigConstants.ENABLE_VAULT + " set to " + bool + ".");
 		return true;
 	}
 	
-	private static boolean transactionCost(ItemBank plugin, Config config, CommandSender sender, Double amount)
+	private static boolean transactionCost(ItemBank plugin, CommandSender sender, Double amount)
 	{
 		if (amount <= 0)
 		{
@@ -235,17 +234,17 @@ public class ConfigCommand
 		
 		plugin.getConfig().set(ConfigConstants.TRANSACTION_COST, amount);
 		plugin.saveConfig();
-		config.reloadConfiguration();
+		plugin.config.reloadConfiguration();
 		sender.sendMessage(Messages.PREFIX + "Config: " + ConfigConstants.TRANSACTION_COST + " set to " + amount + ".");
 		return true;
 	}
 	
-	private static boolean regen(ItemBank plugin, Config config, CommandSender sender)
+	private static boolean regen(ItemBank plugin, CommandSender sender)
 	{
 		File configFile = new File(plugin.getDataFolder(), "config.yml");
 		configFile.delete();
 		plugin.saveDefaultConfig();
-		config.reloadConfiguration();
+		plugin.config.reloadConfiguration();
 		sender.sendMessage(Messages.PREFIX + "Regenerated config file.");
 		return true;
 	}

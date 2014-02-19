@@ -1,6 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Commands;
@@ -22,16 +21,14 @@ import org.bukkit.inventory.ItemStack;
 public class WithdrawCommand implements CommandExecutor
 {
 	ItemBank plugin;
-	Config config;
 	
 	/**
 	 * @param plugin References the plugin's main class.
 	 * @param config References the config options.
 	 */
-	public WithdrawCommand(ItemBank plugin, Config config)
+	public WithdrawCommand(ItemBank plugin)
 	{
 		this.plugin = plugin;
-		this.config = config;
 	}
 	
 	/**
@@ -87,7 +84,7 @@ public class WithdrawCommand implements CommandExecutor
 			}
 			
 			/** Economy Check Check */
-			if (!IBUtils.checkEconomy(plugin, config, (Player) sender))
+			if (!IBUtils.checkEconomy(plugin, (Player) sender))
 			{
 				sender.sendMessage(Messages.LACK_MONEY);
 				return false;
@@ -188,10 +185,10 @@ public class WithdrawCommand implements CommandExecutor
 			item.setAmount(amount);
 			((Player) sender).getInventory().addItem(item);
 			sender.sendMessage(Messages.PREFIX + "You have withdrawn " + amount + " " + item.getType().toString() + " and now have a total of " + newAmount + " left.");
-			if (plugin.getEconomy().isEnabled() && config.enableVault)
+			if (plugin.economy.isEnabled() && plugin.config.enableVault)
 			{
-				sender.sendMessage(Messages.PREFIX + "A " + config.transactionCost + " transaction fee has been deducted from your account.");
-				plugin.getEconomy().takeMoney(sender.getName(), config.transactionCost);
+				sender.sendMessage(Messages.PREFIX + "A " + plugin.config.transactionCost + " transaction fee has been deducted from your account.");
+				plugin.economy.takeMoney(sender.getName(), plugin.config.transactionCost);
 			}
 			return true;
 		}

@@ -1,6 +1,5 @@
 package musician101.itembank.commands.dwcommands;
 
-import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Commands;
@@ -22,16 +21,13 @@ import org.bukkit.inventory.ItemStack;
 public class DepositCommand implements CommandExecutor
 {
 	ItemBank plugin;
-	Config config;
 	
 	/**
 	 * @param plugin References the plugin's main class.
-	 * @param config References the config options.
 	 */
-	public DepositCommand(ItemBank plugin, Config config)
+	public DepositCommand(ItemBank plugin)
 	{
 		this.plugin = plugin;
-		this.config = config;
 	}
 	
 	/**
@@ -85,7 +81,7 @@ public class DepositCommand implements CommandExecutor
 			}
 			
 			/** Economy Check */
-			if (!IBUtils.checkEconomy(plugin, config, (Player) sender))
+			if (!IBUtils.checkEconomy(plugin, (Player) sender))
 			{
 				sender.sendMessage(Messages.LACK_MONEY);
 				return false;
@@ -186,9 +182,9 @@ public class DepositCommand implements CommandExecutor
 		}
 		
 		int newAmount = oldAmount + amount;
-		if (config.blacklist.isSet(itemPath))
+		if (plugin.config.blacklist.isSet(itemPath))
 		{
-			int maxAmount = config.blacklist.getInt(itemPath);
+			int maxAmount = plugin.config.blacklist.getInt(itemPath);
 			if (maxAmount == 0)
 			{
 				player.sendMessage(Messages.NO_DEPOSIT);
@@ -214,10 +210,10 @@ public class DepositCommand implements CommandExecutor
 		item.setAmount(amount);
 		player.getInventory().removeItem(item);
 		player.sendMessage(Messages.getDepositSuccess(item.getType().toString(), item.getAmount()));
-		if (plugin.getEconomy().isEnabled() && config.enableVault)
+		if (plugin.economy.isEnabled() && plugin.config.enableVault)
 		{
-			player.sendMessage(Messages.getTransactionFeeMessage(config.transactionCost));
-			plugin.getEconomy().takeMoney(player.getName(), config.transactionCost);
+			player.sendMessage(Messages.getTransactionFeeMessage(plugin.config.transactionCost));
+			plugin.economy.takeMoney(player.getName(), plugin.config.transactionCost);
 		}
 		
 		return true;

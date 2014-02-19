@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 
-import musician101.itembank.Config;
 import musician101.itembank.ItemBank;
 import musician101.itembank.exceptions.InvalidAliasException;
 import musician101.itembank.lib.Messages;
@@ -158,13 +157,13 @@ public class IBUtils
 	 * @param player The player involved.
 	 * @return false if the player does not have enough money, else true.
 	 */
-	public static boolean checkEconomy(ItemBank plugin, Config config, Player player)
+	public static boolean checkEconomy(ItemBank plugin, Player player)
 	{
-		if (!(plugin.getEconomy().isEnabled() && config.enableVault))
+		if (!(plugin.economy.isEnabled() && plugin.config.enableVault))
 			return true;
 			
-		double money = plugin.getEconomy().getMoney(player.getName());
-		double cost = config.transactionCost;
+		double money = plugin.economy.getMoney(player.getName());
+		double cost = plugin.config.transactionCost;
 		if (money < cost)
 			return false;
 		

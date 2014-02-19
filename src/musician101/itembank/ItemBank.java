@@ -27,7 +27,7 @@ public class ItemBank extends JavaPlugin
 	public File playerDataDir;
 	public File playerFile;
 	public FileConfiguration playerData;
-	public static Econ economy = null;
+	public Econ economy = null;
 	
 	/** Checks if a new version is available. */
 	public void versionCheck()
@@ -58,10 +58,10 @@ public class ItemBank extends JavaPlugin
 		
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
-		getCommand("deposit").setExecutor(new DepositCommand(this, config));
+		getCommand("deposit").setExecutor(new DepositCommand(this));
 		getCommand("itemalias").setExecutor(new ItemAliasCommand(this));
-		getCommand("withdraw").setExecutor(new WithdrawCommand(this, config));
-		getCommand("itembank").setExecutor(new IBCommand(this, config));
+		getCommand("withdraw").setExecutor(new WithdrawCommand(this));
+		getCommand("itembank").setExecutor(new IBCommand(this));
 		
 		versionCheck();
 	}
@@ -70,15 +70,5 @@ public class ItemBank extends JavaPlugin
 	public void onDisable()
 	{
 		getLogger().info("Shutting down.");
-	}
-	
-	/**
-	 * Get economy related methods.
-	 *
-	 * @return
-	 */
-	public Econ getEconomy()
-	{
-		return economy;
 	}
 }
