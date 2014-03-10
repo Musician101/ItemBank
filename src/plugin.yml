@@ -1,60 +1,16 @@
 name: ItemBank
 main: musician101.itembank.ItemBank
-version: 1.7
+version: 2.0
 description: Virtual chest with configurable limits.
-authors: [Musician101]
-maintainer: Musician101
+author: Musician101
+prefix: ItemBank
 softdepend: [Vault]
 
 commands:
+    account:
+        aliases: [a]
+        description: Manage your account.
     itembank:
         aliases: [ib]
         description: Virtual chest with configurable limits.
-    deposit:
-        aliases: [d]
-        description: Add blocks/items to a player's account.
-    itemalias:
-        aliases: [ia]
-        description: View block/item aliases.
-    withdraw:
-        aliases: [w]
-        description: Remove blocks/items to a player's account.
 
-permissions:
-   itembank.*:
-      default: op
-      description: Gives access to all commands.
-      children:
-         itembank.account: true
-         itembank.admin: true
-         itembank.deposit: true
-         itembank.itemalias: true
-         itembank.help: true
-         itembank.purge: true
-         itembank.reload: true
-         itembank.version: true
-         itembank.withdraw: true
-   itembank.account:
-      default: op
-      description: Allows user/group to view what is in their account.
-   itembank.admin:
-      default: op
-      description: Allows user/group to view and manage other players' accounts.
-   itembank.deposit:
-      default: op
-      description: Allows user/group to use the deposit command.
-   itembank.itemalias:
-      default: op
-      description: Allows user/group to use the itemalias command.
-   itembank.purge:
-      default: op
-      description: Allows user/group to use the purge command.
-   itembank.reload:
-      default: op
-      description: Allows user/group to use the reload command.
-   itembank.version:
-      default: op
-      description: Allows user/group to use the version command.
-   itembank.withdraw:
-      default: op
-      description: Allows user/group to use the withdraw command.

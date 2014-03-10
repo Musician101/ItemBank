@@ -1,15 +1,19 @@
-# Which blocks/items shouldn't be stored in the bank. 'Block/Item Name: Maximum Amount Allowed in Storage'
+# Which blocks/items shouldn't be stored in the bank.
 # If the amount is 0 then that block/item is NON-DEPOSITABLE.
 blacklist:
     bedrock:
         '0': 0
 
+# Limit the number of pages of items players can have.
+# If the amount is 0 then the amount of pages is infinite.
+pageLimit: 0
+
 # Whether to check for updates or not.    
-checkForUpdate: true
+updateCheck: true
 
 # Vault related options.
-# Enable Vault integration?
-enableVault: true
+# Enable vault support?
+enableVault: false
 
-# How much it is to deposit/withdraw items.
+# How much to charge for use of /account
 transactionCost: 5

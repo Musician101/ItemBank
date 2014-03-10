@@ -1,78 +1,61 @@
 package musician101.itembank;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import musician101.itembank.lib.ConfigConstants;
-import musician101.itembank.lib.Messages;
-import musician101.itembank.opencsv.CSVReader;
-import musician101.itembank.util.ItemTranslator;
+import musician101.itembank.lib.Constants;
 
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-/**
- * Config related loading for the plugin.
- * 
- * @author Musician101
- */
 public class Config
 {
-	private ItemBank plugin;
-	public boolean checkForUpdate;
-	public ConfigurationSection blacklist;
+	ItemBank plugin;
+	public Map<String, Integer> blacklist = new HashMap<String, Integer>();
 	public boolean enableVault;
+	public int pageLimit;
 	public double transactionCost;
+	public boolean updateCheck;
 	
-	/**
-	 * Config constructor.
-	 * 
-	 * @param plugin Reference's the plugin's main class.
-	 */
 	public Config(ItemBank plugin)
 	{
 		this.plugin = plugin;
+		plugin.playerData = new File(plugin.getDataFolder(), "PlayerData");
 		File config = new File(plugin.getDataFolder(), "config.yml");
-		File items = new File(plugin.getDataFolder(), "items.csv");
+		
 		if (!config.exists())
 		{
-			if (!config.getParentFile().mkdirs()) plugin.getLogger().warning("Could not create config.yml directory.");
+			if (!config.getParentFile().mkdirs())
+				plugin.getLogger().warning("Error: Could not create config.yml directory.");
+			
 			plugin.saveDefaultConfig();
 		}
 		
-		if (!items.exists())
+		if (!plugin.playerData.exists())
 		{
-			if (!items.getParentFile().mkdirs()) plugin.getLogger().warning("Could not create items.csv directory.");
-			plugin.saveResource("items.csv", false);
-		}
-		
-		if (!plugin.playerDataDir.exists())
-		{
-			if (!plugin.playerDataDir.mkdirs()) plugin.getLogger().warning("Could not create PlayerData directory.");
-			plugin.playerDataDir.mkdirs();
+			if (!plugin.playerData.mkdirs())
+				plugin.getLogger().warning("Error: Could not create PlayerData folder.");
+			
+			plugin.playerData.mkdirs();
 		}
 		
 		reloadConfiguration();
 	}
 	
-	/** Reloads the server's configuration file and items.csv. */
 	public void reloadConfiguration()
 	{
 		plugin.reloadConfig();
 		final FileConfiguration config = plugin.getConfig();
-		checkForUpdate = config.getBoolean(ConfigConstants.CHECK_FOR_UPDATE, true);
-		blacklist = config.getConfigurationSection(ConfigConstants.BLACKLIST);
-		enableVault = config.getBoolean(ConfigConstants.ENABLE_VAULT, true);
-		transactionCost = config.getDouble(ConfigConstants.TRANSACTION_COST, 5);
+		enableVault = config.getBoolean(Constants.ENABLE_VAULT, false);
+		pageLimit = config.getInt(Constants.PAGE_LIMIT, 0);
+		transactionCost = config.getDouble(Constants.TRANSACTION_COST, 5);
+		updateCheck = config.getBoolean(Constants.UPDATE_CHECK, true);
 		
-		try
+		for (Map.Entry<String, Object> material : config.getConfigurationSection(Constants.BLACKLIST).getValues(true).entrySet())
 		{
-			plugin.translator = new ItemTranslator(plugin, new CSVReader(new FileReader(new File(plugin.getDataFolder() + "/items.csv"))).readAll());
-		}
-		catch (IOException e)
-		{
-			plugin.getLogger().warning(Messages.IO_EXCEPTION);
+			if (!(material.getValue() instanceof MemorySection))
+				blacklist.put(material.getKey(), (Integer) material.getValue());
 		}
 	}
 }

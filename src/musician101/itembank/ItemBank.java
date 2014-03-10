@@ -2,17 +2,16 @@ package musician101.itembank;
 
 import java.io.File;
 
-import musician101.itembank.commands.ItemAliasCommand;
-import musician101.itembank.commands.dwcommands.DepositCommand;
-import musician101.itembank.commands.dwcommands.WithdrawCommand;
-import musician101.itembank.commands.ibcommand.IBCommand;
+import musician101.itembank.commands.AccountCommand;
+import musician101.itembank.commands.IBCommand;
+import musician101.itembank.lib.Constants;
+import musician101.itembank.listeners.InventoryListener;
 import musician101.itembank.listeners.PlayerListener;
 import musician101.itembank.util.IBUtils;
-import musician101.itembank.util.ItemTranslator;
-import musician101.itembank.util.Update;
+import musician101.itembank.util.Updater;
+import musician101.itembank.util.Updater.UpdateResult;
+import musician101.itembank.util.Updater.UpdateType;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -23,52 +22,51 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ItemBank extends JavaPlugin
 {
 	public Config config;
-	public ItemTranslator translator;
-	public File playerDataDir;
-	public File playerFile;
-	public FileConfiguration playerData;
 	public Econ economy = null;
+	public File playerData;
 	
-	/** Checks if a new version is available. */
+	/** Set up Economy */
+	public void setupEconomy()
+	{
+		economy = new Econ();
+		if (economy.isEnabled() && config.enableVault)
+			getLogger().info("Vault detected and enabled in config. Using Vault for monetary transactions.");
+		else if (!economy.isEnabled())
+			getLogger().info("Error detecting Vault. Is it installed.");
+		else if (!config.enableVault)
+			getLogger().info("Vault detected but disabled in config. No monetary transactions will occur.");
+	}
+	
+	/** Check for update. */
 	public void versionCheck()
 	{
-		if (config.checkForUpdate)
-		{
-			@SuppressWarnings("unused")
-			Update update = new Update(59073, "72784c134bdbc3c2216591011a29df99fac08239");
-		}
+		if (!config.updateCheck)
+			getLogger().info("Update check is disabled.");
 		else
-			getLogger().info("Updater is disabled.");
+		{
+			Updater updater = new Updater(this, 59073, this.getFile(), UpdateType.NO_DOWNLOAD, true);
+			if (updater.getResult() == UpdateResult.UPDATE_AVAILABLE)
+				getLogger().info("A new version is available." + updater.getLatestName());
+			else if (updater.getResult() == UpdateResult.NO_UPDATE)
+				getLogger().info("The current version is the latest." + updater.getLatestName());
+			else
+				getLogger().info("Error: Update check failed.");
+		}
 	}
 	
 	/** Initializes the plugin, checks for the config, and register commands and listeners. */
 	public void onEnable()
 	{
-		playerDataDir = new File(getDataFolder() + "/PlayerData");
 		config = new Config(this);
-		economy = new Econ();
-		if (economy.isEnabled() && config.enableVault)
-			getLogger().info("Vault detected and enabled in config. Using Vault for monetary transactions.");
-		else if (!economy.isEnabled())
-			getLogger().info("Error detecting Vault. Is it installed?");
-		else if (!config.enableVault)
-			getLogger().info("Vault detected but disabled in config. No monetary transactions will occur.");
+		versionCheck();
+		setupEconomy();
 		
-		IBUtils.createPlayerFiles(this, Bukkit.getOnlinePlayers());
+		IBUtils.createPlayerFiles(this);
 		
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+		getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
 		
-		getCommand("deposit").setExecutor(new DepositCommand(this));
-		getCommand("itemalias").setExecutor(new ItemAliasCommand(this));
-		getCommand("withdraw").setExecutor(new WithdrawCommand(this));
-		getCommand("itembank").setExecutor(new IBCommand(this));
-		
-		versionCheck();
-	}
-	
-	/** Shuts off the plugin */
-	public void onDisable()
-	{
-		getLogger().info("Shutting down.");
+		getCommand(Constants.ACOUNT_CMD).setExecutor(new AccountCommand(this));
+		getCommand(Constants.ITEMBANK_CMD).setExecutor(new IBCommand(this));
 	}
 }
