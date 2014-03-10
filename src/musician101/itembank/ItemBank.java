@@ -25,7 +25,6 @@ public class ItemBank extends JavaPlugin
 	public Econ economy = null;
 	public File playerData;
 	
-	/** Set up Economy */
 	public void setupEconomy()
 	{
 		economy = new Econ();
@@ -37,7 +36,6 @@ public class ItemBank extends JavaPlugin
 			getLogger().info("Vault detected but disabled in config. No monetary transactions will occur.");
 	}
 	
-	/** Check for update. */
 	public void versionCheck()
 	{
 		if (!config.updateCheck)
@@ -54,7 +52,6 @@ public class ItemBank extends JavaPlugin
 		}
 	}
 	
-	/** Initializes the plugin, checks for the config, and register commands and listeners. */
 	public void onEnable()
 	{
 		config = new Config(this);

@@ -24,6 +24,7 @@ public class AccountCommand implements CommandExecutor
 		this.plugin = plugin;
 	}
 	
+	// sender.getName() and playerName are not always the same.
 	public boolean openInv(CommandSender sender, String playerName, int page)
 	{
 		Inventory inv = null;
