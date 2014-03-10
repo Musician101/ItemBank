@@ -12,6 +12,7 @@ public class Constants
 	/** Commands Names */
 	public static final String ACOUNT_CMD = "account";
 	public static final String ITEMBANK_CMD = "itembank";
+	public static final String PURGE_CMD = "purge";
 	public static final String RELOAD_CMD = "reload";
 	public static final String HELP_CMD = "help";
 	
@@ -22,6 +23,8 @@ public class Constants
 	/** Command Help */
 	public static final String[] ACCOUNT_HELP_MSG = {HEADER, ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + "Opens a GUI with the items stored in the account.",
 		ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + "/account"};
+	public static final String[] PURGE_HELP_MSG = {HEADER, ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + "Delete all or a specified player's account.",
+		ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + "/itembank purge [player]"};
 	public static final String[] RELOAD_MSG = {HEADER, ChatColor.DARK_RED + "Description: " + ChatColor.WHITE + "Reloads the plugin's config file.",
 		ChatColor.DARK_RED + "Usage: " + ChatColor.WHITE + "/itembank reload"};
 	public static final String[] HELP_MSG = {HEADER, "Version: " + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getVersion() + " for Bukkit 1.7.2-R0.3",
