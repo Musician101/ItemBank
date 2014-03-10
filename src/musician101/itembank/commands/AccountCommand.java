@@ -84,7 +84,7 @@ public class AccountCommand implements CommandExecutor
 			if (IBUtils.isNumber(args[0]))
 				return openInv(sender, sender.getName(), Integer.valueOf(args[0]));
 			
-			if (!sender.hasPermission(Constants.ADMIN_PERM))
+			if (!sender.hasPermission(Constants.ADMIN_ACCOUNT_PERM))
 			{
 				sender.sendMessage(Constants.NO_PERMISSION);
 				return false;

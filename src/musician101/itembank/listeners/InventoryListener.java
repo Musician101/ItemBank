@@ -89,7 +89,7 @@ public class InventoryListener implements Listener
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
 		String name = player.getName() + "'s Account - Page";
-		if (player.hasPermission(Constants.ADMIN_PERM))
+		if (player.hasPermission(Constants.EXEMPT_PERM))
 			return;
 		
 		if (!account.getName().contains(name) && !clickedInv.getName().contains(name))
@@ -142,9 +142,9 @@ public class InventoryListener implements Listener
 		int page = 1;
 		if (!inv.getName().contains(player.getName() + "'s Account - Page"))
 		{
-			if (!player.hasPermission(Constants.ADMIN_PERM))
+			if (!player.hasPermission(Constants.EXEMPT_PERM))
 				return;
-			else if (player.hasPermission(Constants.ADMIN_PERM))
+			else if (player.hasPermission(Constants.EXEMPT_PERM))
 			{
 				page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
 				saveAccount(player, inv.getName().substring(0, inv.getName().indexOf("'")), inv, player.getInventory(), page);

@@ -63,7 +63,7 @@ public class ItemBank extends JavaPlugin
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
 		
-		getCommand(Constants.ACOUNT_CMD).setExecutor(new AccountCommand(this));
+		getCommand(Constants.ACCOUNT_CMD).setExecutor(new AccountCommand(this));
 		getCommand(Constants.ITEMBANK_CMD).setExecutor(new IBCommand(this));
 	}
 }

@@ -33,10 +33,12 @@ public class IBCommand implements CommandExecutor
 		{
 			if (args.length > 1)
 			{
-				if (args[1].equalsIgnoreCase(Constants.ACOUNT_CMD))
+				if (args[1].equalsIgnoreCase(Constants.ACCOUNT_CMD))
 					sender.sendMessage(Constants.ACCOUNT_HELP_MSG);
-				else if (args[1].equals(Constants.RELOAD_CMD))
-					sender.sendMessage(Constants.RELOAD_MSG);
+				else if (args[1].equalsIgnoreCase(Constants.RELOAD_CMD))
+					sender.sendMessage(Constants.RELOAD_HELP_MSG);
+				else if (args[1].equalsIgnoreCase(Constants.PURGE_CMD))
+					sender.sendMessage(Constants.PURGE_HELP_MSG);
 				
 				return true;
 			}
@@ -47,7 +49,7 @@ public class IBCommand implements CommandExecutor
 		/** Reload Command */
 		else if (args[0].equalsIgnoreCase(Constants.RELOAD_CMD))
 		{
-			if (!sender.hasPermission(Constants.ADMIN_PERM))
+			if (!sender.hasPermission(Constants.RELOAD_PERM))
 			{
 				sender.sendMessage(Constants.NO_PERMISSION);
 				return false;
@@ -59,7 +61,7 @@ public class IBCommand implements CommandExecutor
 		}
 		else if (args[0].equalsIgnoreCase(Constants.PURGE_CMD))
 		{
-			if (!sender.hasPermission(Constants.ADMIN_PERM))
+			if (!sender.hasPermission(Constants.PURGE_PERM))
 			{
 				sender.sendMessage(Constants.NO_PERMISSION);
 				return false;
