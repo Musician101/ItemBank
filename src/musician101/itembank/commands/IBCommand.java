@@ -21,75 +21,73 @@ public class IBCommand implements CommandExecutor
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
-		if (args.length == 0)
+	{	
+		if (args.length > 0)
 		{
-			sender.sendMessage(Constants.HELP_MSG);
-			return true;
-		}
-		
-		/** Help Command */
-		if (args[0].equalsIgnoreCase(Constants.HELP_CMD))
-		{
-			if (args.length > 1)
+			/** Help Command */
+			if (args[0].equalsIgnoreCase(Constants.HELP_CMD))
 			{
-				if (args[1].equalsIgnoreCase(Constants.ACCOUNT_CMD))
-					sender.sendMessage(Constants.ACCOUNT_HELP_MSG);
-				else if (args[1].equalsIgnoreCase(Constants.RELOAD_CMD))
-					sender.sendMessage(Constants.RELOAD_HELP_MSG);
-				else if (args[1].equalsIgnoreCase(Constants.PURGE_CMD))
-					sender.sendMessage(Constants.PURGE_HELP_MSG);
+				if (args.length > 1)
+				{
+					if (args[1].equalsIgnoreCase(Constants.ACCOUNT_CMD))
+						sender.sendMessage(Constants.ACCOUNT_HELP_MSG);
+					else if (args[1].equalsIgnoreCase(Constants.RELOAD_CMD))
+						sender.sendMessage(Constants.RELOAD_HELP_MSG);
+					else if (args[1].equalsIgnoreCase(Constants.PURGE_CMD))
+						sender.sendMessage(Constants.PURGE_HELP_MSG);
+					
+					return true;
+				}
 				
+				sender.sendMessage(Constants.PREFIX + Constants.HELP_MSG[3]);
 				return true;
 			}
-			
-			sender.sendMessage(Constants.PREFIX + Constants.HELP_MSG[3]);
-			return true;
-		}
-		/** Reload Command */
-		else if (args[0].equalsIgnoreCase(Constants.RELOAD_CMD))
-		{
-			if (!sender.hasPermission(Constants.RELOAD_PERM))
+			/** Reload Command */
+			else if (args[0].equalsIgnoreCase(Constants.RELOAD_CMD))
 			{
-				sender.sendMessage(Constants.NO_PERMISSION);
-				return false;
-			}
-			
-			plugin.config.reloadConfiguration();
-			sender.sendMessage(Constants.PREFIX + "Config reloaded.");
-			return true;
-		}
-		else if (args[0].equalsIgnoreCase(Constants.PURGE_CMD))
-		{
-			if (!sender.hasPermission(Constants.PURGE_PERM))
-			{
-				sender.sendMessage(Constants.NO_PERMISSION);
-				return false;
-			}
-			
-			if (args.length > 1)
-			{
-				File file = new File(plugin.playerData, args[1] + ".yml");
-				if (!file.exists())
+				if (!sender.hasPermission(Constants.RELOAD_PERM))
 				{
-					sender.sendMessage(Constants.PREFIX + "File not found. Please check spelling and capitalization.");
+					sender.sendMessage(Constants.NO_PERMISSION);
 					return false;
 				}
 				
-				file.delete();
-				IBUtils.createPlayerFile(file);
-				sender.sendMessage(Constants.PREFIX + args[1] + "'s account has been reset.");
+				plugin.config.reloadConfiguration();
+				sender.sendMessage(Constants.PREFIX + "Config reloaded.");
 				return true;
 			}
-			
-			for (File file : plugin.playerData.listFiles())
-				file.delete();
-			
-			IBUtils.createPlayerFiles(plugin);
-			sender.sendMessage(Constants.PREFIX + "All accounts have been reset.");
-			return true;
+			else if (args[0].equalsIgnoreCase(Constants.PURGE_CMD))
+			{
+				if (!sender.hasPermission(Constants.PURGE_PERM))
+				{
+					sender.sendMessage(Constants.NO_PERMISSION);
+					return false;
+				}
+				
+				if (args.length > 1)
+				{
+					File file = new File(plugin.playerData, args[1] + ".yml");
+					if (!file.exists())
+					{
+						sender.sendMessage(Constants.PREFIX + "File not found. Please check spelling and capitalization.");
+						return false;
+					}
+					
+					file.delete();
+					IBUtils.createPlayerFile(file);
+					sender.sendMessage(Constants.PREFIX + args[1] + "'s account has been reset.");
+					return true;
+				}
+				
+				for (File file : plugin.playerData.listFiles())
+					file.delete();
+				
+				IBUtils.createPlayerFiles(plugin);
+				sender.sendMessage(Constants.PREFIX + "All accounts have been reset.");
+				return true;
+			}
 		}
 		
-		return false;
+		sender.sendMessage(Constants.HELP_MSG);
+		return true;
 	}
 }
