@@ -3,6 +3,7 @@ package musician101.itembank;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import musician101.itembank.lib.Constants;
 
@@ -52,7 +53,7 @@ public class Config
 		transactionCost = config.getDouble(Constants.TRANSACTION_COST, 5);
 		updateCheck = config.getBoolean(Constants.UPDATE_CHECK, true);
 		
-		for (Map.Entry<String, Object> material : config.getConfigurationSection(Constants.BLACKLIST).getValues(true).entrySet())
+		for (Entry<String, Object> material : config.getConfigurationSection(Constants.BLACKLIST).getValues(true).entrySet())
 		{
 			if (!(material.getValue() instanceof MemorySection))
 				blacklist.put(material.getKey(), (Integer) material.getValue());
