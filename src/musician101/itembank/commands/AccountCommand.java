@@ -66,13 +66,7 @@ public class AccountCommand implements CommandExecutor
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-	{
-		if (!sender.hasPermission(Constants.ACCOUNT_PERM))
-		{
-			sender.sendMessage(Constants.NO_PERMISSION);
-			return false;
-		}
-		
+	{	
 		if (!(sender instanceof Player))
 		{
 			sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
@@ -99,6 +93,12 @@ public class AccountCommand implements CommandExecutor
 					return openInv(sender, player.getName(), Integer.valueOf(args[1]));
 			
 			return openInv(sender, player.getName(), 1);
+		}
+		
+		if (!sender.hasPermission(Constants.ACCOUNT_PERM))
+		{
+			sender.sendMessage(Constants.NO_PERMISSION);
+			return false;
 		}
 		
 		return openInv(sender, sender.getName(), 1);
