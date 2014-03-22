@@ -14,11 +14,6 @@ import musician101.itembank.util.Updater.UpdateType;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-/**
- * The plugin's main class.
- * 
- * @author Musician101
- */
 public class ItemBank extends JavaPlugin
 {
 	public Config config;
@@ -44,9 +39,9 @@ public class ItemBank extends JavaPlugin
 		{
 			Updater updater = new Updater(this, 59073, this.getFile(), UpdateType.NO_DOWNLOAD, true);
 			if (updater.getResult() == UpdateResult.UPDATE_AVAILABLE)
-				getLogger().info("A new version is available." + updater.getLatestName());
+				getLogger().info("A new version is available. " + updater.getLatestName());
 			else if (updater.getResult() == UpdateResult.NO_UPDATE)
-				getLogger().info("The current version is the latest." + updater.getLatestName());
+				getLogger().info("The current version is the latest. " + updater.getLatestName());
 			else
 				getLogger().info("Error: Update check failed.");
 		}

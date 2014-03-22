@@ -55,6 +55,7 @@ public class IBCommand implements CommandExecutor
 				sender.sendMessage(Constants.PREFIX + "Config reloaded.");
 				return true;
 			}
+			/** Purge Command */
 			else if (args[0].equalsIgnoreCase(Constants.PURGE_CMD))
 			{
 				if (!sender.hasPermission(Constants.PURGE_PERM))
