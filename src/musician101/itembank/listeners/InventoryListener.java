@@ -144,16 +144,21 @@ public class InventoryListener implements Listener
 		{
 			if (!player.hasPermission(Constants.EXEMPT_PERM))
 				return;
-			else if (player.hasPermission(Constants.EXEMPT_PERM))
+			
+			//To prevent spamming of the console should an player with Exempt permission node open ANY inventory.
+			try
 			{
 				page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
 				saveAccount(player, inv.getName().substring(0, inv.getName().indexOf("'")), inv, player.getInventory(), page);
+				return;
+			}
+			catch (StringIndexOutOfBoundsException e)
+			{
+				return;
 			}
 		}
-		else
-		{
-			page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-			saveAccount(player, player.getName(), inv, player.getInventory(), page);
-		}
+		
+		page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
+		saveAccount(player, player.getName(), inv, player.getInventory(), page);
 	}
 }
