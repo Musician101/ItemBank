@@ -17,3 +17,6 @@ enableVault: false
 
 # How much to charge for use of /account
 transactionCost: 5
+
+# Language selection. Not implemented in v2.1.2 or earlier.
+# lang: en 

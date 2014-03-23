@@ -57,12 +57,7 @@ public class IBUtils
 	
 	public static Inventory getAccount(ItemBank plugin, String playerName, int page) throws FileNotFoundException, IOException, InvalidConfigurationException
 	{
-		String invTitleBack = "'s Account -   Page " + page;
-		String invTitle = playerName + invTitleBack;
-		if (invTitle.length() > 32)
-			invTitle = playerName.substring(0, invTitleBack.length() - playerName.length()) + invTitleBack;
-		
-		final Inventory inv = Bukkit.createInventory(plugin.getServer().getPlayer(playerName), 54, invTitle);
+		final Inventory inv = Bukkit.createInventory(plugin.getServer().getPlayer(playerName), 54, playerName + " - Page " + page);
 		File file = new File(plugin.playerData, playerName + ".yml");
 		if (inv != null)
 			createPlayerFile(file);

@@ -37,6 +37,7 @@ public class Constants
 	/** Config */
 	public static final String BLACKLIST = "blacklist";
 	public static final String ENABLE_VAULT = "enableVault";
+	//public static final String LANG = "lang";
 	public static final String PAGE_LIMIT = "pageLimit";
 	public static final String TRANSACTION_COST = "transactionCost";
 	public static final String UPDATE_CHECK = "updateCheck";

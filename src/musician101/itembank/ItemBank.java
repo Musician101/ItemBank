@@ -19,6 +19,7 @@ public class ItemBank extends JavaPlugin
 	public Config config;
 	public Econ economy = null;
 	public File playerData;
+	//public File langFolder;
 	
 	public void setupEconomy()
 	{

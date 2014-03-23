@@ -7,8 +7,6 @@ import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.util.IBUtils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,7 +52,6 @@ public class InventoryListener implements Listener
 			return;
 		}
 		
-		
 		account.setContents(topInv.getContents());
 		try
 		{
@@ -90,7 +87,7 @@ public class InventoryListener implements Listener
 		Inventory clickedInv = event.getInventory();
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
-		String name = player.getName() + "'s Account - Page";
+		String name = player.getName() + " - Page";
 		if (player.hasPermission(Constants.EXEMPT_PERM))
 			return;
 		
@@ -142,7 +139,7 @@ public class InventoryListener implements Listener
 		Inventory inv = event.getView().getTopInventory();
 		Player player = (Player) event.getPlayer();
 		int page = 1;
-		if (!inv.getName().contains(player.getName() + "'s Account - Page"))
+		if (!inv.getName().contains(player.getName() + " - Page"))
 		{
 			if (!player.hasPermission(Constants.EXEMPT_PERM))
 				return;
@@ -150,15 +147,9 @@ public class InventoryListener implements Listener
 			//To prevent spamming of the console should an player with Exempt permission node open ANY inventory.
 			try
 			{
-				for (OfflinePlayer p : Bukkit.getOfflinePlayers())
-				{
-					if (p.getName().contains(inv.getName().substring(0, inv.getName().indexOf("'"))))
-					{
-						page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-						saveAccount(player, p.getName(), inv, player.getInventory(), page);
-						return;
-					}
-				}
+				page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
+				saveAccount(player, inv.getName().substring(0, inv.getName().indexOf(" ")), inv, player.getInventory(), page);
+				return;
 			}
 			catch (StringIndexOutOfBoundsException e)
 			{
