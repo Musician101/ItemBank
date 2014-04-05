@@ -5,6 +5,7 @@ import java.io.File;
 import musician101.itembank.commands.AccountCommand;
 import musician101.itembank.commands.IBCommand;
 import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.listeners.InventoryListener;
 import musician101.itembank.listeners.PlayerListener;
 import musician101.itembank.util.IBUtils;
@@ -19,17 +20,16 @@ public class ItemBank extends JavaPlugin
 	public Config config;
 	public Econ economy = null;
 	public File playerData;
-	//public File langFolder;
 	
 	public void setupEconomy()
 	{
 		economy = new Econ();
 		if (economy.isEnabled() && config.enableVault)
-			getLogger().info("Vault detected and enabled in config. Using Vault for monetary transactions.");
+			getLogger().info(Messages.VAULT_BOTH_ENABLED);
 		else if (!economy.isEnabled())
-			getLogger().info("Error detecting Vault. Is it installed.");
+			getLogger().info(Messages.VAULT_NOT_INSTALLED);
 		else if (!config.enableVault)
-			getLogger().info("Vault detected but disabled in config. No monetary transactions will occur.");
+			getLogger().info(Messages.VAULT_NO_CONFIG);
 	}
 	
 	public void versionCheck()
@@ -40,11 +40,11 @@ public class ItemBank extends JavaPlugin
 		{
 			Updater updater = new Updater(this, 59073, this.getFile(), UpdateType.NO_DOWNLOAD, true);
 			if (updater.getResult() == UpdateResult.UPDATE_AVAILABLE)
-				getLogger().info("A new version is available. " + updater.getLatestName());
+				getLogger().info(Messages.UPDATER_NEW + " " + updater.getLatestName());
 			else if (updater.getResult() == UpdateResult.NO_UPDATE)
-				getLogger().info("The current version is the latest. " + updater.getLatestName());
+				getLogger().info(Messages.UPDATER_CURRENT + " " + updater.getLatestName());
 			else
-				getLogger().info("Error: Update check failed.");
+				getLogger().info(Messages.UPDATER_ERROR);
 		}
 	}
 	

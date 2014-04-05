@@ -3,7 +3,7 @@ package musician101.itembank.listeners;
 import java.io.File;
 
 import musician101.itembank.ItemBank;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.entity.Player;
@@ -27,6 +27,6 @@ public class PlayerListener implements Listener
 		File playerFile = new File(plugin.playerData, player.getName().toLowerCase() + ".yml");
 		IBUtils.createPlayerFile(playerFile);
 		if (!playerFile.exists())
-			player.sendMessage(Constants.PREFIX + "There was an error in creating you're account file. Please contanct an administrator immediately.");
+			player.sendMessage(Messages.PLAYER_JOIN_FILE_FAIL);
 	}
 }

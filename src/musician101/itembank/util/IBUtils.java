@@ -5,9 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import musician101.itembank.ItemBank;
-import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -27,12 +28,12 @@ public class IBUtils
 			{
 				file.createNewFile();
 				BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-				bw.write(Constants.NEW_PLAYER_FILE);
+				bw.write(Messages.NEW_PLAYER_FILE);
 				bw.close();
 			}
 			catch (IOException e)
 			{
-				Bukkit.getLogger().warning(Constants.IO_EX);
+				Bukkit.getLogger().warning(Messages.IO_EX);
 			}
 		}
 	}
@@ -99,5 +100,11 @@ public class IBUtils
 		}
 		
 		return true;
+	}
+	
+	public static void sendMessages(Player player, List<String> messages)
+	{
+		for (String message : messages)
+			player.sendMessage(message);
 	}
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -35,19 +36,19 @@ public class InventoryListener implements Listener
 		}
 		catch (FileNotFoundException e)
 		{
-			player.sendMessage(Constants.NO_FILE_EX);
+			player.sendMessage(Messages.NO_FILE_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
 		catch (IOException e)
 		{
-			player.sendMessage(Constants.IO_EX);
+			player.sendMessage(Messages.IO_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
 		catch (InvalidConfigurationException e)
 		{
-			player.sendMessage(Constants.YAML_EX);
+			player.sendMessage(Messages.YAML_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
@@ -59,24 +60,24 @@ public class InventoryListener implements Listener
 		}
 		catch (FileNotFoundException e)
 		{
-			player.sendMessage(Constants.NO_FILE_EX);
+			player.sendMessage(Messages.NO_FILE_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
 		catch (IOException e)
 		{
-			player.sendMessage(Constants.IO_EX);
+			player.sendMessage(Messages.IO_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
 		catch (InvalidConfigurationException e)
 		{
-			player.sendMessage(Constants.YAML_EX);
+			player.sendMessage(Messages.YAML_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
 		
-		player.sendMessage(Constants.PREFIX + "Accout updated.");
+		player.sendMessage(Messages.ACCOUNT_UPDATED);
 	}
 	
 	@EventHandler
@@ -87,7 +88,7 @@ public class InventoryListener implements Listener
 		Inventory clickedInv = event.getInventory();
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
-		String name = player.getName() + " - Page";
+		String name = player.getName() + " - " + Messages.PAGE;
 		if (player.hasPermission(Constants.EXEMPT_PERM))
 			return;
 		
@@ -98,7 +99,7 @@ public class InventoryListener implements Listener
 		if (plugin.config.pageLimit > 0 && plugin.config.pageLimit < page)
 		{
 			event.setCancelled(true);
-			player.sendMessage(Constants.PREFIX + "You cannot add items to this page.");
+			player.sendMessage(Messages.ACCOUNT_ILLEGAL_PAGE);
 			player.closeInventory();
 			return;
 		}
@@ -115,19 +116,20 @@ public class InventoryListener implements Listener
 			if (maxAmount == 0)
 			{
 				event.setCancelled(true);
-				player.sendMessage(Constants.PREFIX + "This item is non depositable.");
+				player.sendMessage(Messages.ACCOUNT_ILLEGAL_ITEM);
 				player.closeInventory();
 			}
 			else if (maxAmount == amountInAccount)
 			{
 				event.setCancelled(true);
-				player.sendMessage(Constants.PREFIX + "You are unable to do add this item to your account.");
+				player.sendMessage(Messages.ACCOUNT_ILLEGAL_AMOUNT);
 				player.closeInventory();
 			}
 			else if (maxAmount < newAmount)
 			{
 				event.setCancelled(true);
-				player.sendMessage(new String[]{Constants.PREFIX + "The stack you selected puts you over the limit. Please split the stack and try again.", Constants.PREFIX + "Maximum: " + maxAmount + ", Amount in account: " + amountInAccount});
+				player.sendMessage(new String[]{Messages.ACCOUNT_ILLEGAL_STACK_EXPLAIN,
+						Messages.PREFIX + Messages.ACCOUNT_ILLEGAL_STACK_MAXIMUM + ": " + maxAmount + ", " + Messages.ACCOUNT_ILLEGAL_AMOUNT + ": " + amountInAccount});
 				player.closeInventory();
 			}
 		}
@@ -139,7 +141,7 @@ public class InventoryListener implements Listener
 		Inventory inv = event.getView().getTopInventory();
 		Player player = (Player) event.getPlayer();
 		int page = 1;
-		if (!inv.getName().contains(player.getName() + " - Page"))
+		if (!inv.getName().contains(player.getName() + " - " + Messages.PAGE))
 		{
 			if (!player.hasPermission(Constants.EXEMPT_PERM))
 				return;

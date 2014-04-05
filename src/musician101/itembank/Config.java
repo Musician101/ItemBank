@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,7 +16,6 @@ public class Config
 	ItemBank plugin;
 	public Map<String, Integer> blacklist = new HashMap<String, Integer>();
 	public boolean enableVault;
-	//public YamlConfiguration lang = new YamlConfiguration();
 	public int pageLimit;
 	public double transactionCost;
 	public boolean updateCheck;
@@ -24,8 +24,8 @@ public class Config
 	{
 		this.plugin = plugin;
 		plugin.playerData = new File(plugin.getDataFolder(), "PlayerData");
-		//plugin.langFolder = new File(plugin.getDataFolder(), "Languages");
 		File config = new File(plugin.getDataFolder(), "config.yml");
+		File langFile = new File(plugin.getDataFolder(), "lang.yml");
 		
 		if (!config.exists())
 		{
@@ -35,6 +35,14 @@ public class Config
 			plugin.saveDefaultConfig();
 		}
 		
+		if (!langFile.exists())
+		{
+			if (!langFile.getParentFile().mkdirs())
+				plugin.getLogger().warning("Error: Could not create lang.yml directory.");
+			
+			plugin.saveResource("lang.yml", false);
+		}
+		
 		if (!plugin.playerData.exists())
 		{
 			if (!plugin.playerData.mkdirs())
@@ -42,15 +50,6 @@ public class Config
 			
 			plugin.playerData.mkdirs();
 		}
-		
-		/*if (!plugin.langFolder.exists())
-		{
-			if (!plugin.langFolder.mkdirs())
-				plugin.getLogger().warning("Error: Could not create Languages folder.");
-			
-			//TODO test if testing as boolean still creates folders (it should but gotta check)
-			//plugin
-		}*/
 		
 		reloadConfiguration();
 	}
@@ -69,7 +68,7 @@ public class Config
 			if (!(material.getValue() instanceof MemorySection))
 				blacklist.put(material.getKey(), (Integer) material.getValue());
 		}
-		
-		//lang.load(new File("", config.getString(Constants.LANG, "en")));
+
+		Messages.init(config.getString(Constants.LANG, "en"), new File(plugin.getDataFolder(), "lang.yml"));
 	}
 }

@@ -19,4 +19,4 @@ enableVault: false
 transactionCost: 5
 
 # Language selection. Not implemented in v2.1.2 or earlier.
-# lang: en 
+lang: en 

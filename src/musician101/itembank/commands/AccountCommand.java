@@ -2,9 +2,11 @@ package musician101.itembank.commands;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.OfflinePlayer;
@@ -34,29 +36,31 @@ public class AccountCommand implements CommandExecutor
 		}
 		catch (FileNotFoundException e)
 		{
-			sender.sendMessage(Constants.NO_FILE_EX);
+			sender.sendMessage(Messages.NO_FILE_EX);
 			return false;
 		}
 		catch (IOException e)
 		{
-			sender.sendMessage(Constants.IO_EX);
+			sender.sendMessage(Messages.IO_EX);
 			return false;
 		}
 		catch (InvalidConfigurationException e)
 		{
-			sender.sendMessage(Constants.YAML_EX);
+			sender.sendMessage(Messages.YAML_EX);
 			return false;
 		}
 		
 		if (sender.getName().equals(playerName) && plugin.economy.isEnabled() && plugin.config.enableVault)
 		{
+			//Player player = ((Player) sender).get
+			
 			if (plugin.economy.getMoney(sender.getName()) < plugin.config.transactionCost)
 			{
-				sender.sendMessage(Constants.PREFIX + "You lack sufficient money to cover transaction costs.");
+				sender.sendMessage(Messages.ACCOUNT_TRANSACTION_FAIL);
 				return false;
 			}
 			
-			sender.sendMessage(Constants.PREFIX + "A " + plugin.config.transactionCost + " transaction fee has been deducted from your account.");
+			sender.sendMessage(Messages.ACCOUNT_ECON_SUCCESS.replace("$", "$" + plugin.config.transactionCost));
 			plugin.economy.takeMoney(sender.getName(), plugin.config.transactionCost);
 		}
 		
@@ -69,7 +73,7 @@ public class AccountCommand implements CommandExecutor
 	{	
 		if (!(sender instanceof Player))
 		{
-			sender.sendMessage(Constants.PLAYER_COMMAND_ONLY);
+			sender.sendMessage(Messages.PLAYER_CMD);
 			return false;
 		}
 		
@@ -80,7 +84,7 @@ public class AccountCommand implements CommandExecutor
 			
 			if (!sender.hasPermission(Constants.ADMIN_ACCOUNT_PERM))
 			{
-				sender.sendMessage(Constants.NO_PERMISSION);
+				sender.sendMessage(Messages.NO_PERMISSION);
 				return false;
 			}
 			
@@ -97,7 +101,7 @@ public class AccountCommand implements CommandExecutor
 		
 		if (!sender.hasPermission(Constants.ACCOUNT_PERM))
 		{
-			sender.sendMessage(Constants.NO_PERMISSION);
+			sender.sendMessage(Messages.NO_PERMISSION);
 			return false;
 		}
 		

@@ -4,11 +4,13 @@ import java.io.File;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
+import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class IBCommand implements CommandExecutor
 {
@@ -30,16 +32,23 @@ public class IBCommand implements CommandExecutor
 				if (args.length > 1)
 				{
 					if (args[1].equalsIgnoreCase(Constants.ACCOUNT_CMD))
-						sender.sendMessage(Constants.ACCOUNT_HELP_MSG);
+					{
+						IBUtils.sendMessages((Player) sender, Messages.ACCOUNT_HELP_MSG);
+						return true;
+					}
 					else if (args[1].equalsIgnoreCase(Constants.RELOAD_CMD))
-						sender.sendMessage(Constants.RELOAD_HELP_MSG);
+					{
+						IBUtils.sendMessages((Player) sender, Messages.RELOAD_HELP_MSG);
+						return true;
+					}
 					else if (args[1].equalsIgnoreCase(Constants.PURGE_CMD))
-						sender.sendMessage(Constants.PURGE_HELP_MSG);
-					
-					return true;
+					{
+						IBUtils.sendMessages((Player) sender, Messages.PURGE_HELP_MSG);
+						return true;
+					}
 				}
 				
-				sender.sendMessage(Constants.PREFIX + Constants.HELP_MSG[3]);
+				sender.sendMessage(Messages.PREFIX + Messages.HELP_MSG.get(3));
 				return true;
 			}
 			/** Reload Command */
@@ -47,12 +56,12 @@ public class IBCommand implements CommandExecutor
 			{
 				if (!sender.hasPermission(Constants.RELOAD_PERM))
 				{
-					sender.sendMessage(Constants.NO_PERMISSION);
+					sender.sendMessage(Messages.NO_PERMISSION);
 					return false;
 				}
 				
 				plugin.config.reloadConfiguration();
-				sender.sendMessage(Constants.PREFIX + "Config reloaded.");
+				sender.sendMessage(Messages.RELOAD_SUCCESS);
 				return true;
 			}
 			/** Purge Command */
@@ -60,7 +69,7 @@ public class IBCommand implements CommandExecutor
 			{
 				if (!sender.hasPermission(Constants.PURGE_PERM))
 				{
-					sender.sendMessage(Constants.NO_PERMISSION);
+					sender.sendMessage(Messages.NO_PERMISSION);
 					return false;
 				}
 				
@@ -69,13 +78,13 @@ public class IBCommand implements CommandExecutor
 					File file = new File(plugin.playerData, args[1] + ".yml");
 					if (!file.exists())
 					{
-						sender.sendMessage(Constants.PREFIX + "File not found. Please check spelling and capitalization.");
+						sender.sendMessage(Messages.PURGE_NO_FILE);
 						return false;
 					}
 					
 					file.delete();
 					IBUtils.createPlayerFile(file);
-					sender.sendMessage(Constants.PREFIX + args[1] + "'s account has been reset.");
+					sender.sendMessage(Messages.PURGE_SINGLE);
 					return true;
 				}
 				
@@ -83,12 +92,12 @@ public class IBCommand implements CommandExecutor
 					file.delete();
 				
 				IBUtils.createPlayerFiles(plugin);
-				sender.sendMessage(Constants.PREFIX + "All accounts have been reset.");
+				sender.sendMessage(Messages.PURGE_MULTIPLE);
 				return true;
 			}
 		}
 		
-		sender.sendMessage(Constants.HELP_MSG);
+		IBUtils.sendMessages((Player) sender, Messages.HELP_MSG);
 		return true;
 	}
 }
