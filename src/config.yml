@@ -19,4 +19,13 @@ enableVault: false
 transactionCost: 5
 
 # Language selection. Not implemented in v2.1.2 or earlier.
-lang: en 
+lang: en
+
+# MySQL and SQLite Database related options
+mysql:
+    enable: false
+    host: 127.0.0.1
+    database: database
+    port: 3306
+    user: user
+    pass: password

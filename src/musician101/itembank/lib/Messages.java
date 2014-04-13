@@ -46,6 +46,7 @@ public class Messages
 		RELOAD_HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + ".command.help.description", HELP_DESCRIPTION) + ": " + ChatColor.WHITE + langConfig.getString(lang + ".command.help.reload", RELOAD_HELP_DESC),
 				ChatColor.DARK_RED + langConfig.getString(lang + ".command.help.usage.default", USAGE_DEFAULT) + ": " + ChatColor.WHITE + "/itembank reload");
 		
+		SQL_EX = PREFIX + langConfig.getString(lang + ".sqlex", SQL_EX_DEFAULT);
 		UPDATER_CURRENT = langConfig.getString(lang + Constants.UPDATER + ".current", UPDATER_CURRENT_DEFAULT);
 		UPDATER_ERROR = langConfig.getString(lang + Constants.UPDATER + ".error", UPDATER_ERROR_DEFAULT);
 		UPDATER_NEW = langConfig.getString(lang + Constants.UPDATER + ".new", UPDATER_NEW_DEFAULT);
@@ -133,6 +134,9 @@ public class Messages
 	
 	public static String NO_FILE_EX;
 	public static final String NO_FILE_EX_DEFAULT = "Error: File not found. Please contact an administrator immediately.";
+	
+	public static String SQL_EX;
+	public static final String SQL_EX_DEFAULT = "";
 	
 	public static String YAML_EX;
 	public static final String YAML_EX_DEFAULT = "Error: Your account contains format errors. Please contact an administrator immediately.";

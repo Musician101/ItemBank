@@ -2,6 +2,7 @@ package musician101.itembank.listeners;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
@@ -52,6 +53,12 @@ public class InventoryListener implements Listener
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
+		catch (SQLException e)
+		{
+			player.sendMessage(Messages.SQL_EX);
+			player.getInventory().setContents(playerInv.getContents());
+			return;
+		}
 		
 		account.setContents(topInv.getContents());
 		try
@@ -73,6 +80,12 @@ public class InventoryListener implements Listener
 		catch (InvalidConfigurationException e)
 		{
 			player.sendMessage(Messages.YAML_EX);
+			player.getInventory().setContents(playerInv.getContents());
+			return;
+		}
+		catch (SQLException e)
+		{
+			player.sendMessage(Messages.SQL_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}

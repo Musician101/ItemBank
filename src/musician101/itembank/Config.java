@@ -11,6 +11,8 @@ import musician101.itembank.lib.Messages;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import code.husky.mysql.MySQL;
+
 public class Config
 {
 	ItemBank plugin;
@@ -19,6 +21,8 @@ public class Config
 	public int pageLimit;
 	public double transactionCost;
 	public boolean updateCheck;
+	public boolean useMYSQL;
+	public String database = "";
 	
 	public Config(ItemBank plugin)
 	{
@@ -67,6 +71,14 @@ public class Config
 		{
 			if (!(material.getValue() instanceof MemorySection))
 				blacklist.put(material.getKey(), (Integer) material.getValue());
+		}
+		
+		useMYSQL = config.getBoolean(Constants.ENABLE, false);
+		if (useMYSQL)
+		{
+			database = config.getString(Constants.DATABASE);
+			plugin.mysql = new MySQL(plugin, config.getString(Constants.HOST), config.getString(Constants.PORT), database, config.getString(Constants.USER), config.getString(Constants.PASS));
+			plugin.c = plugin.mysql.openConnection();
 		}
 
 		Messages.init(config.getString(Constants.LANG, "en"), new File(plugin.getDataFolder(), "lang.yml"));

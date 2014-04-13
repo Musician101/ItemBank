@@ -1,6 +1,7 @@
 package musician101.itembank;
 
 import java.io.File;
+import java.sql.Connection;
 
 import musician101.itembank.commands.AccountCommand;
 import musician101.itembank.commands.IBCommand;
@@ -15,11 +16,15 @@ import musician101.itembank.util.Updater.UpdateType;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import code.husky.mysql.MySQL;
+
 public class ItemBank extends JavaPlugin
 {
 	public Config config;
 	public Econ economy = null;
 	public File playerData;
+	public MySQL mysql = null;
+	public Connection c = null;
 	
 	public void setupEconomy()
 	{

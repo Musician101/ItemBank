@@ -2,7 +2,7 @@ package musician101.itembank.commands;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.UUID;
+import java.sql.SQLException;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
@@ -47,6 +47,11 @@ public class AccountCommand implements CommandExecutor
 		catch (InvalidConfigurationException e)
 		{
 			sender.sendMessage(Messages.YAML_EX);
+			return false;
+		}
+		catch (SQLException e)
+		{
+			sender.sendMessage(Messages.SQL_EX);
 			return false;
 		}
 		

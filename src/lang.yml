@@ -46,6 +46,7 @@ en:
     nofile: "Error: File not found. Please contact an administrator immediately."
     nopermission: "Error: You do not have permission for this command."
     playercmd: "Error: This is a player command only."
+    sqlex: "Error: Unable to connect to the database."
     updater:
         current: "The current version is the latest."
         error: "Error: Update check failed."
@@ -99,6 +100,7 @@ cz:
     nofile: "Chyba : Soubor nebyl nalezen. Prosím, obraťte se na správce okamžitě."
     nopermission: "Chyba : Nemáte oprávnění pro tento příkaz."
     playercmd: "Chyba : Toto je pouzepříkaz hráč."
+    sqlex: "Chyba: Nelze se připojit k databázi."
     updater:
         current: "Aktuální verze jeposlední."
         error: "Chyba : Kontrola Aktualizace se nezdařila."
@@ -152,6 +154,7 @@ de:
     nofile: "Fehler: Datei nicht gefunden. Bitte kontaktieren Sie sofort einen Administrator."
     nopermission: "Fehler: Sie haben keine Berechtigung für diesen Befehl."
     playercmd: "Fehler: Dies ist ein Spieler Befehl nur."
+    sqlex: "Fehler: kann nicht mit der Datenbank verbinden."
     updater:
         current: "Die aktuelle Version ist die neueste."
         error: "Fehler: Update-Prüfung fehlgeschlagen."
@@ -205,6 +208,7 @@ es:
     nofile: "Error: No se encontró el archivo. Por favor, póngase en contacto con un administrador inmediatamente."
     nopermission: "Error: No tienes permiso para que este comando."
     playercmd: "Error: Este es un comando jugador sólo."
+    sqlex: "Error: No se puede conectar a la base de datos."
     updater:
         current: "La versión actual es la última."
         error: "Error: La comprobación de actualización falló."
@@ -258,6 +262,7 @@ fr:
     nofile: "Erreur: Fichier introuvable. S'il vous plaît contacter immédiatement un administrateur."
     nopermission: "Erreur: Vous n'avez pas la permission de cette commande."
     playercmd: "Erreur: Il s'agit d'une commande de joueur seulement."
+    sqlex: "Erreur: Impossible de se connecter à la base de données."
     updater:
         current: "La version actuelle est la dernière."
         error: "Erreur: Échec de la vérification de mise à jour."
@@ -311,6 +316,7 @@ it:
     nofile: "Errore: Il file non è stato trovato. Si prega di contattare immediatamente un amministratore."
     nopermission: "Errore: Non hai il permesso per questo comando."
     playercmd: "Errore: Questo è solo un comando giocatore."
+    sqlex: "Errore: Impossibile connettersi al database."
     updater:
         current: "La versione attuale è l'ultima."
         error: "Errore: Aggiornamento non riuscito di controllo."

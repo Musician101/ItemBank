@@ -1,6 +1,9 @@
 package musician101.itembank.commands;
 
 import java.io.File;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
@@ -75,6 +78,22 @@ public class IBCommand implements CommandExecutor
 				
 				if (args.length > 1)
 				{
+					if (plugin.config.useMYSQL)
+					{
+						try
+						{
+							plugin.c.createStatement().execute("DROP TABLE IF EXISTS ib_" + args[0]);
+						}
+						catch (SQLException e)
+						{
+							sender.sendMessage(Messages.SQL_EX);
+							return false;
+						}
+						
+						sender.sendMessage(Messages.PURGE_SINGLE);
+						return true;
+					}
+					
 					File file = new File(plugin.playerData, args[1] + ".yml");
 					if (!file.exists())
 					{
@@ -85,6 +104,29 @@ public class IBCommand implements CommandExecutor
 					file.delete();
 					IBUtils.createPlayerFile(file);
 					sender.sendMessage(Messages.PURGE_SINGLE);
+					return true;
+				}
+				
+				if (plugin.config.useMYSQL)
+				{
+					try
+					{
+						Statement statement = plugin.c.createStatement();
+						ResultSet rs = plugin.c.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
+						while (rs.next())
+						{
+							sender.sendMessage(rs.getString(3));
+							if (rs.getString(3).contains("ib_"))
+								statement.execute("DROP TABLE " + rs.getString(3));
+						}
+					}
+					catch (SQLException e)
+					{
+						sender.sendMessage(Messages.SQL_EX);
+						return false;
+					}
+					
+					sender.sendMessage(Messages.PURGE_MULTIPLE);
 					return true;
 				}
 				

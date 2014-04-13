@@ -17,6 +17,14 @@ public class Constants
 	public static final String TRANSACTION_COST = "transactionCost";
 	public static final String UPDATE_CHECK = "updateCheck";
 	
+	public static final String MYSQL = "mysql.";
+	public static final String DATABASE = MYSQL + "database";
+	public static final String ENABLE = MYSQL + "enable";
+	public static final String HOST = MYSQL + "host";
+	public static final String PASS = MYSQL + "pass";
+	public static final String PORT = MYSQL + "port";
+	public static final String USER = MYSQL + "user";
+	
 	/** Language Config */
 	public static final String CMD = ".command";
 	public static final String ACCOUNT = CMD + "." + ACCOUNT_CMD;
