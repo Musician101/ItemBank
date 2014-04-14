@@ -67,4 +67,9 @@ public class ItemBank extends JavaPlugin
 		getCommand(Constants.ACCOUNT_CMD).setExecutor(new AccountCommand(this));
 		getCommand(Constants.ITEMBANK_CMD).setExecutor(new IBCommand(this));
 	}
+	
+	public void onDisable()
+	{
+		mysql.closeConnection();
+	}
 }
