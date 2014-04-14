@@ -71,6 +71,7 @@ public class ItemBank extends JavaPlugin
 	
 	public void onDisable()
 	{
-		mysql.closeConnection();
+		if (mysql != null)
+			mysql.closeConnection();
 	}
 }
