@@ -18,14 +18,14 @@ enableVault: false
 # How much to charge for use of /account
 transactionCost: 5
 
-# Language selection. Not implemented in v2.1.2 or earlier.
+# Language selection.
 lang: en
 
 # Which file format to use. This option is ignored if mysql is enabled.
 # Supported files: yml, json.
 fileType: yml
 
-# MySQL and SQLite Database related options
+# Database related options
 mysql:
     enable: false
     host: 127.0.0.1
