@@ -1,8 +1,10 @@
 package musician101.itembank.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -67,7 +69,7 @@ public class IBUtils
 		Player[] players = Bukkit.getOnlinePlayers();
 		if (players.length > 0)
 			for (Player player : players)
-				createPlayerFile(new File(plugin.playerData, player.getUniqueId() + ".yml"));
+				createPlayerFile(new File(plugin.playerData, player.getName() + "." + plugin.config.fileType));
 	}
 	
 	public static int getAmount(Inventory inv, Material material, short durability)
@@ -93,18 +95,31 @@ public class IBUtils
 			return inv;
 		}
 		
-		File file = new File(plugin.playerData, playerName + ".yml");
+		File file = new File(plugin.playerData, playerName + "." + plugin.config.fileType);
 		if (inv != null)
 			createPlayerFile(file);
 		
+		if (plugin.config.fileType.equals("json"))
+		{
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			JSONObject account = JSONValue.parse(br) == null ? new JSONObject() : (JSONObject) JSONValue.parse(br);
+			if (account.containsKey(page))
+				for (int slot = 0; slot < inv.getSize(); slot++)
+					if (((JSONObject) account.get(page)).containsKey(slot))
+						inv.setItem(slot, getItem((JSONObject) ((JSONObject) account.get(page)).get(slot)));
+			
+			return inv;
+		}
+		
 		YamlConfiguration account = new YamlConfiguration();
 		account.load(file);
-		for (int slot = 0; slot < 54; slot++)
+		for (int slot = 0; slot < inv.getSize(); slot++)
 			inv.setItem(slot, account.getItemStack(page + "." + slot));
 		
 		return inv;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void saveAccount(ItemBank plugin, String playerName, Inventory inventory, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException
 	{
 		if (plugin.config.useMYSQL)
@@ -122,19 +137,27 @@ public class IBUtils
 			return;
 		}
 		
-		for (int slot = 0; slot < inventory.getSize(); slot++)
+		File file = new File(plugin.playerData, playerName + "." + plugin.config.fileType);
+		if (plugin.config.fileType.equals("json"))
 		{
-			File file = new File(plugin.playerData, playerName + ".yml");
-			YamlConfiguration account = new YamlConfiguration();
-			account.load(file);
-			account.set("name", playerName);
-			try
-			{
-				account.set(page + "." + slot, inventory.getItem(slot));
-			}
-			catch (StringIndexOutOfBoundsException e){}
-			account.save(file);
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			JSONObject account = JSONValue.parse(br) == null ? new JSONObject() : (JSONObject) JSONValue.parse(br);			
+			if (account.containsKey(page))
+				account.remove(page);
+			
+			account.put(page, inventoryToJson(inventory));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+			bw.write(account.toJSONString());
+			bw.close();
+			return;
 		}
+		
+		YamlConfiguration account = new YamlConfiguration();
+		account.load(file);
+		for (int slot = 0; slot < inventory.getSize(); slot++)
+			account.set(page + "." + slot, inventory.getItem(slot));	
+		
+		account.save(file);
 	}
 	
 	public static boolean isNumber(String s)
@@ -155,6 +178,28 @@ public class IBUtils
 	{
 		for (String message : messages)
 			player.sendMessage(message);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static JSONObject inventoryToJson(Inventory i)
+	{
+		JSONObject inv = new JSONObject();
+		for (int slot = 0; slot < i.getSize(); slot++)
+			if (i.getItem(slot) != null)
+				inv.put(slot, itemToJson(i.getItem(slot)));
+		
+		return inv;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONObject itemToJson(ItemStack is)
+	{
+		JSONObject item = new JSONObject();
+		item.put("material", is.getType().toString());
+		item.put("damage", is.getDurability());
+		item.put("amount", is.getAmount());
+		item.put("meta", metaToJson(is));
+		return item;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -519,92 +564,167 @@ public class IBUtils
 		return new JSONObject();
 	}
 	
-	public static ItemStack getItem(ResultSet rs) throws SQLException
+	public static ItemMeta jsonToMeta(JSONObject meta, ItemStack item)
 	{
-		while (rs.next())
+		if (item.getType() == Material.BOOK_AND_QUILL || item.getType() == Material.WRITTEN_BOOK)
 		{
-			ItemStack item = new ItemStack(Material.getMaterial(rs.getString("Material")), rs.getInt("Amount"), (short) rs.getInt("Damage"));
-			if (item.getType() == Material.BOOK_AND_QUILL || item.getType() == Material.WRITTEN_BOOK)
+			BookMeta m = (BookMeta) item.getItemMeta();
+			if (meta.containsKey("author"))
+				m.setAuthor(meta.get("author").toString());
+			
+			if (meta.containsKey("pages"))
+				for (Object page : (JSONArray) meta.get("pages"))
+					m.addPage(page.toString());
+			
+			if (meta.containsKey("title"))
+				m.setTitle(meta.get("title").toString());
+			
+			if (meta.containsKey("name"))
+				m.setDisplayName(meta.get("name").toString());
+			
+			if (meta.containsKey("enchants"))
 			{
-				JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-				BookMeta m = (BookMeta) item.getItemMeta();
-				if (meta.containsKey("author"))
-					m.setAuthor(meta.get("author").toString());
-				
-				if (meta.containsKey("pages"))
-					for (Object page : (JSONArray) meta.get("pages"))
-						m.addPage(page.toString());
-				
-				if (meta.containsKey("title"))
-					m.setTitle(meta.get("title").toString());
-				
-				if (meta.containsKey("name"))
-					m.setDisplayName(meta.get("name").toString());
-				
-				if (meta.containsKey("enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
-				
-				if (meta.containsKey("lore"))
-				{
-					JSONArray lore = (JSONArray) meta.get("lore");
-					List<String> l = new ArrayList<String>();
-					for (Object line : lore)
-						l.add(line.toString());
-					
-					m.setLore(l);
-				}
-				
-				item.setItemMeta(m);
-				return item;
+				JSONObject enchants = (JSONObject) meta.get("enchants");
+				for (Enchantment enchant : Enchantment.values())
+					if (enchants.containsKey(enchant.getName()))
+						m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
 			}
-			else if (item.getType() == Material.ENCHANTED_BOOK)
+			
+			if (meta.containsKey("lore"))
 			{
-				JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-				EnchantmentStorageMeta m = (EnchantmentStorageMeta) item.getItemMeta();
-				if (meta.containsKey("stored-enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("stored-enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addStoredEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
+				JSONArray lore = (JSONArray) meta.get("lore");
+				List<String> l = new ArrayList<String>();
+				for (Object line : lore)
+					l.add(line.toString());
 				
-				if (meta.containsKey("name"))
-					m.setDisplayName(meta.get("name").toString());
-				
-				if (meta.containsKey("enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
-				
-				if (meta.containsKey("lore"))
-				{
-					JSONArray lore = (JSONArray) meta.get("lore");
-					List<String> l = new ArrayList<String>();
-					for (Object line : lore)
-						l.add(line.toString());
-					
-					m.setLore(l);
-				}
-				
-				item.setItemMeta(m);
-				return item;
+				m.setLore(l);
 			}
-			else if (item.getType() == Material.FIREWORK_CHARGE)
+			
+			return m;
+		}
+		else if (item.getType() == Material.ENCHANTED_BOOK)
+		{
+			EnchantmentStorageMeta m = (EnchantmentStorageMeta) item.getItemMeta();
+			if (meta.containsKey("stored-enchants"))
 			{
-				JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-				FireworkEffectMeta m = (FireworkEffectMeta) item.getItemMeta();
-				if (meta.containsKey("effect"))
+				JSONObject enchants = (JSONObject) meta.get("stored-enchants");
+				for (Enchantment enchant : Enchantment.values())
+					if (enchants.containsKey(enchant.getName()))
+						m.addStoredEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
+			}
+			
+			if (meta.containsKey("name"))
+				m.setDisplayName(meta.get("name").toString());
+			
+			if (meta.containsKey("enchants"))
+			{
+				JSONObject enchants = (JSONObject) meta.get("enchants");
+				for (Enchantment enchant : Enchantment.values())
+					if (enchants.containsKey(enchant.getName()))
+						m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
+			}
+			
+			if (meta.containsKey("lore"))
+			{
+				JSONArray lore = (JSONArray) meta.get("lore");
+				List<String> l = new ArrayList<String>();
+				for (Object line : lore)
+					l.add(line.toString());
+				
+				m.setLore(l);
+			}
+			
+			return m;
+		}
+		else if (item.getType() == Material.FIREWORK_CHARGE)
+		{
+			FireworkEffectMeta m = (FireworkEffectMeta) item.getItemMeta();
+			if (meta.containsKey("effect"))
+			{
+				JSONObject effect = (JSONObject) meta.get("effect");
+				Builder fw = FireworkEffect.builder();
+				if (effect.containsKey("flicker"))
+					fw.flicker(Boolean.valueOf(effect.get("flicker").toString()));
+				
+				if (effect.containsKey("trail"))
+					fw.trail(Boolean.valueOf(effect.get("trail").toString()));
+				
+				if (effect.containsKey("type"))
+					fw.with(Type.valueOf(effect.get("type").toString()));
+				
+				JSONArray colors = (JSONArray) effect.get("colors");
+				for (Object object : colors)
 				{
-					JSONObject effect = (JSONObject) meta.get("effect");
+					int b = 0;
+					int g = 0;
+					int r = 0;
+					JSONObject color = (JSONObject) object;
+					if (color.containsKey("BLUE"))
+						b = Integer.valueOf(color.get("BLUE").toString());
+					
+					if (color.containsKey("GREEN"))
+						g = Integer.valueOf(color.get("GREEN").toString());
+					
+					if (color.containsKey("RED"))
+						r = Integer.valueOf(color.get("RED").toString());
+					
+					fw.withColor(Color.fromRGB(r, g, b));
+				}
+				
+				JSONArray fade = (JSONArray) effect.get("fade-colors");
+				for (Object object : fade)
+				{
+					int b = 0;
+					int g = 0;
+					int r = 0;
+					JSONObject color = (JSONObject) object;
+					if (color.containsKey("BLUE"))
+						b = Integer.valueOf(color.get("BLUE").toString());
+					
+					if (color.containsKey("GREEN"))
+						g = Integer.valueOf(color.get("GREEN").toString());
+					
+					if (color.containsKey("RED"))
+						r = Integer.valueOf(color.get("RED").toString());
+					
+					fw.withFade(Color.fromRGB(r, g, b));
+				}
+				
+				m.setEffect(fw.build());
+			}
+			
+			if (meta.containsKey("name"))
+				m.setDisplayName(meta.get("name").toString());
+			
+			if (meta.containsKey("enchants"))
+			{
+				JSONObject enchants = (JSONObject) meta.get("enchants");
+				for (Enchantment enchant : Enchantment.values())
+					if (enchants.containsKey(enchant.getName()))
+						m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
+			}
+			
+			if (meta.containsKey("lore"))
+			{
+				JSONArray lore = (JSONArray) meta.get("lore");
+				List<String> l = new ArrayList<String>();
+				for (Object line : lore)
+					l.add(line.toString());
+				
+				m.setLore(l);
+			}
+			
+			return m;
+		}
+		else if (item.getType() == Material.FIREWORK)
+		{
+			FireworkMeta m = (FireworkMeta) item.getItemMeta();
+			if (meta.containsKey("effects"))
+			{
+				JSONArray effects = (JSONArray) meta.get("effects");
+				for (Object e : effects)
+				{
+					JSONObject effect = (JSONObject) e;
 					Builder fw = FireworkEffect.builder();
 					if (effect.containsKey("flicker"))
 						fw.flicker(Boolean.valueOf(effect.get("flicker").toString()));
@@ -653,264 +773,10 @@ public class IBUtils
 						fw.withFade(Color.fromRGB(r, g, b));
 					}
 					
-					m.setEffect(fw.build());
+					m.addEffect(fw.build());
 				}
-				
-				if (meta.containsKey("name"))
-					m.setDisplayName(meta.get("name").toString());
-				
-				if (meta.containsKey("enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
-				
-				if (meta.containsKey("lore"))
-				{
-					JSONArray lore = (JSONArray) meta.get("lore");
-					List<String> l = new ArrayList<String>();
-					for (Object line : lore)
-						l.add(line.toString());
-					
-					m.setLore(l);
-				}
-				
-				item.setItemMeta(m);
-				return item;
-			}
-			else if (item.getType() == Material.FIREWORK)
-			{
-				JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-				FireworkMeta m = (FireworkMeta) item.getItemMeta();
-				if (meta.containsKey("effects"))
-				{
-					JSONArray effects = (JSONArray) meta.get("effects");
-					for (Object e : effects)
-					{
-						JSONObject effect = (JSONObject) e;
-						Builder fw = FireworkEffect.builder();
-						if (effect.containsKey("flicker"))
-							fw.flicker(Boolean.valueOf(effect.get("flicker").toString()));
-						
-						if (effect.containsKey("trail"))
-							fw.trail(Boolean.valueOf(effect.get("trail").toString()));
-						
-						if (effect.containsKey("type"))
-							fw.with(Type.valueOf(effect.get("type").toString()));
-						
-						JSONArray colors = (JSONArray) effect.get("colors");
-						for (Object object : colors)
-						{
-							int b = 0;
-							int g = 0;
-							int r = 0;
-							JSONObject color = (JSONObject) object;
-							if (color.containsKey("BLUE"))
-								b = Integer.valueOf(color.get("BLUE").toString());
-							
-							if (color.containsKey("GREEN"))
-								g = Integer.valueOf(color.get("GREEN").toString());
-							
-							if (color.containsKey("RED"))
-								r = Integer.valueOf(color.get("RED").toString());
-							
-							fw.withColor(Color.fromRGB(r, g, b));
-						}
-						
-						JSONArray fade = (JSONArray) effect.get("fade-colors");
-						for (Object object : fade)
-						{
-							int b = 0;
-							int g = 0;
-							int r = 0;
-							JSONObject color = (JSONObject) object;
-							if (color.containsKey("BLUE"))
-								b = Integer.valueOf(color.get("BLUE").toString());
-							
-							if (color.containsKey("GREEN"))
-								g = Integer.valueOf(color.get("GREEN").toString());
-							
-							if (color.containsKey("RED"))
-								r = Integer.valueOf(color.get("RED").toString());
-							
-							fw.withFade(Color.fromRGB(r, g, b));
-						}
-						
-						m.addEffect(fw.build());
-					}
-				}
-				
-				if (meta.containsKey("name"))
-					m.setDisplayName(meta.get("name").toString());
-				
-				if (meta.containsKey("enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
-				
-				if (meta.containsKey("lore"))
-				{
-					JSONArray lore = (JSONArray) meta.get("lore");
-					List<String> l = new ArrayList<String>();
-					for (Object line : lore)
-						l.add(line.toString());
-					
-					m.setLore(l);
-				}
-				
-				item.setItemMeta(m);
-				return item;
-			}
-			else if (item.getType() == Material.LEATHER_BOOTS || item.getType() == Material.LEATHER_CHESTPLATE || item.getType() == Material.LEATHER_HELMET || item.getType() == Material.LEATHER_LEGGINGS)
-			{
-				JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-				LeatherArmorMeta m = (LeatherArmorMeta) item.getItemMeta();
-				if (meta.containsKey("color"))
-				{
-					JSONObject color = (JSONObject) meta.get("color");
-					int b = (color.containsKey("BLUE") ? Integer.valueOf(color.get("BLUE").toString()) : 0);
-					int g = (color.containsKey("GREEN") ? Integer.valueOf(color.get("GREEN").toString()) : 0);
-					int r = (color.containsKey("RED") ? Integer.valueOf(color.get("RED").toString()) : 0);
-					m.setColor(Color.fromRGB(r, g, b));
-				}
-				
-				if (meta.containsKey("name"))
-					m.setDisplayName(meta.get("name").toString());
-				
-				if (meta.containsKey("enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
-				
-				if (meta.containsKey("lore"))
-				{
-					JSONArray lore = (JSONArray) meta.get("lore");
-					List<String> l = new ArrayList<String>();
-					for (Object line : lore)
-						l.add(line.toString());
-					
-					m.setLore(l);
-				}
-				
-				item.setItemMeta(m);
-				return item;
-			}
-			else if (item.getType() == Material.MAP)
-			{
-				JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-				MapMeta m = (MapMeta) item.getItemMeta();
-				if (meta.containsKey("scaling"))
-					m.setScaling(Boolean.valueOf(meta.get("scaling").toString()));
-				
-				if (meta.containsKey("name"))
-					m.setDisplayName(meta.get("name").toString());
-				
-				if (meta.containsKey("enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
-				
-				if (meta.containsKey("lore"))
-				{
-					JSONArray lore = (JSONArray) meta.get("lore");
-					List<String> l = new ArrayList<String>();
-					for (Object line : lore)
-						l.add(line.toString());
-					
-					m.setLore(l);
-				}
-				
-				item.setItemMeta(m);
-				return item;
-			}
-			else if (item.getType() == Material.POTION)
-			{
-				JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-				PotionMeta m = (PotionMeta) item.getItemMeta();
-				if (meta.containsKey("effects"))
-				{
-					JSONArray effects = (JSONArray) meta.get("effects");
-					for (Object object : effects)
-					{
-						JSONObject e = (JSONObject) object;
-						PotionEffectType type = (e.containsKey("effect") ? PotionEffectType.getByName(e.get("effect").toString()) : PotionEffectType.ABSORPTION);
-						int duration = (e.containsKey("duration") ? Integer.valueOf(e.get("duration").toString()) : 0);
-						int amplifier = (e.containsKey("amplifier") ? Integer.valueOf(e.get("amplifier").toString()) : 0);
-						boolean ambient = (e.containsKey("ambient") ? Boolean.valueOf(e.get("ambient").toString()) : false);
-						PotionEffect effect = new PotionEffect(type, duration, amplifier, ambient);
-						m.addCustomEffect(effect, false);
-					}
-				}
-				
-				if (meta.containsKey("name"))
-					m.setDisplayName(meta.get("name").toString());
-				
-				if (meta.containsKey("enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
-				
-				if (meta.containsKey("lore"))
-				{
-					JSONArray lore = (JSONArray) meta.get("lore");
-					List<String> l = new ArrayList<String>();
-					for (Object line : lore)
-						l.add(line.toString());
-					
-					m.setLore(l);
-				}
-				
-				item.setItemMeta(m);
-				return item;
-			}
-			else if (item.getType() == Material.SKULL_ITEM)
-			{
-				JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-				SkullMeta m = (SkullMeta) item.getItemMeta();
-				if (meta.containsKey("owner"))
-					m.setOwner(meta.get("owner").toString());
-				
-				if (meta.containsKey("name"))
-					m.setDisplayName(meta.get("name").toString());
-				
-				if (meta.containsKey("enchants"))
-				{
-					JSONObject enchants = (JSONObject) meta.get("enchants");
-					for (Enchantment enchant : Enchantment.values())
-						if (enchants.containsKey(enchant.getName()))
-							m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
-				}
-				
-				if (meta.containsKey("lore"))
-				{
-					JSONArray lore = (JSONArray) meta.get("lore");
-					List<String> l = new ArrayList<String>();
-					for (Object line : lore)
-						l.add(line.toString());
-					
-					m.setLore(l);
-				}
-				
-				item.setItemMeta(m);
-				return item;
 			}
 			
-			JSONObject meta = (JSONObject) JSONValue.parse(rs.getString("ItemMeta"));
-			ItemMeta m = (ItemMeta) item.getItemMeta();
 			if (meta.containsKey("name"))
 				m.setDisplayName(meta.get("name").toString());
 			
@@ -932,7 +798,181 @@ public class IBUtils
 				m.setLore(l);
 			}
 			
-			item.setItemMeta(m);
+			return m;
+		}
+		else if (item.getType() == Material.LEATHER_BOOTS || item.getType() == Material.LEATHER_CHESTPLATE || item.getType() == Material.LEATHER_HELMET || item.getType() == Material.LEATHER_LEGGINGS)
+		{
+			LeatherArmorMeta m = (LeatherArmorMeta) item.getItemMeta();
+			if (meta.containsKey("color"))
+			{
+				JSONObject color = (JSONObject) meta.get("color");
+				int b = (color.containsKey("BLUE") ? Integer.valueOf(color.get("BLUE").toString()) : 0);
+				int g = (color.containsKey("GREEN") ? Integer.valueOf(color.get("GREEN").toString()) : 0);
+				int r = (color.containsKey("RED") ? Integer.valueOf(color.get("RED").toString()) : 0);
+				m.setColor(Color.fromRGB(r, g, b));
+			}
+			
+			if (meta.containsKey("name"))
+				m.setDisplayName(meta.get("name").toString());
+			
+			if (meta.containsKey("enchants"))
+			{
+				JSONObject enchants = (JSONObject) meta.get("enchants");
+				for (Enchantment enchant : Enchantment.values())
+					if (enchants.containsKey(enchant.getName()))
+						m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
+			}
+			
+			if (meta.containsKey("lore"))
+			{
+				JSONArray lore = (JSONArray) meta.get("lore");
+				List<String> l = new ArrayList<String>();
+				for (Object line : lore)
+					l.add(line.toString());
+				
+				m.setLore(l);
+			}
+			
+			return m;
+		}
+		else if (item.getType() == Material.MAP)
+		{
+			MapMeta m = (MapMeta) item.getItemMeta();
+			if (meta.containsKey("scaling"))
+				m.setScaling(Boolean.valueOf(meta.get("scaling").toString()));
+			
+			if (meta.containsKey("name"))
+				m.setDisplayName(meta.get("name").toString());
+			
+			if (meta.containsKey("enchants"))
+			{
+				JSONObject enchants = (JSONObject) meta.get("enchants");
+				for (Enchantment enchant : Enchantment.values())
+					if (enchants.containsKey(enchant.getName()))
+						m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
+			}
+			
+			if (meta.containsKey("lore"))
+			{
+				JSONArray lore = (JSONArray) meta.get("lore");
+				List<String> l = new ArrayList<String>();
+				for (Object line : lore)
+					l.add(line.toString());
+				
+				m.setLore(l);
+			}
+			
+			return m;
+		}
+		else if (item.getType() == Material.POTION)
+		{
+			PotionMeta m = (PotionMeta) item.getItemMeta();
+			if (meta.containsKey("effects"))
+			{
+				JSONArray effects = (JSONArray) meta.get("effects");
+				for (Object object : effects)
+				{
+					JSONObject e = (JSONObject) object;
+					PotionEffectType type = (e.containsKey("effect") ? PotionEffectType.getByName(e.get("effect").toString()) : PotionEffectType.ABSORPTION);
+					int duration = (e.containsKey("duration") ? Integer.valueOf(e.get("duration").toString()) : 0);
+					int amplifier = (e.containsKey("amplifier") ? Integer.valueOf(e.get("amplifier").toString()) : 0);
+					boolean ambient = (e.containsKey("ambient") ? Boolean.valueOf(e.get("ambient").toString()) : false);
+					PotionEffect effect = new PotionEffect(type, duration, amplifier, ambient);
+					m.addCustomEffect(effect, false);
+				}
+			}
+			
+			if (meta.containsKey("name"))
+				m.setDisplayName(meta.get("name").toString());
+			
+			if (meta.containsKey("enchants"))
+			{
+				JSONObject enchants = (JSONObject) meta.get("enchants");
+				for (Enchantment enchant : Enchantment.values())
+					if (enchants.containsKey(enchant.getName()))
+						m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
+			}
+			
+			if (meta.containsKey("lore"))
+			{
+				JSONArray lore = (JSONArray) meta.get("lore");
+				List<String> l = new ArrayList<String>();
+				for (Object line : lore)
+					l.add(line.toString());
+				
+				m.setLore(l);
+			}
+			
+			return m;
+		}
+		else if (item.getType() == Material.SKULL_ITEM)
+		{
+			SkullMeta m = (SkullMeta) item.getItemMeta();
+			if (meta.containsKey("owner"))
+				m.setOwner(meta.get("owner").toString());
+			
+			if (meta.containsKey("name"))
+				m.setDisplayName(meta.get("name").toString());
+			
+			if (meta.containsKey("enchants"))
+			{
+				JSONObject enchants = (JSONObject) meta.get("enchants");
+				for (Enchantment enchant : Enchantment.values())
+					if (enchants.containsKey(enchant.getName()))
+						m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
+			}
+			
+			if (meta.containsKey("lore"))
+			{
+				JSONArray lore = (JSONArray) meta.get("lore");
+				List<String> l = new ArrayList<String>();
+				for (Object line : lore)
+					l.add(line.toString());
+				
+				m.setLore(l);
+			}
+			
+			return m;
+		}
+		
+		ItemMeta m = (ItemMeta) item.getItemMeta();
+		if (meta.containsKey("name"))
+			m.setDisplayName(meta.get("name").toString());
+		
+		if (meta.containsKey("enchants"))
+		{
+			JSONObject enchants = (JSONObject) meta.get("enchants");
+			for (Enchantment enchant : Enchantment.values())
+				if (enchants.containsKey(enchant.getName()))
+					m.addEnchant(enchant, Integer.valueOf(enchants.get(enchant.getName()).toString()), false);
+		}
+		
+		if (meta.containsKey("lore"))
+		{
+			JSONArray lore = (JSONArray) meta.get("lore");
+			List<String> l = new ArrayList<String>();
+			for (Object line : lore)
+				l.add(line.toString());
+			
+			m.setLore(l);
+		}
+		
+		return m;
+	}
+	
+	public static ItemStack getItem(JSONObject item)
+	{
+		ItemStack is = new ItemStack(Material.getMaterial(item.get("material").toString()), (int) item.get("amount"), (short) item.get("damage"));
+		is.setItemMeta(jsonToMeta(item, is));
+		return is;
+	}
+	
+	public static ItemStack getItem(ResultSet rs) throws SQLException
+	{
+		while (rs.next())
+		{
+			ItemStack item = new ItemStack(Material.getMaterial(rs.getString("Material")), rs.getInt("Amount"), (short) rs.getInt("Damage"));
+			item.setItemMeta(jsonToMeta((JSONObject) JSONValue.parse(rs.getString("ItemMeta")), item));
 			return item;
 		}
 		

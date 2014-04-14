@@ -94,7 +94,7 @@ public class IBCommand implements CommandExecutor
 						return true;
 					}
 					
-					File file = new File(plugin.playerData, args[1] + ".yml");
+					File file = new File(plugin.playerData, args[1] + "." + plugin.config.fileType);
 					if (!file.exists())
 					{
 						sender.sendMessage(Messages.PURGE_NO_FILE);

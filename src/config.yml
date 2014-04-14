@@ -21,6 +21,10 @@ transactionCost: 5
 # Language selection. Not implemented in v2.1.2 or earlier.
 lang: en
 
+# Which file format to use. This option is ignored if mysql is enabled.
+# Supported files: yml, json.
+fileType: yml
+
 # MySQL and SQLite Database related options
 mysql:
     enable: false
