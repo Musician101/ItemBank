@@ -58,8 +58,9 @@ public class ItemBank extends JavaPlugin
 		config = new Config(this);
 		versionCheck();
 		setupEconomy();
-		
-		IBUtils.createPlayerFiles(this);
+
+		if (config.useMYSQL)
+			IBUtils.createPlayerFiles(this);
 		
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
