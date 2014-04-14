@@ -165,38 +165,38 @@ public class IBUtils
 			JSONObject meta = new JSONObject();
 			if (is.getType() == Material.BOOK_AND_QUILL || is.getType() == Material.WRITTEN_BOOK)
 			{
-				BookMeta bMeta = (BookMeta) is.getItemMeta();
-				if (bMeta.hasAuthor())
-					meta.put("author", bMeta.getAuthor());
+				BookMeta m = (BookMeta) is.getItemMeta();
+				if (m.hasAuthor())
+					meta.put("author", m.getAuthor());
 				
-				if (bMeta.hasPages())
+				if (m.hasPages())
 				{
 					JSONArray pages = new JSONArray();
-					for (String page : bMeta.getPages())
+					for (String page : m.getPages())
 						pages.add(page);
 					
 					meta.put("pages", pages);
 				}
 				
-				if (bMeta.hasTitle())
-					meta.put("title", bMeta.getTitle());
+				if (m.hasTitle())
+					meta.put("title", m.getTitle());
 				
-				if (bMeta.hasDisplayName())
-					meta.put("name", bMeta.getDisplayName());
+				if (m.hasDisplayName())
+					meta.put("name", m.getDisplayName());
 				
-				if (bMeta.hasEnchants())
+				if (m.hasEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : bMeta.getEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("enchants", enchants);
 				}
 				
-				if (bMeta.hasLore())
+				if (m.hasLore())
 				{
 					JSONArray lore = new JSONArray();
-					for (String line : bMeta.getLore())
+					for (String line : m.getLore())
 						lore.add(line);
 					
 					meta.put("lore", lore);
@@ -206,32 +206,32 @@ public class IBUtils
 			}
 			else if (is.getType() == Material.ENCHANTED_BOOK)
 			{
-				EnchantmentStorageMeta eMeta = (EnchantmentStorageMeta) is.getItemMeta();
-				if (eMeta.hasStoredEnchants())
+				EnchantmentStorageMeta m = (EnchantmentStorageMeta) is.getItemMeta();
+				if (m.hasStoredEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : eMeta.getStoredEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getStoredEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("stored-enchants", enchants);
 				}
 				
-				if (eMeta.hasDisplayName())
-					meta.put("name", eMeta.getDisplayName());
+				if (m.hasDisplayName())
+					meta.put("name", m.getDisplayName());
 				
-				if (eMeta.hasEnchants())
+				if (m.hasEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : eMeta.getEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("enchants", enchants);
 				}
 				
-				if (eMeta.hasLore())
+				if (m.hasLore())
 				{
 					JSONArray lore = new JSONArray();
-					for (String line : eMeta.getLore())
+					for (String line : m.getLore())
 						lore.add(line);
 					
 					meta.put("lore", lore);
@@ -241,10 +241,10 @@ public class IBUtils
 			}
 			else if (is.getType() == Material.FIREWORK_CHARGE)
 			{
-				FireworkEffectMeta fwMeta = (FireworkEffectMeta) is.getItemMeta();
-				if (fwMeta.hasEffect())
+				FireworkEffectMeta m = (FireworkEffectMeta) is.getItemMeta();
+				if (m.hasEffect())
 				{
-					FireworkEffect fwEffect = fwMeta.getEffect();
+					FireworkEffect fwEffect = m.getEffect();
 					JSONObject effect = new JSONObject();
 					effect.put("flicker", fwEffect.hasFlicker());
 					effect.put("trail", fwEffect.hasTrail());
@@ -274,22 +274,22 @@ public class IBUtils
 					meta.put("effect", effect);
 				}
 				
-				if (fwMeta.hasDisplayName())
-					meta.put("name", fwMeta.getDisplayName());
+				if (m.hasDisplayName())
+					meta.put("name", m.getDisplayName());
 				
-				if (fwMeta.hasEnchants())
+				if (m.hasEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : fwMeta.getEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("enchants", enchants);
 				}
 				
-				if (fwMeta.hasLore())
+				if (m.hasLore())
 				{
 					JSONArray lore = new JSONArray();
-					for (String line : fwMeta.getLore())
+					for (String line : m.getLore())
 						lore.add(line);
 					
 					meta.put("lore", lore);
@@ -299,11 +299,11 @@ public class IBUtils
 			}
 			else if (is.getType() == Material.FIREWORK)
 			{
-				FireworkMeta fwMeta = (FireworkMeta) is.getItemMeta();
-				if (fwMeta.hasEffects())
+				FireworkMeta m = (FireworkMeta) is.getItemMeta();
+				if (m.hasEffects())
 				{
 					JSONArray effects = new JSONArray();
-					for (FireworkEffect fwEffect : fwMeta.getEffects())
+					for (FireworkEffect fwEffect : m.getEffects())
 					{
 						JSONObject effect = new JSONObject();
 						effect.put("flicker", fwEffect.hasFlicker());
@@ -334,26 +334,26 @@ public class IBUtils
 						effects.add(effect);
 					}
 					
-					meta.put("power", fwMeta.getPower());
+					meta.put("power", m.getPower());
 					meta.put("effects", effects);
 				}
 				
-				if (fwMeta.hasDisplayName())
-					meta.put("name", fwMeta.getDisplayName());
+				if (m.hasDisplayName())
+					meta.put("name", m.getDisplayName());
 				
-				if (fwMeta.hasEnchants())
+				if (m.hasEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : fwMeta.getEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("enchants", enchants);
 				}
 				
-				if (fwMeta.hasLore())
+				if (m.hasLore())
 				{
 					JSONArray lore = new JSONArray();
-					for (String line : fwMeta.getLore())
+					for (String line : m.getLore())
 						lore.add(line);
 					
 					meta.put("lore", lore);
@@ -363,29 +363,29 @@ public class IBUtils
 			}
 			else if (is.getType() == Material.LEATHER_BOOTS || is.getType() == Material.LEATHER_CHESTPLATE || is.getType() == Material.LEATHER_HELMET || is.getType() == Material.LEATHER_LEGGINGS)
 			{
-				LeatherArmorMeta lMeta = (LeatherArmorMeta) is.getItemMeta();
-				Color c = lMeta.getColor();
+				LeatherArmorMeta m = (LeatherArmorMeta) is.getItemMeta();
+				Color c = m.getColor();
 				JSONObject color = new JSONObject();
 				color.put("BLUE", c.getBlue());
 				color.put("GREEN", c.getGreen());
 				color.put("RED", c.getRed());
 				meta.put("color", color);
-				if (lMeta.hasDisplayName())
-					meta.put("name", lMeta.getDisplayName());
+				if (m.hasDisplayName())
+					meta.put("name", m.getDisplayName());
 				
-				if (lMeta.hasEnchants())
+				if (m.hasEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : lMeta.getEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("enchants", enchants);
 				}
 				
-				if (lMeta.hasLore())
+				if (m.hasLore())
 				{
 					JSONArray lore = new JSONArray();
-					for (String line : lMeta.getLore())
+					for (String line : m.getLore())
 						lore.add(line);
 					
 					meta.put("lore", lore);
@@ -395,24 +395,24 @@ public class IBUtils
 			}
 			else if (is.getType() == Material.MAP)
 			{
-				MapMeta mMeta = (MapMeta) is.getItemMeta();
-				meta.put("scaling", mMeta.isScaling());
-				if (mMeta.hasDisplayName())
-					meta.put("name", mMeta.getDisplayName());
+				MapMeta m = (MapMeta) is.getItemMeta();
+				meta.put("scaling", m.isScaling());
+				if (m.hasDisplayName())
+					meta.put("name", m.getDisplayName());
 				
-				if (mMeta.hasEnchants())
+				if (m.hasEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : mMeta.getEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("enchants", enchants);
 				}
 				
-				if (mMeta.hasLore())
+				if (m.hasLore())
 				{
 					JSONArray lore = new JSONArray();
-					for (String line : mMeta.getLore())
+					for (String line : m.getLore())
 						lore.add(line);
 					
 					meta.put("lore", lore);
@@ -422,11 +422,11 @@ public class IBUtils
 			}
 			else if (is.getType() == Material.POTION)
 			{
-				PotionMeta pMeta = (PotionMeta) is.getItemMeta();
-				if (pMeta.hasCustomEffects())
+				PotionMeta m = (PotionMeta) is.getItemMeta();
+				if (m.hasCustomEffects())
 				{
 					JSONArray effects = new JSONArray();
-					for (PotionEffect e : pMeta.getCustomEffects())
+					for (PotionEffect e : m.getCustomEffects())
 					{
 						JSONObject effect = new JSONObject();
 						effect.put("duration", e.getDuration());
@@ -438,22 +438,22 @@ public class IBUtils
 					meta.put("effects", effects);
 				}
 				
-				if (pMeta.hasDisplayName())
-					meta.put("name", pMeta.getDisplayName());
+				if (m.hasDisplayName())
+					meta.put("name", m.getDisplayName());
 				
-				if (pMeta.hasEnchants())
+				if (m.hasEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : pMeta.getEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("enchants", enchants);
 				}
 				
-				if (pMeta.hasLore())
+				if (m.hasLore())
 				{
 					JSONArray lore = new JSONArray();
-					for (String line : pMeta.getLore())
+					for (String line : m.getLore())
 						lore.add(line);
 					
 					meta.put("lore", lore);
@@ -463,26 +463,26 @@ public class IBUtils
 			}
 			else if (is.getType() == Material.SKULL_ITEM)
 			{
-				SkullMeta sMeta = (SkullMeta) is.getItemMeta();
-				if (sMeta.hasOwner())
-					meta.put("owner", sMeta.getOwner());
+				SkullMeta m = (SkullMeta) is.getItemMeta();
+				if (m.hasOwner())
+					meta.put("owner", m.getOwner());
 				
-				if (sMeta.hasDisplayName())
-					meta.put("name", sMeta.getDisplayName());
+				if (m.hasDisplayName())
+					meta.put("name", m.getDisplayName());
 				
-				if (sMeta.hasEnchants())
+				if (m.hasEnchants())
 				{
 					JSONObject enchants = new JSONObject();
-					for (Entry<Enchantment, Integer> enchant : sMeta.getEnchants().entrySet())
+					for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 						enchants.put(enchant.getKey().getName(), enchant.getValue());
 					
 					meta.put("enchants", enchants);
 				}
 				
-				if (sMeta.hasLore())
+				if (m.hasLore())
 				{
 					JSONArray lore = new JSONArray();
-					for (String line : sMeta.getLore())
+					for (String line : m.getLore())
 						lore.add(line);
 					
 					meta.put("lore", lore);
@@ -491,23 +491,23 @@ public class IBUtils
 				return meta;
 			}
 			
-			ItemMeta iMeta = is.getItemMeta();
-			if (iMeta.hasDisplayName())
-				meta.put("name", iMeta.getDisplayName());
+			ItemMeta m = is.getItemMeta();
+			if (m.hasDisplayName())
+				meta.put("name", m.getDisplayName());
 			
-			if (iMeta.hasEnchants())
+			if (m.hasEnchants())
 			{
 				JSONObject enchants = new JSONObject();
-				for (Entry<Enchantment, Integer> enchant : iMeta.getEnchants().entrySet())
+				for (Entry<Enchantment, Integer> enchant : m.getEnchants().entrySet())
 					enchants.put(enchant.getKey().getName(), enchant.getValue());
 				
 				meta.put("enchants", enchants);
 			}
 			
-			if (iMeta.hasLore())
+			if (m.hasLore())
 			{
 				JSONArray lore = new JSONArray();
-				for (String line : iMeta.getLore())
+				for (String line : m.getLore())
 					lore.add(line);
 				
 				meta.put("lore", lore);
