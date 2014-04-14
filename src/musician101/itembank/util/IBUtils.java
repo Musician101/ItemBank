@@ -116,7 +116,7 @@ public class IBUtils
 				statement.execute("DELETE FROM ib_" + playerName + " WHERE Page = " + page + " and Slot = " + slot + ";");
 				ItemStack item = inventory.getItem(slot);
 				if (item != null)
-					statement.executeUpdate("INSERT INTO ib_" + playerName + "(Page, Slot, Material, Damage, Amount, ItemMeta) VALUES (" + page + ", " + slot + ", \"" + item.getType().toString() + "\", " + item.getDurability() + ", " + item.getAmount() + ", \""+ metaToJson(item).replace("\"", "\\\"") + "\");");
+					statement.executeUpdate("INSERT INTO ib_" + playerName + "(Page, Slot, Material, Damage, Amount, ItemMeta) VALUES (" + page + ", " + slot + ", \"" + item.getType().toString() + "\", " + item.getDurability() + ", " + item.getAmount() + ", \""+ metaToJson(item).toJSONString().replace("\"", "\\\"") + "\");");
 			}
 			
 			return;
@@ -133,8 +133,6 @@ public class IBUtils
 				account.set(page + "." + slot, inventory.getItem(slot));
 			}
 			catch (StringIndexOutOfBoundsException e){}
-			if (inventory.getItem(slot) != null)
-				Bukkit.getPlayer(playerName).sendMessage(IBUtils.metaToJson(inventory.getItem(slot)));
 			account.save(file);
 		}
 	}
@@ -160,7 +158,7 @@ public class IBUtils
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static String metaToJson(ItemStack is)
+	public static JSONObject metaToJson(ItemStack is)
 	{
 		if (is.hasItemMeta())
 		{
@@ -204,7 +202,7 @@ public class IBUtils
 					meta.put("lore", lore);
 				}
 				
-				return meta.toJSONString();
+				return meta;
 			}
 			else if (is.getType() == Material.ENCHANTED_BOOK)
 			{
@@ -239,7 +237,7 @@ public class IBUtils
 					meta.put("lore", lore);
 				}
 				
-				return meta.toJSONString();
+				return meta;
 			}
 			else if (is.getType() == Material.FIREWORK_CHARGE)
 			{
@@ -297,7 +295,7 @@ public class IBUtils
 					meta.put("lore", lore);
 				}
 				
-				return meta.toJSONString();
+				return meta;
 			}
 			else if (is.getType() == Material.FIREWORK)
 			{
@@ -361,7 +359,7 @@ public class IBUtils
 					meta.put("lore", lore);
 				}
 				
-				return meta.toJSONString();
+				return meta;
 			}
 			else if (is.getType() == Material.LEATHER_BOOTS || is.getType() == Material.LEATHER_CHESTPLATE || is.getType() == Material.LEATHER_HELMET || is.getType() == Material.LEATHER_LEGGINGS)
 			{
@@ -393,7 +391,7 @@ public class IBUtils
 					meta.put("lore", lore);
 				}
 				
-				return meta.toJSONString();
+				return meta;
 			}
 			else if (is.getType() == Material.MAP)
 			{
@@ -420,7 +418,7 @@ public class IBUtils
 					meta.put("lore", lore);
 				}
 				
-				return meta.toJSONString();
+				return meta;
 			}
 			else if (is.getType() == Material.POTION)
 			{
@@ -461,7 +459,7 @@ public class IBUtils
 					meta.put("lore", lore);
 				}
 				
-				return meta.toJSONString();
+				return meta;
 			}
 			else if (is.getType() == Material.SKULL_ITEM)
 			{
@@ -490,7 +488,7 @@ public class IBUtils
 					meta.put("lore", lore);
 				}
 				
-				return meta.toJSONString();
+				return meta;
 			}
 			
 			ItemMeta iMeta = is.getItemMeta();
@@ -515,10 +513,10 @@ public class IBUtils
 				meta.put("lore", lore);
 			}
 			
-			return meta.toJSONString();
+			return meta;
 		}
 		
-		return "{}";
+		return new JSONObject();
 	}
 	
 	public static ItemStack getItem(ResultSet rs) throws SQLException
