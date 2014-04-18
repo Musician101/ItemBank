@@ -46,12 +46,7 @@ public class AccountCommand implements CommandExecutor
 			sender.sendMessage(Messages.IO_EX);
 			return false;
 		}
-		catch (InvalidConfigurationException e)
-		{
-			sender.sendMessage(Messages.YAML_PARSE_EX);
-			return false;
-		}
-		catch (ParseException e)
+		catch (InvalidConfigurationException | ParseException e)
 		{
 			sender.sendMessage(Messages.YAML_PARSE_EX);
 			return false;

@@ -49,13 +49,7 @@ public class InventoryListener implements Listener
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
-		catch (InvalidConfigurationException e)
-		{
-			player.sendMessage(Messages.YAML_PARSE_EX);
-			player.getInventory().setContents(playerInv.getContents());
-			return;
-		}
-		catch (ParseException e)
+		catch (InvalidConfigurationException | ParseException e)
 		{
 			player.sendMessage(Messages.YAML_PARSE_EX);
 			player.getInventory().setContents(playerInv.getContents());
@@ -85,16 +79,10 @@ public class InventoryListener implements Listener
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
-		catch (InvalidConfigurationException e)
+		catch (InvalidConfigurationException | ParseException e)
 		{
 			player.sendMessage(Messages.YAML_PARSE_EX);
 			player.getInventory().setContents(playerInv.getContents());
-			return;
-		}
-		catch (ParseException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			return;
 		}
 		catch (SQLException e)
