@@ -59,7 +59,7 @@ public class ItemBank extends JavaPlugin
 		versionCheck();
 		setupEconomy();
 
-		if (config.useMYSQL)
+		if (!config.useMYSQL)
 			IBUtils.createPlayerFiles(this);
 		
 		IBUtils.convertToMultiWorld(this);
