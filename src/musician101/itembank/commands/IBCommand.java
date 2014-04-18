@@ -54,19 +54,6 @@ public class IBCommand implements CommandExecutor
 				sender.sendMessage(Messages.PREFIX + Messages.HELP_MSG.get(3));
 				return true;
 			}
-			/** Reload Command */
-			else if (args[0].equalsIgnoreCase(Constants.RELOAD_CMD))
-			{
-				if (!sender.hasPermission(Constants.RELOAD_PERM))
-				{
-					sender.sendMessage(Messages.NO_PERMISSION);
-					return false;
-				}
-				
-				plugin.config.reloadConfiguration();
-				sender.sendMessage(Messages.RELOAD_SUCCESS);
-				return true;
-			}
 			/** Purge Command */
 			else if (args[0].equalsIgnoreCase(Constants.PURGE_CMD))
 			{
@@ -135,6 +122,19 @@ public class IBCommand implements CommandExecutor
 				
 				IBUtils.createPlayerFiles(plugin);
 				sender.sendMessage(Messages.PURGE_MULTIPLE);
+				return true;
+			}
+			/** Reload Command */
+			else if (args[0].equalsIgnoreCase(Constants.RELOAD_CMD))
+			{
+				if (!sender.hasPermission(Constants.RELOAD_PERM))
+				{
+					sender.sendMessage(Messages.NO_PERMISSION);
+					return false;
+				}
+				
+				plugin.config.reloadConfiguration();
+				sender.sendMessage(Messages.RELOAD_SUCCESS);
 				return true;
 			}
 		}
