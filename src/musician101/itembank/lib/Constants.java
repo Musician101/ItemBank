@@ -14,6 +14,7 @@ public class Constants
 	public static final String ENABLE_VAULT = "enableVault";
 	public static final String FILE_TYPE = "fileType";
 	public static final String LANG = "lang";
+	public static final String MULTI_WORLD = "multiWorld";
 	public static final String PAGE_LIMIT = "pageLimit";
 	public static final String TRANSACTION_COST = "transactionCost";
 	public static final String UPDATE_CHECK = "updateCheck";
@@ -37,6 +38,7 @@ public class Constants
 	public static final String USAGE = HELP + ".usage";
 	public static final String PURGE = CMD + "." + PURGE_CMD;
 	public static final String SUCCESS = PURGE + ".success";
+	public static final String RELOAD = CMD + ".reload";
 	public static final String UPDATER = ".updater";
 	public static final String VAULT = ".vault";
 	

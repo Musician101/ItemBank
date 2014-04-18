@@ -1,10 +1,8 @@
 package musician101.itembank.util;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -24,6 +22,7 @@ import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -69,7 +68,7 @@ public class IBUtils
 		Player[] players = Bukkit.getOnlinePlayers();
 		if (players.length > 0)
 			for (Player player : players)
-				createPlayerFile(new File(plugin.playerData, player.getName() + "." + plugin.config.fileType));
+				createPlayerFile(new File(plugin.playerData, player.getName() + ".yml"));
 	}
 	
 	public static int getAmount(Inventory inv, Material material, short durability)
@@ -82,80 +81,53 @@ public class IBUtils
 		return amount;
 	}
 	
-	public static Inventory getAccount(ItemBank plugin, String playerName, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException
+	public static Inventory getAccount(ItemBank plugin, String worldName, String playerName, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException
 	{
 		final Inventory inv = Bukkit.createInventory(plugin.getServer().getPlayer(playerName), 54, playerName + " - Page " + page);
 		if (plugin.config.useMYSQL)
 		{
 			Statement statement = plugin.c.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + playerName + "(Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
+			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + playerName + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
 			for (int slot = 0; slot < inv.getSize(); slot++)
-				inv.setItem(slot, getItem(statement.executeQuery("SELECT * FROM ib_" + playerName + " WHERE Page = " + page + " AND Slot = " + slot + ";")));
+				inv.setItem(slot, getItem(statement.executeQuery("SELECT * FROM ib_" + playerName + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
 			
 			return inv;
 		}
 		
-		File file = new File(plugin.playerData, playerName + "." + plugin.config.fileType);
+		File file = new File(plugin.playerData, playerName + ".yml");
 		if (inv != null)
 			createPlayerFile(file);
-		
-		if (plugin.config.fileType.equals("json"))
-		{
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			JSONObject account = JSONValue.parse(br) == null ? new JSONObject() : (JSONObject) JSONValue.parse(br);
-			if (account.containsKey(page))
-				for (int slot = 0; slot < inv.getSize(); slot++)
-					if (((JSONObject) account.get(page)).containsKey(slot))
-						inv.setItem(slot, getItem((JSONObject) ((JSONObject) account.get(page)).get(slot)));
-			
-			return inv;
-		}
 		
 		YamlConfiguration account = new YamlConfiguration();
 		account.load(file);
 		for (int slot = 0; slot < inv.getSize(); slot++)
-			inv.setItem(slot, account.getItemStack(page + "." + slot));
+			inv.setItem(slot, account.getItemStack(worldName + "." + page + "." + slot));
 		
 		return inv;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static void saveAccount(ItemBank plugin, String playerName, Inventory inventory, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException
+	public static void saveAccount(ItemBank plugin, String worldName, String playerName, Inventory inventory, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException
 	{
 		if (plugin.config.useMYSQL)
 		{
 			Statement statement = plugin.c.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + playerName + "(Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
+			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + playerName + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
 			for (int slot = 0; slot < inventory.getSize(); slot++)
 			{
-				statement.execute("DELETE FROM ib_" + playerName + " WHERE Page = " + page + " and Slot = " + slot + ";");
+				statement.execute("DELETE FROM ib_" + playerName + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";");
 				ItemStack item = inventory.getItem(slot);
 				if (item != null)
-					statement.executeUpdate("INSERT INTO ib_" + playerName + "(Page, Slot, Material, Damage, Amount, ItemMeta) VALUES (" + page + ", " + slot + ", \"" + item.getType().toString() + "\", " + item.getDurability() + ", " + item.getAmount() + ", \""+ metaToJson(item).toJSONString().replace("\"", "\\\"") + "\");");
+					statement.executeUpdate("INSERT INTO ib_" + playerName + "(World, Page, Slot, Material, Damage, Amount, ItemMeta) VALUES (\"" + worldName + "\", " + page + ", " + slot + ", \"" + item.getType().toString() + "\", " + item.getDurability() + ", " + item.getAmount() + ", \""+ metaToJson(item).toJSONString().replace("\"", "\\\"") + "\");");
 			}
 			
 			return;
 		}
-		
-		File file = new File(plugin.playerData, playerName + "." + plugin.config.fileType);
-		if (plugin.config.fileType.equals("json"))
-		{
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			JSONObject account = JSONValue.parse(br) == null ? new JSONObject() : (JSONObject) JSONValue.parse(br);			
-			if (account.containsKey(page))
-				account.remove(page);
-			
-			account.put(page, inventoryToJson(inventory));
-			BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-			bw.write(account.toJSONString());
-			bw.close();
-			return;
-		}
-		
+
+		File file = new File(plugin.playerData, playerName + ".yml");
 		YamlConfiguration account = new YamlConfiguration();
 		account.load(file);
 		for (int slot = 0; slot < inventory.getSize(); slot++)
-			account.set(page + "." + slot, inventory.getItem(slot));	
+			account.set(worldName + "." + page + "." + slot, inventory.getItem(slot));	
 		
 		account.save(file);
 	}
@@ -178,28 +150,6 @@ public class IBUtils
 	{
 		for (String message : messages)
 			player.sendMessage(message);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static JSONObject inventoryToJson(Inventory i)
-	{
-		JSONObject inv = new JSONObject();
-		for (int slot = 0; slot < i.getSize(); slot++)
-			if (i.getItem(slot) != null)
-				inv.put(slot, itemToJson(i.getItem(slot)));
-		
-		return inv;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static JSONObject itemToJson(ItemStack is)
-	{
-		JSONObject item = new JSONObject();
-		item.put("material", is.getType().toString());
-		item.put("damage", is.getDurability());
-		item.put("amount", is.getAmount());
-		item.put("meta", metaToJson(is));
-		return item;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -564,7 +514,7 @@ public class IBUtils
 		return new JSONObject();
 	}
 	
-	public static ItemMeta jsonToMeta(JSONObject meta, ItemStack item)
+	public static ItemMeta getMeta(JSONObject meta, ItemStack item)
 	{
 		if (item.getType() == Material.BOOK_AND_QUILL || item.getType() == Material.WRITTEN_BOOK)
 		{
@@ -960,22 +910,64 @@ public class IBUtils
 		return m;
 	}
 	
-	public static ItemStack getItem(JSONObject item)
-	{
-		ItemStack is = new ItemStack(Material.getMaterial(item.get("material").toString()), (int) item.get("amount"), (short) item.get("damage"));
-		is.setItemMeta(jsonToMeta(item, is));
-		return is;
-	}
-	
 	public static ItemStack getItem(ResultSet rs) throws SQLException
 	{
 		while (rs.next())
 		{
 			ItemStack item = new ItemStack(Material.getMaterial(rs.getString("Material")), rs.getInt("Amount"), (short) rs.getInt("Damage"));
-			item.setItemMeta(jsonToMeta((JSONObject) JSONValue.parse(rs.getString("ItemMeta")), item));
+			item.setItemMeta(getMeta((JSONObject) JSONValue.parse(rs.getString("ItemMeta")), item));
 			return item;
 		}
 		
 		return null;
+	}
+	
+	public static void convertToMultiWorld(ItemBank plugin)
+	{
+		if (plugin.config.useMYSQL)
+		{
+			return;
+		}
+		
+		for (File file : plugin.playerData.listFiles())
+		{
+			YamlConfiguration oldAccount = new YamlConfiguration();
+			YamlConfiguration newAccount = new YamlConfiguration();
+			try
+			{
+				oldAccount.load(file);
+				if (!oldAccount.isSet("isMultiWorld") || !oldAccount.getBoolean("isMultiWorld"))
+				{
+					for (Entry<String, Object> entry : oldAccount.getValues(true).entrySet())
+						if (!(entry.getValue() instanceof MemorySection))
+							newAccount.set(Bukkit.getWorlds().get(0).getName() + "." + entry.getKey(), oldAccount.getItemStack(entry.getKey()));
+					
+					newAccount.set("isMultiWorld", true);
+					file.delete();
+					IBUtils.createPlayerFile(file);
+					newAccount.save(file);
+				}
+			}
+			catch (FileNotFoundException e)
+			{e.printStackTrace();}
+			catch (IOException e)
+			{
+				plugin.getLogger().warning("Could not convert file " + file.getName() + ": I/O Error.");
+			}
+			catch (InvalidConfigurationException e)
+			{
+				plugin.getLogger().warning("Could not convert file " + file.getName() + ": YAML Format Error.");
+			}
+		}
+	}
+
+	public static String getWorldName(ItemBank plugin, Player player)
+	{
+		if (plugin.config.multiWorld.equals("none"))
+			return Bukkit.getWorlds().get(0).getName();
+		else if (plugin.config.multiWorld.equals("partial"))
+			return player.getWorld().getName().replace("_nether", "").replace("_the_end", "");
+		
+		return player.getWorld().getName();
 	}
 }

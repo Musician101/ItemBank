@@ -62,6 +62,8 @@ public class ItemBank extends JavaPlugin
 		if (config.useMYSQL)
 			IBUtils.createPlayerFiles(this);
 		
+		IBUtils.convertToMultiWorld(this);
+		
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
 		

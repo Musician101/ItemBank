@@ -9,6 +9,7 @@ import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,12 +29,12 @@ public class InventoryListener implements Listener
 	}
 	
 	// player.getName() and playerName are not always the same.
-	public void saveAccount(Player player, String playerName, Inventory topInv, Inventory playerInv, int page)
+	public void saveAccount(Player player, String worldName, String playerName, Inventory topInv, Inventory playerInv, int page)
 	{
 		Inventory account = null;
 		try
 		{
-			account = IBUtils.getAccount(plugin, playerName, page);
+			account = IBUtils.getAccount(plugin, worldName, playerName, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -63,7 +64,7 @@ public class InventoryListener implements Listener
 		account.setContents(topInv.getContents());
 		try
 		{
-			IBUtils.saveAccount(plugin, playerName, account, page);
+			IBUtils.saveAccount(plugin, worldName, playerName, account, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -163,7 +164,7 @@ public class InventoryListener implements Listener
 			try
 			{
 				page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-				saveAccount(player, inv.getName().substring(0, inv.getName().indexOf(" ")), inv, player.getInventory(), page);
+				saveAccount(player, Bukkit.getWorlds().get(0).getName(), inv.getName().substring(0, inv.getName().indexOf(" ")), inv, player.getInventory(), page);
 				return;
 			}
 			catch (StringIndexOutOfBoundsException e)
@@ -173,6 +174,6 @@ public class InventoryListener implements Listener
 		}
 		
 		page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-		saveAccount(player, player.getName(), inv, player.getInventory(), page);
+		saveAccount(player, IBUtils.getWorldName(plugin, player), player.getName(), inv, player.getInventory(), page);
 	}
 }

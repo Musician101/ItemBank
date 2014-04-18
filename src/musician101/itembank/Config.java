@@ -19,7 +19,7 @@ public class Config
 	public Map<String, Integer> blacklist = new HashMap<String, Integer>();
 	public String database = "";
 	public boolean enableVault;
-	public String fileType = "";
+	public String multiWorld = "";
 	public int pageLimit;
 	public double transactionCost;
 	public boolean updateCheck;
@@ -64,7 +64,7 @@ public class Config
 		plugin.reloadConfig();
 		final FileConfiguration config = plugin.getConfig();
 		enableVault = config.getBoolean(Constants.ENABLE_VAULT, false);
-		fileType = config.getString(Constants.FILE_TYPE, "yml").toLowerCase();
+		multiWorld = config.getString(Constants.MULTI_WORLD, "none").toLowerCase();
 		pageLimit = config.getInt(Constants.PAGE_LIMIT, 0);
 		transactionCost = config.getDouble(Constants.TRANSACTION_COST, 5);
 		updateCheck = config.getBoolean(Constants.UPDATE_CHECK, true);

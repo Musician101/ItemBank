@@ -40,12 +40,13 @@ public class Messages
 		PURGE_HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".description", HELP_DESCRIPTION) + ": " + ChatColor.WHITE + langConfig.getString(lang + Constants.HELP + ".purge", PURGE_HELP_DESC),
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.USAGE + ".default", USAGE_DEFAULT) + ": " + ChatColor.WHITE + "/itembank purge <player>");
 		
-		PURGE_NO_FILE = PREFIX + langConfig.getString(lang + ".command.purge.nofile", PURGE_NO_FILE_DEFAULT);
-		PURGE_MULTIPLE = PREFIX + langConfig.getString(lang + ".command.purge.success.multiple", PURGE_MULTIPLE_DEFAULT);
-		PURGE_SINGLE = PREFIX + langConfig.getString(lang + ".command.purge.success.single", PURGE_SINGLE_DEFAULT);
-		RELOAD_HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + ".command.help.description", HELP_DESCRIPTION) + ": " + ChatColor.WHITE + langConfig.getString(lang + ".command.help.reload", RELOAD_HELP_DESC),
-				ChatColor.DARK_RED + langConfig.getString(lang + ".command.help.usage.default", USAGE_DEFAULT) + ": " + ChatColor.WHITE + "/itembank reload");
+		PURGE_NO_FILE = PREFIX + langConfig.getString(lang + Constants.PURGE + ".nofile", PURGE_NO_FILE_DEFAULT);
+		PURGE_MULTIPLE = PREFIX + langConfig.getString(lang + Constants.SUCCESS + ".multiple", PURGE_MULTIPLE_DEFAULT);
+		PURGE_SINGLE = PREFIX + langConfig.getString(lang + Constants.SUCCESS + ".single", PURGE_SINGLE_DEFAULT);
+		RELOAD_HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".description", HELP_DESCRIPTION) + ": " + ChatColor.WHITE + langConfig.getString(lang + Constants.HELP + ".reload", RELOAD_HELP_DESC),
+				ChatColor.DARK_RED + langConfig.getString(lang + Constants.USAGE + ".default", USAGE_DEFAULT) + ": " + ChatColor.WHITE + "/itembank reload");
 		
+		RELOAD_SUCCESS = PREFIX + langConfig.getString(lang + Constants.CMD + ".reload", RELOAD_SUCCESS_DEFAULT);
 		SQL_EX = PREFIX + langConfig.getString(lang + ".sqlex", SQL_EX_DEFAULT);
 		UPDATER_CURRENT = langConfig.getString(lang + Constants.UPDATER + ".current", UPDATER_CURRENT_DEFAULT);
 		UPDATER_ERROR = langConfig.getString(lang + Constants.UPDATER + ".error", UPDATER_ERROR_DEFAULT);
@@ -136,7 +137,7 @@ public class Messages
 	public static final String NO_FILE_EX_DEFAULT = "Error: File not found. Please contact an administrator immediately.";
 	
 	public static String SQL_EX;
-	public static final String SQL_EX_DEFAULT = "";
+	public static final String SQL_EX_DEFAULT = "Error: Unable to connect to the database.";
 	
 	public static String YAML_EX;
 	public static final String YAML_EX_DEFAULT = "Error: Your account contains format errors. Please contact an administrator immediately.";
