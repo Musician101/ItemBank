@@ -4,19 +4,9 @@ blacklist:
     bedrock:
         '0': 0
 
-# Limit the number of pages of items players can have.
-# If the amount is 0 then the amount of pages is infinite.
-pageLimit: 0
-
-# Whether to check for updates or not.    
-updateCheck: true
-
 # Vault related options.
 # Enable vault support?
 enableVault: false
-
-# How much to charge for use of /account
-transactionCost: 5
 
 # Language selection.
 lang: en
@@ -24,7 +14,7 @@ lang: en
 # Enable Multi-World support.
 # Full - Every world and dimension will have it's own set of accounts (i.e. world1, world1_nether, world1_the_end will have separate accounts).
 # Partial - Every world and it's dimensions will have their own set of accounts (i.e. world1, world1_nether, world1_the_end will have the same account).
-# None - One account across the whole board.
+# None - One account across the whole server.
 multiWorld: none
 
 # Database related options
@@ -35,3 +25,13 @@ mysql:
     port: 3306
     user: user
     pass: password
+
+# Limit the number of pages of items players can have.
+# If the amount is 0 then the amount of pages is infinite.
+pageLimit: 0
+
+# How much to charge for use of /account
+transactionCost: 5
+
+# Whether to check for updates or not.
+updateCheck: true
