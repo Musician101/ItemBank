@@ -18,6 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.json.simple.parser.ParseException;
 
 public class InventoryListener implements Listener
 {
@@ -50,7 +51,13 @@ public class InventoryListener implements Listener
 		}
 		catch (InvalidConfigurationException e)
 		{
-			player.sendMessage(Messages.YAML_EX);
+			player.sendMessage(Messages.YAML_PARSE_EX);
+			player.getInventory().setContents(playerInv.getContents());
+			return;
+		}
+		catch (ParseException e)
+		{
+			player.sendMessage(Messages.YAML_PARSE_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
@@ -80,8 +87,14 @@ public class InventoryListener implements Listener
 		}
 		catch (InvalidConfigurationException e)
 		{
-			player.sendMessage(Messages.YAML_EX);
+			player.sendMessage(Messages.YAML_PARSE_EX);
 			player.getInventory().setContents(playerInv.getContents());
+			return;
+		}
+		catch (ParseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return;
 		}
 		catch (SQLException e)

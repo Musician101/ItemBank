@@ -3,6 +3,7 @@ package musician101.itembank.util;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -14,6 +15,7 @@ import java.util.Map.Entry;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Messages;
+import net.minecraft.util.org.apache.commons.io.FilenameUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -42,6 +44,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class IBUtils
 {	
@@ -53,7 +57,10 @@ public class IBUtils
 			{
 				file.createNewFile();
 				BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-				bw.write(Messages.NEW_PLAYER_FILE);
+				if (FilenameUtils.getExtension(file.getName()).equals("json"))
+					bw.write("{\"comment\":\"" + Messages.NEW_PLAYER_FILE.replace("# ", "").replace("\n", "") + "\"}");
+				else
+					bw.write(Messages.NEW_PLAYER_FILE);
 				bw.close();
 			}
 			catch (IOException e)
@@ -68,7 +75,7 @@ public class IBUtils
 		Player[] players = Bukkit.getOnlinePlayers();
 		if (players.length > 0)
 			for (Player player : players)
-				createPlayerFile(new File(plugin.playerData, player.getName() + ".yml"));
+				createPlayerFile(new File(plugin.playerData, player.getName() + "." + plugin.config.format));
 	}
 	
 	public static int getAmount(Inventory inv, Material material, short durability)
@@ -81,7 +88,7 @@ public class IBUtils
 		return amount;
 	}
 	
-	public static Inventory getAccount(ItemBank plugin, String worldName, String playerName, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException
+	public static Inventory getAccount(ItemBank plugin, String worldName, String playerName, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
 		final Inventory inv = Bukkit.createInventory(plugin.getServer().getPlayer(playerName), 54, playerName + " - Page " + page);
 		if (plugin.config.useMYSQL)
@@ -94,7 +101,27 @@ public class IBUtils
 			return inv;
 		}
 		
-		File file = new File(plugin.playerData, playerName + ".yml");
+		File file = new File(plugin.playerData, playerName + "." + plugin.config.format);
+		if (FilenameUtils.getExtension(file.getName()).equals("json"))
+		{
+			JSONParser parser = new JSONParser();
+			JSONObject account = (JSONObject) parser.parse(new FileReader(file));
+			
+			if (!account.containsKey(worldName))
+				return inv;
+			
+			JSONObject world = (JSONObject) account.get(worldName);
+			if (!world.containsKey(page + ""))
+				return inv;
+			
+			JSONObject pg = (JSONObject) world.get(page + "");
+			for (int slot = 0; slot < inv.getSize(); slot++)
+				if (pg.containsKey(slot + ""))
+					inv.setItem(slot, getItem((JSONObject) pg.get(slot + "")));
+			
+			return inv;
+		}
+		
 		if (inv != null)
 			createPlayerFile(file);
 		
@@ -106,7 +133,8 @@ public class IBUtils
 		return inv;
 	}
 	
-	public static void saveAccount(ItemBank plugin, String worldName, String playerName, Inventory inventory, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, SQLException
+	@SuppressWarnings("unchecked")
+	public static void saveAccount(ItemBank plugin, String worldName, String playerName, Inventory inventory, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
 		if (plugin.config.useMYSQL)
 		{
@@ -123,7 +151,28 @@ public class IBUtils
 			return;
 		}
 
-		File file = new File(plugin.playerData, playerName + ".yml");
+		File file = new File(plugin.playerData, playerName + "." + plugin.config.format);
+		if (FilenameUtils.getExtension(file.getName()).equals("json"))
+		{
+			JSONParser parser = new JSONParser();
+			JSONObject account = (JSONObject) parser.parse(new FileReader(file));
+			JSONObject pg = new JSONObject();
+			JSONObject inv = new JSONObject();
+			for (int slot = 0; slot < inventory.getSize(); slot++)
+				if (inventory.getItem(slot) != null)
+					inv.put(slot, itemToJson(inventory.getItem(slot)));
+			
+			pg.put(page, inv);
+			if (account == null)
+				account = new JSONObject();
+			
+			account.put(worldName, pg);
+			FileWriter fw = new FileWriter(file);
+			fw.write(account.toJSONString());
+			fw.close();
+			return;
+		}
+		
 		YamlConfiguration account = new YamlConfiguration();
 		account.load(file);
 		for (int slot = 0; slot < inventory.getSize(); slot++)
@@ -150,6 +199,17 @@ public class IBUtils
 	{
 		for (String message : messages)
 			player.sendMessage(message);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONObject itemToJson(ItemStack is)
+	{
+		JSONObject item = new JSONObject();
+		item.put("material", is.getType().toString());
+		item.put("damage", is.getDurability());
+		item.put("amount", is.getAmount());
+		item.put("meta", metaToJson(is));
+		return item;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -910,6 +970,13 @@ public class IBUtils
 		return m;
 	}
 	
+	public static ItemStack getItem(JSONObject item)
+	{
+		ItemStack is = new ItemStack(Material.getMaterial(item.get("material").toString()), Integer.valueOf(item.get("amount").toString()), Short.valueOf(item.get("damage").toString()));
+		is.setItemMeta(getMeta((JSONObject) item.get("meta"), is));
+		return is;
+	}
+	
 	public static ItemStack getItem(ResultSet rs) throws SQLException
 	{
 		while (rs.next())
@@ -928,6 +995,9 @@ public class IBUtils
 		{
 			return;
 		}
+		
+		if (!plugin.config.format.equals("yml"))
+			return;
 		
 		for (File file : plugin.playerData.listFiles())
 		{

@@ -55,7 +55,7 @@ en:
         bothenabled: "Vault detected and enabled in config. Using Vault for monetary transactions."
         noconfig: "Vault detected but disabled in config. No monetary transactions will occur."
         novault: "Error detecting Vault. Is it installed?"
-    yamlex: "Error: Your account contains format errors. Please contact an administrator immediately."
+    yamlparseex: "Error: Your account contains format errors. Please contact an administrator immediately."
 cz:
     command:
         account:
@@ -109,7 +109,7 @@ cz:
         bothenabled: "Vault detekován a povolen config. Použití Vault pro peněžní transakce."
         noconfig: "Vault rozpoznáno, ale zakázán v config. Dojde k žádné peněžní transakce."
         novault: "Chyba detekce Vault. Je nainstalován ?"
-    yamlex: "Chyba : Váš účet obsahuje chyby formátu. Prosím, obraťte se na správce okamžitě."
+    yamlparseex: "Chyba : Váš účet obsahuje chyby formátu. Prosím, obraťte se na správce okamžitě."
 de:
     command:
         account:
@@ -163,7 +163,7 @@ de:
         bothenabled: "Vault erkannt und in der Konfigurations aktiviert. Mit Vault für die Geldtransaktionen."
         noconfig: "Vault erkannt, aber in der Konfigurations deaktiviert. Keine Geldverkehr auftreten."
         novault: "Fehlererkennungs Vault. Ist es installiert?"
-    yamlex: "Fehler: Ihr Konto enthält Formatfehler. Bitte kontaktieren Sie sofort einen Administrator."
+    yamlparseex: "Fehler: Ihr Konto enthält Formatfehler. Bitte kontaktieren Sie sofort einen Administrator."
 es:
     command:
         account:
@@ -217,7 +217,7 @@ es:
         bothenabled: "Vault detectado y activado en la configuración. Usando Vault para las transacciones monetarias."
         noconfig: "Vault detecta pero no está deshabilitado en la configuración. No se producirán transacciones monetarias."
         novault: "Error detectar Vault. Se instala?"
-    yamlex: "Error: Tu cuenta contiene errores de formato. Por favor, póngase en contacto con un administrador inmediatamente."
+    yamlparseex: "Error: Tu cuenta contiene errores de formato. Por favor, póngase en contacto con un administrador inmediatamente."
 fr:
     command:
         account:
@@ -271,7 +271,7 @@ fr:
         bothenabled: "Vault détecté et activé dans la configuration. Utilisation de Vault pour les transactions monétaires."
         noconfig: "Vault détecté mais désactivé dans la configuration. Pas de transactions monétaires se produisent."
         novault: "Erreur de détection Vault. Est-il installé ?"
-    yamlex: "Erreur: Votre compte contient des erreurs de format. S'il vous plaît contacter immédiatement un administrateur."
+    yamlparseex: "Erreur: Votre compte contient des erreurs de format. S'il vous plaît contacter immédiatement un administrateur."
 it:
     command:
         account:
@@ -325,4 +325,4 @@ it:
         bothenabled: "Vault rilevato e attivato in config. Utilizzando Vault per le transazioni monetarie."
         noconfig: "Vault rilevato ma disabilitato in config. Non si verificheranno transazioni monetarie."
         novault: "Errore di rilevamento Vault. E ' installato ?"
-    yamlex: "Errore: Il tuo account contiene errori di formattazione. Si prega di contattare immediatamente un amministratore."    
+    yamlparseex: "Errore: Il tuo account contiene errori di formattazione. Si prega di contattare immediatamente un amministratore."    

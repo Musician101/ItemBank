@@ -54,7 +54,14 @@ public class Messages
 		VAULT_BOTH_ENABLED = langConfig.getString(lang + Constants.VAULT + ".bothenabled", VAULT_BOTH_ENABLED_DEFAULT);
 		VAULT_NO_CONFIG = langConfig.getString(lang + Constants.VAULT + ".noconfig", VAULT_NO_CONFIG_DEFAULT);
 		VAULT_NOT_INSTALLED = langConfig.getString(lang + Constants.VAULT + ".novault", VAULT_NOT_INSTALLED_DEFAULT);
-		YAML_EX = PREFIX + langConfig.getString(lang + ".yamlex", YAML_EX_DEFAULT);
+		YAML_PARSE_EX = PREFIX + langConfig.getString(lang + ".yamlparseex", YAML_PARSE_EX_DEFAULT);
+		
+		if (!langConfig.isSet(lang + ".yamlparseex"))
+		{
+			Bukkit.getPluginManager().getPlugin("ItemBank").getLogger().warning("An update has changed language configuration slightly. Please change yamlex to yamlparseex. This warning will only be in this version of the plugin.");
+			Bukkit.getPluginManager().getPlugin("ItemBank").getLogger().warning("This warning will only be in this version of the plugin (ItemBank v" + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getVersion() + ").");
+			YAML_PARSE_EX = PREFIX + langConfig.getString(lang + ".yamlex", YAML_PARSE_EX_DEFAULT);
+		}
 	}
 	
 	/** Formatting */
@@ -139,8 +146,8 @@ public class Messages
 	public static String SQL_EX;
 	public static final String SQL_EX_DEFAULT = "Error: Unable to connect to the database.";
 	
-	public static String YAML_EX;
-	public static final String YAML_EX_DEFAULT = "Error: Your account contains format errors. Please contact an administrator immediately.";
+	public static String YAML_PARSE_EX;
+	public static final String YAML_PARSE_EX_DEFAULT = "Error: Your account contains format errors. Please contact an administrator immediately.";
 	
 	/** Updater Messages */
 	public static String UPDATER_CURRENT;

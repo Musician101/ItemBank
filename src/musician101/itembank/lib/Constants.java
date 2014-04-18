@@ -12,7 +12,7 @@ public class Constants
 	/** Config */
 	public static final String BLACKLIST = "blacklist";
 	public static final String ENABLE_VAULT = "enableVault";
-	public static final String FILE_TYPE = "fileType";
+	public static final String FORMAT = "format";
 	public static final String LANG = "lang";
 	public static final String MULTI_WORLD = "multiWorld";
 	public static final String PAGE_LIMIT = "pageLimit";

@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.json.simple.parser.ParseException;
 
 public class AccountCommand implements CommandExecutor
 {
@@ -47,7 +48,12 @@ public class AccountCommand implements CommandExecutor
 		}
 		catch (InvalidConfigurationException e)
 		{
-			sender.sendMessage(Messages.YAML_EX);
+			sender.sendMessage(Messages.YAML_PARSE_EX);
+			return false;
+		}
+		catch (ParseException e)
+		{
+			sender.sendMessage(Messages.YAML_PARSE_EX);
 			return false;
 		}
 		catch (SQLException e)

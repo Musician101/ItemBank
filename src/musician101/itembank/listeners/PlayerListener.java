@@ -24,7 +24,7 @@ public class PlayerListener implements Listener
 	public void onPlayerLogin(PlayerJoinEvent event)
 	{
 		Player player = event.getPlayer();
-		File playerFile = new File(plugin.playerData, player.getName().toLowerCase() + ".yml");
+		File playerFile = new File(plugin.playerData, player.getName().toLowerCase() + "." + plugin.config.format);
 		IBUtils.createPlayerFile(playerFile);
 		if (!playerFile.exists())
 			player.sendMessage(Messages.PLAYER_JOIN_FILE_FAIL);

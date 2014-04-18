@@ -8,6 +8,11 @@ blacklist:
 # Enable vault support?
 enableVault: false
 
+# Which format player accounts should be saved in.
+# This option is ignored if MySQL is enabled.
+# Supported formats: json, yml.
+format: yml
+
 # Language selection.
 lang: en
 
