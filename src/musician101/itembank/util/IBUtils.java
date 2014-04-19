@@ -102,6 +102,9 @@ public class IBUtils
 		}
 		
 		File file = new File(plugin.playerData, playerName + "." + plugin.config.format);
+		if (inv != null)
+			createPlayerFile(file);
+		
 		if (FilenameUtils.getExtension(file.getName()).equals("json"))
 		{
 			JSONParser parser = new JSONParser();
@@ -121,9 +124,6 @@ public class IBUtils
 			
 			return inv;
 		}
-		
-		if (inv != null)
-			createPlayerFile(file);
 		
 		YamlConfiguration account = new YamlConfiguration();
 		account.load(file);
