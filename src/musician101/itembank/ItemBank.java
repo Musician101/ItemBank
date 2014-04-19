@@ -26,7 +26,7 @@ public class ItemBank extends JavaPlugin
 	public MySQL mysql = null;
 	public Connection c = null;
 	
-	public void setupEconomy()
+	private void setupEconomy()
 	{
 		economy = new Econ();
 		if (economy.isEnabled() && config.enableVault)
@@ -37,7 +37,7 @@ public class ItemBank extends JavaPlugin
 			getLogger().info(Messages.VAULT_NO_CONFIG);
 	}
 	
-	public void versionCheck()
+	private void versionCheck()
 	{
 		if (!config.updateCheck)
 			getLogger().info("Update check is disabled.");
