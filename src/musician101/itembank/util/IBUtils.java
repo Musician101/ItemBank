@@ -58,7 +58,7 @@ public class IBUtils
 				file.createNewFile();
 				BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
 				if (FilenameUtils.getExtension(file.getName()).equals("json"))
-					bw.write("{\"comment\":\"" + Messages.NEW_PLAYER_FILE.replace("# ", "").replace("\n", "") + "\"}");
+					bw.write("{\"_comment\":\"" + Messages.NEW_PLAYER_FILE.replace("# ", "").replace("\n", "") + "\"}");
 				else
 					bw.write(Messages.NEW_PLAYER_FILE);
 				bw.close();
