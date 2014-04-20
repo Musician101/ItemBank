@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -47,6 +48,8 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import au.com.bytecode.opencsv.CSV;
+
 public class IBUtils
 {	
 	public static void createPlayerFile(File file)
@@ -59,8 +62,14 @@ public class IBUtils
 				BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
 				if (FilenameUtils.getExtension(file.getName()).equals("json"))
 					bw.write("{\"_comment\":\"" + Messages.NEW_PLAYER_FILE.replace("# ", "").replace("\n", "") + "\"}");
+				else if (FilenameUtils.getExtension(file.getName()).equals("csv"))
+				{
+					bw.write(Messages.NEW_PLAYER_FILE);
+					bw.write("# world|page|slot|material|damage/durability|amount|meta data");
+				}
 				else
 					bw.write(Messages.NEW_PLAYER_FILE);
+				
 				bw.close();
 			}
 			catch (IOException e)
@@ -105,7 +114,27 @@ public class IBUtils
 		if (inv != null)
 			createPlayerFile(file);
 		
-		if (FilenameUtils.getExtension(file.getName()).equals("json"))
+		if (FilenameUtils.getExtension(file.getName()).equals("csv"))
+		{
+			for (String[] s : CSV.separator('|').create().reader(new FileReader(file)).readAll())
+			{
+				if (!s[0].startsWith("#"))
+				{
+					if (s[0].equals(worldName))
+					{
+						if (Integer.valueOf(s[1]) == page)
+						{
+							ItemStack item = new ItemStack(Material.getMaterial(s[3]), Integer.valueOf(s[5]), Short.valueOf(s[4]));
+							item.setItemMeta(getMeta((JSONObject) JSONValue.parse(s[6]), item));
+							inv.setItem(Integer.valueOf(s[2]), item);
+						}
+					}
+				}
+			}
+			
+			return inv;
+		}
+		else if (FilenameUtils.getExtension(file.getName()).equals("json"))
 		{
 			JSONParser parser = new JSONParser();
 			JSONObject account = (JSONObject) parser.parse(new FileReader(file));
@@ -152,7 +181,40 @@ public class IBUtils
 		}
 
 		File file = new File(plugin.playerData, playerName + "." + plugin.config.format);
-		if (FilenameUtils.getExtension(file.getName()).equals("json"))
+		if (FilenameUtils.getExtension(file.getName()).equals("csv"))
+		{
+			List<String> account = new ArrayList<String>();
+			for (String[] s : CSV.separator('|').create().reader(new FileReader(file)).readAll())
+			{
+				if (!s[0].startsWith("#"))
+				{
+					if (!worldName.equals(s[0]))
+						if (Integer.valueOf(s[1]) != page)
+							for (int slot = 0; slot < inventory.getSize(); slot++)
+								if (Integer.valueOf(s[2]) != slot)
+									account.add(s.toString());
+				}
+				else
+					account.add(Arrays.toString(s).replace("[", "").replace("]", ""));
+			}	
+					
+			for (int slot = 0; slot < inventory.getSize(); slot++)
+			{
+				ItemStack item = inventory.getItem(slot);
+				if (item != null)
+					account.add(worldName + "|" + page + "|" + slot + "|" + item.getType().toString() + "|" + item.getDurability() + "|" + item.getAmount() + "|" + metaToJson(item).toJSONString());
+			}
+			
+			file.delete();
+			createPlayerFile(file);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+			for (String line : account)
+				bw.write(line + "\n");
+			
+			bw.close();
+			return;
+		}
+		else if (FilenameUtils.getExtension(file.getName()).equals("json"))
 		{
 			JSONParser parser = new JSONParser();
 			JSONObject account = (JSONObject) parser.parse(new FileReader(file));
