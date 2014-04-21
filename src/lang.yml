@@ -34,6 +34,7 @@ en:
                 admin: "Admin Usage"
                 default: "Usage"
                 player: "Player Usage"
+            uuid: "Get a player's UUID."
         purge:
             nofile: "File not found. Please check spelling and capitalization."
             success:
@@ -89,6 +90,7 @@ cz:
                 admin: "Použití admin"
                 default: "Používání"
                 player: "Použití Player"
+            uuid: "Získat UUID hráčovu."
         purge:
             nofile: "Soubor nebyl nalezen. Prosím zkontrolujte pravopis a velkých písmen."
             success:
@@ -144,6 +146,7 @@ de:
                 admin: "Admin Nutzungs"
                 default: "Nutzungs"
                 player: "Spieler Nutzungs"
+            uuid: "Holen UUID eines Spielers."
         purge:
             nofile: "Datei nicht gefunden. Bitte überprüfen Sie die Schreibweise und Groß-/Kleinschreibung."
             success:
@@ -199,6 +202,7 @@ es:
                 admin: "Uso de administración"
                 default: "Uso"
                 player: "Uso del jugador"
+            uuid: "Obtenga UUID de un jugador."
         purge:
             nofile: "No se encontró el archivo. Por favor verificar la ortografía y capitalización."
             success:
@@ -254,6 +258,7 @@ fr:
                 admin: "Administrateur D'utilisation"
                 default: "Utilisez"
                 player: "Joueur d'utilisation"
+            uuid: "Obtenez l'UUID d'un joueur."
         purge:
             nofile: "Fichier non trouvé. S'il vous plaît vérifier l'orthographe et la capitalisation."
             success:
@@ -309,6 +314,7 @@ it:
                 admin: "Admin d'uso"
                 default: "Uso"
                 player: "Giocatore d'uso"
+            uuid: "Prendi UUID di un giocatore."
         purge:
             nofile: "Il file non è stato trovato. Si prega di controllare l'ortografia e capitalizzazione."
             success:

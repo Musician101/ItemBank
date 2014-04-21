@@ -53,6 +53,8 @@ public class Messages
 		UPDATER_CURRENT = langConfig.getString(lang + Constants.UPDATER + ".current", UPDATER_CURRENT_DEFAULT);
 		UPDATER_ERROR = langConfig.getString(lang + Constants.UPDATER + ".error", UPDATER_ERROR_DEFAULT);
 		UPDATER_NEW = langConfig.getString(lang + Constants.UPDATER + ".new", UPDATER_NEW_DEFAULT);
+		UUID_HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".description", HELP_DESCRIPTION) + ": " + ChatColor.WHITE + langConfig.getString(lang + Constants.HELP + ".uuid", UUID_HELP_DESC),
+				ChatColor.DARK_RED + langConfig.getString(lang + Constants.USAGE + ".default", USAGE_DEFAULT) + ": " + ChatColor.WHITE + "/itembank uuid [player]");
 		VAULT_BOTH_ENABLED = langConfig.getString(lang + Constants.VAULT + ".bothenabled", VAULT_BOTH_ENABLED_DEFAULT);
 		VAULT_NO_CONFIG = langConfig.getString(lang + Constants.VAULT + ".noconfig", VAULT_NO_CONFIG_DEFAULT);
 		VAULT_NOT_INSTALLED = langConfig.getString(lang + Constants.VAULT + ".novault", VAULT_NOT_INSTALLED_DEFAULT);
@@ -87,6 +89,8 @@ public class Messages
 	public static final String USAGE_ADMIN = "Admin Usage";
 	public static final String USAGE_DEFAULT = "Usage";
 	public static final String USAGE_PLAYER = "Player Usage";
+	public static final String UUID_HELP_DESC = "Get a player's UUID.";
+	public static List<String> UUID_HELP_MSG;
 	
 	/** Command Success */
 	public static String ACCOUNT_ECON_SUCCESS;

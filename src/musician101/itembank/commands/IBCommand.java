@@ -53,6 +53,11 @@ public class IBCommand implements CommandExecutor
 						IBUtils.sendMessages((Player) sender, Messages.PURGE_HELP_MSG);
 						return true;
 					}
+					else if (args[1].equalsIgnoreCase(Constants.UUID_CMD))
+					{
+						IBUtils.sendMessages((Player) sender, Messages.UUID_HELP_MSG);
+						return true;
+					}
 				}
 				
 				sender.sendMessage(Messages.PREFIX + Messages.HELP_MSG.get(3));
