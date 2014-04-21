@@ -25,6 +25,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -260,10 +261,10 @@ public class IBUtils
 		return true;
 	}
 	
-	public static void sendMessages(Player player, List<String> messages)
+	public static void sendMessages(CommandSender sender, List<String> messages)
 	{
 		for (String message : messages)
-			player.sendMessage(message);
+			sender.sendMessage(message);
 	}
 	
 	@SuppressWarnings("unchecked")
