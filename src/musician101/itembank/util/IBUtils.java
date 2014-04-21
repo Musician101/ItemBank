@@ -84,7 +84,7 @@ public class IBUtils
 		Player[] players = Bukkit.getOnlinePlayers();
 		if (players.length > 0)
 			for (Player player : players)
-				createPlayerFile(new File(plugin.playerData, player.getName() + "." + plugin.config.format));
+				createPlayerFile(new File(plugin.playerData, player.getUniqueId() + "." + plugin.config.format));
 	}
 	
 	public static int getAmount(Inventory inv, Material material, short durability)
