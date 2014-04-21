@@ -12,8 +12,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Messages;
@@ -26,7 +26,6 @@ import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -1051,48 +1050,6 @@ public class IBUtils
 		}
 		
 		return null;
-	}
-	
-	public static void convertToMultiWorld(ItemBank plugin)
-	{
-		if (plugin.config.useMYSQL)
-		{
-			return;
-		}
-		
-		if (!plugin.config.format.equals("yml"))
-			return;
-		
-		for (File file : plugin.playerData.listFiles())
-		{
-			YamlConfiguration oldAccount = new YamlConfiguration();
-			YamlConfiguration newAccount = new YamlConfiguration();
-			try
-			{
-				oldAccount.load(file);
-				if (!oldAccount.isSet("isMultiWorld") || !oldAccount.getBoolean("isMultiWorld"))
-				{
-					for (Entry<String, Object> entry : oldAccount.getValues(true).entrySet())
-						if (!(entry.getValue() instanceof MemorySection))
-							newAccount.set(Bukkit.getWorlds().get(0).getName() + "." + entry.getKey(), oldAccount.getItemStack(entry.getKey()));
-					
-					newAccount.set("isMultiWorld", true);
-					file.delete();
-					IBUtils.createPlayerFile(file);
-					newAccount.save(file);
-				}
-			}
-			catch (FileNotFoundException e)
-			{e.printStackTrace();}
-			catch (IOException e)
-			{
-				plugin.getLogger().warning("Could not convert file " + file.getName() + ": I/O Error.");
-			}
-			catch (InvalidConfigurationException e)
-			{
-				plugin.getLogger().warning("Could not convert file " + file.getName() + ": YAML Format Error.");
-			}
-		}
 	}
 
 	public static String getWorldName(ItemBank plugin, Player player)
