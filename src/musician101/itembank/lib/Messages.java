@@ -26,7 +26,7 @@ public class Messages
 		ACCOUNT_ILLEGAL_STACK_MAXIMUM = langConfig.getString(lang + Constants.STACK + ".maximum", ACCOUNT_ILLEGAL_STACK_MAXIMUM);
 		ACCOUNT_TRANSACTION_FAIL = PREFIX + langConfig.getString(lang + Constants.ECONOMY + ".fail", ACCOUNT_TRANSACTION_FAIL_DEFAULT);
 		ACCOUNT_UPDATED = PREFIX + langConfig.getString(lang + Constants.ACCOUNT + ".updated", ACCOUNT_UPDATED_DEFAULT);
-		HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".version", HELP_VERSION) + ": " + ChatColor.WHITE + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getVersion() + " " + langConfig.getString(lang + Constants.HELP + ".for", HELP_FOR) + " Bukkit 1.7.2-R0.3.",
+		HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".version", HELP_VERSION) + ": " + ChatColor.WHITE + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getVersion() + " " + langConfig.getString(lang + Constants.HELP + ".for", HELP_FOR) + " Bukkit 1.7.9-R0.1-SNAPSHOT.",
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".downloads", HELP_DOWNLOADS) + ", Wiki, & " + langConfig.getString(lang + Constants.HELP + ".error", HELP_BUGS) + ": " + ChatColor.WHITE + "http://dev.bukkit.org/bukkit-plugins/item_bank/",
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".specific", HELP_SPECIFIC) + ChatColor.WHITE + " /itembank help <command>");
 		
