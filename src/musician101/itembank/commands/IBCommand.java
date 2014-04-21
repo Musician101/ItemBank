@@ -4,12 +4,16 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -135,6 +139,48 @@ public class IBCommand implements CommandExecutor
 				
 				plugin.config.reloadConfiguration();
 				sender.sendMessage(Messages.RELOAD_SUCCESS);
+				return true;
+			}
+			/** UUID Command */
+			else if (args[0].equalsIgnoreCase(Constants.UUID_CMD))
+			{
+				if (!sender.hasPermission(Constants.UUID_PERM))
+				{
+					sender.sendMessage(Messages.NO_PERMISSION);
+					return false;
+				}
+				
+				if (args.length > 1)
+				{
+					OfflinePlayer player = null;
+					try
+					{
+						player = Bukkit.getServer().getOfflinePlayer(UUID.fromString(args[1]));
+					}
+					catch (IllegalArgumentException e)
+					{
+						for (Entry<String, String> uuid : plugin.config.uuids.entrySet())
+							if (uuid.getValue().equals(args[1]))
+								player = Bukkit.getServer().getOfflinePlayer(UUID.fromString(uuid.getKey()));
+					}
+					
+					if (player == null)
+					{
+						sender.sendMessage(Messages.PLAYER_DNE);
+						return false;
+					}
+					
+					sender.sendMessage(Messages.PREFIX + args[1] + "'s UUID: " + ((OfflinePlayer) player).getUniqueId().toString());
+					return true;
+				}
+				
+				if (!(sender instanceof Player))
+				{
+					sender.sendMessage(Messages.PLAYER_CMD);
+					return false;
+				}
+				
+				sender.sendMessage(Messages.PREFIX + sender.getName() + "'s UUID: " + ((Player) sender).getUniqueId().toString());
 				return true;
 			}
 		}
