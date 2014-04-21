@@ -103,6 +103,7 @@ public class IBUtils
 		final Inventory inv = Bukkit.createInventory(player, 54, player.getName() + " - Page " + page);
 		if (plugin.config.useMYSQL)
 		{
+			uuid = uuid.replace("-", "_");
 			Statement statement = plugin.c.createStatement();
 			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + uuid + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
 			for (int slot = 0; slot < inv.getSize(); slot++)
@@ -168,6 +169,7 @@ public class IBUtils
 	{
 		if (plugin.config.useMYSQL)
 		{
+			uuid = uuid.replace("-", "_");
 			Statement statement = plugin.c.createStatement();
 			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + uuid + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
 			for (int slot = 0; slot < inventory.getSize(); slot++)
