@@ -3,6 +3,7 @@ package musician101.itembank.listeners;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map.Entry;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
@@ -29,13 +30,13 @@ public class InventoryListener implements Listener
 		this.plugin = plugin;
 	}
 	
-	// player.getName() and playerName are not always the same.
-	public void saveAccount(Player player, String worldName, String playerName, Inventory topInv, Inventory playerInv, int page)
+	// player.getUniqueId() and UUID are not always the same.
+	public void saveAccount(Player player, String worldName, String uuid, Inventory topInv, Inventory playerInv, int page)
 	{
 		Inventory account = null;
 		try
 		{
-			account = IBUtils.getAccount(plugin, worldName, playerName, page);
+			account = IBUtils.getAccount(plugin, worldName, uuid, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -65,7 +66,7 @@ public class InventoryListener implements Listener
 		account.setContents(topInv.getContents());
 		try
 		{
-			IBUtils.saveAccount(plugin, worldName, playerName, account, page);
+			IBUtils.saveAccount(plugin, worldName, uuid, account, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -164,8 +165,13 @@ public class InventoryListener implements Listener
 			//To prevent spamming of the console should an player with Exempt permission node open ANY inventory.
 			try
 			{
+				String p = "";
+				for (Entry<String, String> uuid : plugin.config.uuids.entrySet())
+					if (uuid.getValue().equals(inv.getName().substring(0, inv.getName().indexOf(" "))))
+						p = uuid.getKey();
+				
 				page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-				saveAccount(player, Bukkit.getWorlds().get(0).getName(), inv.getName().substring(0, inv.getName().indexOf(" ")), inv, player.getInventory(), page);
+				saveAccount(player, Bukkit.getWorlds().get(0).getName(), p, inv, player.getInventory(), page);
 				return;
 			}
 			catch (StringIndexOutOfBoundsException e)
@@ -175,6 +181,6 @@ public class InventoryListener implements Listener
 		}
 		
 		page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-		saveAccount(player, IBUtils.getWorldName(plugin, player), player.getName(), inv, player.getInventory(), page);
+		saveAccount(player, IBUtils.getWorldName(plugin, player), player.getUniqueId().toString(), inv, player.getInventory(), page);
 	}
 }
