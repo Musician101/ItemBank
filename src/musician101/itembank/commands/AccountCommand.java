@@ -98,10 +98,8 @@ public class AccountCommand implements CommandExecutor
 			
 			OfflinePlayer player = plugin.getServer().getPlayer(UUID.fromString(args[0]));
 			for (Entry<String, String> uuid : plugin.config.uuids.entrySet())
-			{
 				if (uuid.getValue().equals(args[0]))
 					player = plugin.getServer().getPlayer(UUID.fromString(uuid.getKey()));
-			}
 			
 			if (args.length > 1)
 			{
@@ -111,7 +109,7 @@ public class AccountCommand implements CommandExecutor
 				return openInv(sender, args[0], player.getUniqueId().toString(), Integer.valueOf(args[2]));
 			}
 			
-			return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getName(), 1);
+			return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getUniqueId().toString(), 1);
 		}
 		
 		if (!sender.hasPermission(Constants.ACCOUNT_PERM))
