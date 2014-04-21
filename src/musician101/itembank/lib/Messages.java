@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Messages
 {
+	//TODO Reformat lang.yml
 	public static void init(String lang, File file)
 	{
 		YamlConfiguration langConfig = YamlConfiguration.loadConfiguration(file);
@@ -37,6 +38,7 @@ public class Messages
 		PAGE = langConfig.getString(lang + Constants.ACCOUNT + ".page", PAGE_DEFAULT);
 		PLAYER_CMD = PREFIX + langConfig.getString(lang + ".playercmd", PLAYER_CMD_DEFAULT);
 		PLAYER_JOIN_FILE_FAIL = PREFIX + langConfig.getString(lang + ".failedfile", PLAYER_JOIN_FILE_FAIL_DEFAULT);
+		PLAYER_DNE = PREFIX + langConfig.getString(lang + ".playerdne", PLAYER_DNE_DEFAULT);
 		PURGE_HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".description", HELP_DESCRIPTION) + ": " + ChatColor.WHITE + langConfig.getString(lang + Constants.HELP + ".purge", PURGE_HELP_DESC),
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.USAGE + ".default", USAGE_DEFAULT) + ": " + ChatColor.WHITE + "/itembank purge <player>");
 		
@@ -132,6 +134,9 @@ public class Messages
 	
 	public static String PLAYER_JOIN_FILE_FAIL;
 	public static final String PLAYER_JOIN_FILE_FAIL_DEFAULT = "There was an error in creating your account file. Please contact an administrator immediately.";
+	
+	public static String PLAYER_DNE;
+	public static final String PLAYER_DNE_DEFAULT = "Error: Player not found. Check for spelling, capitalization, and if the player has ever logged onto the server.";
 	
 	public static String PURGE_NO_FILE;
 	public static final String PURGE_NO_FILE_DEFAULT = "File not found. Please check spelling and capitalization.";

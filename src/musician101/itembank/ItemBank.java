@@ -1,7 +1,9 @@
 package musician101.itembank;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
+import java.util.Map.Entry;
 
 import musician101.itembank.commands.AccountCommand;
 import musician101.itembank.commands.IBCommand;
@@ -14,6 +16,8 @@ import musician101.itembank.util.Updater;
 import musician101.itembank.util.Updater.UpdateResult;
 import musician101.itembank.util.Updater.UpdateType;
 
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import code.husky.mysql.MySQL;
@@ -73,6 +77,21 @@ public class ItemBank extends JavaPlugin
 	
 	public void onDisable()
 	{
+		File file = new File(getDataFolder(), "players.yml");
+		YamlConfiguration players = new YamlConfiguration();
+		try
+		{
+			players.load(file);
+			for (Entry <String, String> player : config.uuids.entrySet())
+				players.set(player.getKey(), player.getValue());
+			
+			players.save(file);
+		}
+		catch (IOException | InvalidConfigurationException e)
+		{
+			getLogger().warning("Error saving players.yml");
+		}
+		
 		if (mysql != null)
 			mysql.closeConnection();
 	}

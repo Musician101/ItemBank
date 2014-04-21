@@ -28,5 +28,7 @@ public class PlayerListener implements Listener
 		IBUtils.createPlayerFile(playerFile);
 		if (!playerFile.exists())
 			player.sendMessage(Messages.PLAYER_JOIN_FILE_FAIL);
+		
+		plugin.config.uuids.put(player.getUniqueId().toString(), player.getName());
 	}
 }

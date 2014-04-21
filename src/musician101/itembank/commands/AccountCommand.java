@@ -3,6 +3,8 @@ package musician101.itembank.commands;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
@@ -29,12 +31,12 @@ public class AccountCommand implements CommandExecutor
 	}
 	
 	// sender.getName() and playerName are not always the same.
-	public boolean openInv(CommandSender sender, String worldName, String playerName, int page)
+	public boolean openInv(CommandSender sender, String worldName, String uuid, int page)
 	{
 		Inventory inv = null;
 		try
 		{
-			inv = IBUtils.getAccount(plugin, worldName, playerName, page);
+			inv = IBUtils.getAccount(plugin, worldName, uuid, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -57,7 +59,7 @@ public class AccountCommand implements CommandExecutor
 			return false;
 		}
 		
-		if (sender.getName().equals(playerName) && plugin.economy.isEnabled() && plugin.config.enableVault)
+		if (sender.getName().equals(uuid) && plugin.economy.isEnabled() && plugin.config.enableVault)
 		{
 			
 			if (plugin.economy.getMoney(sender.getName()) < plugin.config.transactionCost)
@@ -94,16 +96,19 @@ public class AccountCommand implements CommandExecutor
 				return false;
 			}
 			
-			OfflinePlayer player = plugin.getServer().getPlayer(args[0]);
-			if (player == null)
-				player = plugin.getServer().getOfflinePlayer(args[0]);
+			OfflinePlayer player = plugin.getServer().getPlayer(UUID.fromString(args[0]));
+			for (Entry<String, String> uuid : plugin.config.uuids.entrySet())
+			{
+				if (uuid.getValue().equals(args[0]))
+					player = plugin.getServer().getPlayer(UUID.fromString(uuid.getKey()));
+			}
 			
 			if (args.length > 1)
 			{
 				if (IBUtils.isNumber(args[1]))
-					return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getName(), Integer.valueOf(args[1]));
+					return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getUniqueId().toString(), Integer.valueOf(args[1]));
 				
-				return openInv(sender, args[0], player.getName(), Integer.valueOf(args[2]));
+				return openInv(sender, args[0], player.getUniqueId().toString(), Integer.valueOf(args[2]));
 			}
 			
 			return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getName(), 1);
@@ -115,6 +120,6 @@ public class AccountCommand implements CommandExecutor
 			return false;
 		}
 		
-		return openInv(sender, IBUtils.getWorldName(plugin, (Player) sender), sender.getName(), 1);
+		return openInv(sender, IBUtils.getWorldName(plugin, (Player) sender), ((Player) sender).getUniqueId().toString(), 1);
 	}
 }

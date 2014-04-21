@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import musician101.itembank.ItemBank;
@@ -97,20 +98,20 @@ public class IBUtils
 		return amount;
 	}
 	
-	public static Inventory getAccount(ItemBank plugin, String worldName, String playerName, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
+	public static Inventory getAccount(ItemBank plugin, String worldName, String uuid, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
-		final Inventory inv = Bukkit.createInventory(plugin.getServer().getPlayer(playerName), 54, playerName + " - Page " + page);
+		final Inventory inv = Bukkit.createInventory(plugin.getServer().getPlayer(UUID.fromString(uuid)), 54, uuid + " - Page " + page);
 		if (plugin.config.useMYSQL)
 		{
 			Statement statement = plugin.c.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + playerName + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
+			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + uuid + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
 			for (int slot = 0; slot < inv.getSize(); slot++)
-				inv.setItem(slot, getItem(statement.executeQuery("SELECT * FROM ib_" + playerName + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
+				inv.setItem(slot, getItem(statement.executeQuery("SELECT * FROM ib_" + uuid + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
 			
 			return inv;
 		}
 		
-		File file = new File(plugin.playerData, playerName + "." + plugin.config.format);
+		File file = new File(plugin.playerData, uuid + "." + plugin.config.format);
 		if (inv != null)
 			createPlayerFile(file);
 		
@@ -163,24 +164,24 @@ public class IBUtils
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void saveAccount(ItemBank plugin, String worldName, String playerName, Inventory inventory, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
+	public static void saveAccount(ItemBank plugin, String worldName, String uuid, Inventory inventory, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
 		if (plugin.config.useMYSQL)
 		{
 			Statement statement = plugin.c.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + playerName + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
+			statement.execute("CREATE TABLE IF NOT EXISTS ib_" + uuid + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
 			for (int slot = 0; slot < inventory.getSize(); slot++)
 			{
-				statement.execute("DELETE FROM ib_" + playerName + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";");
+				statement.execute("DELETE FROM ib_" + uuid + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";");
 				ItemStack item = inventory.getItem(slot);
 				if (item != null)
-					statement.executeUpdate("INSERT INTO ib_" + playerName + "(World, Page, Slot, Material, Damage, Amount, ItemMeta) VALUES (\"" + worldName + "\", " + page + ", " + slot + ", \"" + item.getType().toString() + "\", " + item.getDurability() + ", " + item.getAmount() + ", \""+ metaToJson(item).toJSONString().replace("\"", "\\\"") + "\");");
+					statement.executeUpdate("INSERT INTO ib_" + uuid + "(World, Page, Slot, Material, Damage, Amount, ItemMeta) VALUES (\"" + worldName + "\", " + page + ", " + slot + ", \"" + item.getType().toString() + "\", " + item.getDurability() + ", " + item.getAmount() + ", \""+ metaToJson(item).toJSONString().replace("\"", "\\\"") + "\");");
 			}
 			
 			return;
 		}
 
-		File file = new File(plugin.playerData, playerName + "." + plugin.config.format);
+		File file = new File(plugin.playerData, uuid + "." + plugin.config.format);
 		if (FilenameUtils.getExtension(file.getName()).equals("csv"))
 		{
 			List<String> account = new ArrayList<String>();

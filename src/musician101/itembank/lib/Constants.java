@@ -4,10 +4,11 @@ public class Constants
 {
 	/** Commands Names */
 	public static final String ACCOUNT_CMD = "account";
+	public static final String HELP_CMD = "help";
 	public static final String ITEMBANK_CMD = "itembank";
 	public static final String PURGE_CMD = "purge";
 	public static final String RELOAD_CMD = "reload";
-	public static final String HELP_CMD = "help";
+	public static final String UUID_CMD = "uuid";
 	
 	/** Config */
 	public static final String BLACKLIST = "blacklist";
@@ -49,4 +50,5 @@ public class Constants
 	public static final String EXEMPT_PERM = ADMIN_PERM + ".exempt";
 	public static final String PURGE_PERM = ADMIN_PERM + "." + PURGE_CMD;
 	public static final String RELOAD_PERM = ADMIN_PERM + "." + RELOAD_CMD;
+	public static final String UUID_PERM = ADMIN_PERM + "." + UUID_CMD;
 }
