@@ -10,7 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Messages
 {
-	//TODO Reformat lang.yml
 	public static void init(String lang, File file)
 	{
 		YamlConfiguration langConfig = YamlConfiguration.loadConfiguration(file);
