@@ -190,7 +190,7 @@ public class IBCommand implements CommandExecutor
 			}
 		}
 		
-		IBUtils.sendMessages((Player) sender, Messages.HELP_MSG);
+		IBUtils.sendMessages(sender, Messages.HELP_MSG);
 		return true;
 	}
 }
