@@ -4,15 +4,12 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map.Entry;
-import java.util.UUID;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;
 import musician101.itembank.util.IBUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -157,26 +154,20 @@ public class IBCommand implements CommandExecutor
 				
 				if (args.length > 1)
 				{
-					OfflinePlayer player = null;
+					OfflinePlayer player = plugin.config.uuids.getPlayer(args[1]);
+					if (player == null)
+						player = plugin.config.uuids.getOfflinePlayer(args[1]);
+					
 					try
 					{
-						player = Bukkit.getServer().getOfflinePlayer(UUID.fromString(args[1]));
+						sender.sendMessage(Messages.PREFIX + args[1] + "'s UUID: " + player.getUniqueId().toString());
+						return true;
 					}
-					catch (IllegalArgumentException e)
-					{
-						for (Entry<String, String> uuid : plugin.config.uuids.entrySet())
-							if (uuid.getValue().equals(args[1]))
-								player = Bukkit.getServer().getOfflinePlayer(UUID.fromString(uuid.getKey()));
-					}
-					
-					if (player == null)
+					catch (NullPointerException e)
 					{
 						sender.sendMessage(Messages.PLAYER_DNE);
 						return false;
 					}
-					
-					sender.sendMessage(Messages.PREFIX + args[1] + "'s UUID: " + ((OfflinePlayer) player).getUniqueId().toString());
-					return true;
 				}
 				
 				if (!(sender instanceof Player))

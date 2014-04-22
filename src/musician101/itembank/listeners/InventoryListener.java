@@ -3,7 +3,6 @@ package musician101.itembank.listeners;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Map.Entry;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
@@ -164,14 +163,9 @@ public class InventoryListener implements Listener
 			
 			//To prevent spamming of the console should an player with Exempt permission node open ANY inventory.
 			try
-			{
-				String p = "";
-				for (Entry<String, String> uuid : plugin.config.uuids.entrySet())
-					if (uuid.getValue().equals(inv.getName().substring(0, inv.getName().indexOf(" "))))
-						p = uuid.getKey();
-				
+			{	
 				page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-				saveAccount(player, Bukkit.getWorlds().get(0).getName(), p, inv, player.getInventory(), page);
+				saveAccount(player, Bukkit.getWorlds().get(0).getName(), plugin.config.uuids.getOfflinePlayer(inv.getName().substring(0, inv.getName().indexOf(" "))).getUniqueId().toString(), inv, player.getInventory(), page);
 				return;
 			}
 			catch (StringIndexOutOfBoundsException e)

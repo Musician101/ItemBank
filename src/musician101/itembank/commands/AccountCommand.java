@@ -3,8 +3,6 @@ package musician101.itembank.commands;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Map.Entry;
-import java.util.UUID;
 
 import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
@@ -88,7 +86,15 @@ public class AccountCommand implements CommandExecutor
 		if (args.length > 0)
 		{
 			if (IBUtils.isNumber(args[0]))
+			{
+				if (!sender.hasPermission(Constants.ACCOUNT_PERM))
+				{
+					sender.sendMessage(Messages.NO_PERMISSION);
+					return false;
+				}
+				
 				return openInv(sender, IBUtils.getWorldName(plugin, (Player) sender), sender.getName(), Integer.valueOf(args[0]));
+			}
 			
 			if (!sender.hasPermission(Constants.ADMIN_ACCOUNT_PERM))
 			{
@@ -96,20 +102,27 @@ public class AccountCommand implements CommandExecutor
 				return false;
 			}
 			
-			OfflinePlayer player = plugin.getServer().getPlayer(UUID.fromString(args[0]));
-			for (Entry<String, String> uuid : plugin.config.uuids.entrySet())
-				if (uuid.getValue().equals(args[0]))
-					player = plugin.getServer().getPlayer(UUID.fromString(uuid.getKey()));
+			OfflinePlayer player = plugin.config.uuids.getPlayer(args[0]);
+			if (player == null)
+				player = plugin.config.uuids.getOfflinePlayer(args[0]);
 			
-			if (args.length > 1)
+			try
 			{
-				if (IBUtils.isNumber(args[1]))
-					return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getUniqueId().toString(), Integer.valueOf(args[1]));
+				if (args.length > 1)
+				{
+					if (IBUtils.isNumber(args[1]))
+						return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getUniqueId().toString(), Integer.valueOf(args[1]));
+					
+					return openInv(sender, args[0], player.getUniqueId().toString(), Integer.valueOf(args[2]));
+				}
 				
-				return openInv(sender, args[0], player.getUniqueId().toString(), Integer.valueOf(args[2]));
+				return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getUniqueId().toString(), 1);
 			}
-			
-			return openInv(sender, Bukkit.getWorlds().get(0).getName(), player.getUniqueId().toString(), 1);
+			catch (NullPointerException e)
+			{
+				sender.sendMessage(Messages.PLAYER_DNE);
+				return false;
+			}
 		}
 		
 		if (!sender.hasPermission(Constants.ACCOUNT_PERM))

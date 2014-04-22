@@ -100,8 +100,7 @@ public class IBUtils
 	
 	public static Inventory getAccount(ItemBank plugin, String worldName, String uuid, int page) throws FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
-		Player player = plugin.getServer().getPlayer(UUID.fromString(uuid));
-		final Inventory inv = Bukkit.createInventory(player, 54, player.getName() + " - Page " + page);
+		final Inventory inv = Bukkit.createInventory(Bukkit.getPlayer(UUID.fromString(uuid)), 54, Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName() + " - Page " + page);
 		if (plugin.config.useMYSQL)
 		{
 			uuid = uuid.replace("-", "_");

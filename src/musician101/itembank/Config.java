@@ -1,6 +1,7 @@
 package musician101.itembank;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,11 +9,11 @@ import java.util.Map.Entry;
 
 import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;
+import musician101.luc.bukkit.UUIDFinder;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import code.husky.mysql.MySQL;
 
@@ -25,7 +26,7 @@ public class Config
 	public String format = "";
 	public String multiWorld = "";
 	public int pageLimit;
-	public Map<String, String> uuids = new HashMap<String, String>();
+	public UUIDFinder uuids;
 	public double transactionCost;
 	public boolean updateCheck;
 	public boolean useMYSQL;
@@ -36,7 +37,6 @@ public class Config
 		plugin.playerData = new File(plugin.getDataFolder(), "PlayerData");
 		File config = new File(plugin.getDataFolder(), "config.yml");
 		File langFile = new File(plugin.getDataFolder(), "lang.yml");
-		File players = new File(plugin.getDataFolder(), "players.yml");
 		
 		if (!config.exists())
 		{
@@ -52,14 +52,6 @@ public class Config
 				plugin.getLogger().warning("Error: Could not create lang.yml directory.");
 			
 			plugin.saveResource("lang.yml", false);
-		}
-		
-		if (!players.exists())
-		{
-			if (!players.getParentFile().mkdirs())
-				plugin.getLogger().warning("Error: Could not create players.yml directory.");
-			
-			plugin.saveResource("players.yml", false);
 		}
 		
 		if (!plugin.playerData.exists())
@@ -90,18 +82,22 @@ public class Config
 				blacklist.put(material.getKey(), (Integer) material.getValue());
 		}
 		
-		YamlConfiguration players = new YamlConfiguration();
 		try
 		{
-			players.load(new File(plugin.getDataFolder(), "players.yml"));
+			uuids = new UUIDFinder(plugin);
 		}
-		catch (IOException | InvalidConfigurationException e)
+		catch (FileNotFoundException e)
 		{
-			plugin.getLogger().warning("Error loading players.yml.");
+			plugin.getLogger().warning("Error loading players.yml (File not found).");
 		}
-		
-		for (Entry<String, Object> player : players.getValues(true).entrySet())
-			uuids.put(player.getKey(), player.getValue().toString());
+		catch (IOException e)
+		{
+			plugin.getLogger().warning("Error loading players.yml (Internal Error).");
+		}
+		catch (InvalidConfigurationException e)
+		{
+			plugin.getLogger().warning("Error loading players.yml (Incorrect YAML format).");
+		}
 		
 		useMYSQL = config.getBoolean(Constants.ENABLE, false);
 		if (useMYSQL)
