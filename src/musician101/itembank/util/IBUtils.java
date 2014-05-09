@@ -1,11 +1,14 @@
 package musician101.itembank.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -16,9 +19,11 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import musician101.itembank.ItemBank;
+import musician101.itembank.config.CustomYamlConfig;
 import musician101.itembank.lib.Messages;
 import net.minecraft.util.org.apache.commons.io.FilenameUtils;
 
+import org.apache.commons.lang.text.StrBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -27,6 +32,7 @@ import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -1062,5 +1068,33 @@ public class IBUtils
 			return player.getWorld().getName().replace("_nether", "").replace("_the_end", "");
 		
 		return player.getWorld().getName();
+	}
+	
+	public static FileConfiguration getYamlConfig(InputStream stream, boolean forceEncode) throws IOException, InvalidConfigurationException
+	{
+		CustomYamlConfig config = new CustomYamlConfig();
+		InputStreamReader reader = null;
+		BufferedReader br = null;
+		try
+		{
+			reader = forceEncode ? new InputStreamReader(stream, "UTF-8") : new InputStreamReader(stream);
+			br = new BufferedReader(reader);
+			StrBuilder builder = new StrBuilder();
+			String line = null;
+			while ((line = br.readLine()) != null)
+				builder.appendln(line);
+			
+			config.loadFromString(builder.toString());
+		}
+		finally
+		{
+			if (br != null)
+				br.close();
+			
+			if (reader != null)
+				reader.close();
+		}
+		
+		return config;
 	}
 }

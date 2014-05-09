@@ -1,18 +1,24 @@
 package musician101.itembank.lib;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import musician101.itembank.util.IBUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class Messages
 {
-	public static void init(String lang, File file)
+	public static void init(String lang, File file) throws FileNotFoundException, IOException, InvalidConfigurationException
 	{
-		YamlConfiguration langConfig = YamlConfiguration.loadConfiguration(file);
+		FileConfiguration langConfig = IBUtils.getYamlConfig(new FileInputStream(file), true);
 		ACCOUNT_ECON_SUCCESS = PREFIX + langConfig.getString(lang + Constants.ECONOMY + ".success", ACCOUNT_ECON_SUCCESS_DEFAULT);
 		ACCOUNT_HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".description", HELP_DESCRIPTION) + ": " + ChatColor.WHITE + langConfig.getString(lang + Constants.HELP + ".account", ACCOUNT_HELP_DESC),
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.USAGE + ".player", USAGE_PLAYER) + ": " + ChatColor.WHITE + "/account <page>",

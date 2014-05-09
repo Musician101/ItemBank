@@ -1,4 +1,4 @@
-package musician101.itembank;
+package musician101.itembank.config;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import musician101.itembank.ItemBank;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;
 import musician101.luc.bukkit.UUIDFinder;
@@ -107,6 +108,21 @@ public class Config
 			plugin.c = plugin.mysql.openConnection();
 		}
 
-		Messages.init(config.getString(Constants.LANG, "en"), new File(plugin.getDataFolder(), "lang.yml"));
+		try
+		{
+			Messages.init(config.getString(Constants.LANG, "en"), new File(plugin.getDataFolder(), "lang.yml"));
+		}
+		catch (FileNotFoundException e)
+		{
+			plugin.getLogger().warning("Error loading lang.yml (File not found).");
+		}
+		catch (IOException e)
+		{
+			plugin.getLogger().warning("Error loading lang.yml (Internal Error).");
+		}
+		catch (InvalidConfigurationException e)
+		{
+			plugin.getLogger().warning("Error loading lang.yml (Incorrect YAML format).");
+		}
 	}
 }

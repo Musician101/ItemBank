@@ -7,6 +7,7 @@ import java.sql.Connection;
 
 import musician101.itembank.commands.AccountCommand;
 import musician101.itembank.commands.IBCommand;
+import musician101.itembank.config.Config;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;
 import musician101.itembank.listeners.InventoryListener;
@@ -28,7 +29,7 @@ public class ItemBank extends JavaPlugin
 	public File playerData;
 	public MySQL mysql = null;
 	public Connection c = null;
-	
+	//TODO enable page permission i.e. itembank.account.page.#
 	private void setupEconomy()
 	{
 		economy = new Econ();
@@ -80,15 +81,15 @@ public class ItemBank extends JavaPlugin
 		}
 		catch (FileNotFoundException e)
 		{
-			getLogger().warning("Error loading players.yml (File not found).");
+			getLogger().warning("Error saving players.yml (File not found).");
 		}
 		catch (IOException e)
 		{
-			getLogger().warning("Error loading players.yml (Internal Error).");
+			getLogger().warning("Error saving players.yml (Internal Error).");
 		}
 		catch (InvalidConfigurationException e)
 		{
-			getLogger().warning("Error loading players.yml (Incorrect YAML format).");
+			getLogger().warning("Error saving players.yml (Incorrect YAML format).");
 		}
 		
 		
