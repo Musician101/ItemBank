@@ -32,7 +32,7 @@ public class Messages
 		ACCOUNT_ILLEGAL_STACK_MAXIMUM = langConfig.getString(lang + Constants.STACK + ".maximum", ACCOUNT_ILLEGAL_STACK_MAXIMUM);
 		ACCOUNT_TRANSACTION_FAIL = PREFIX + langConfig.getString(lang + Constants.ECONOMY + ".fail", ACCOUNT_TRANSACTION_FAIL_DEFAULT);
 		ACCOUNT_UPDATED = PREFIX + langConfig.getString(lang + Constants.ACCOUNT + ".updated", ACCOUNT_UPDATED_DEFAULT);
-		HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".version", HELP_VERSION) + ": " + ChatColor.WHITE + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getVersion() + " " + langConfig.getString(lang + Constants.HELP + ".for", HELP_FOR) + " Bukkit 1.7.9-R0.1-SNAPSHOT.",
+		HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".version", HELP_VERSION) + ": " + ChatColor.WHITE + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getVersion() + " " + langConfig.getString(lang + Constants.HELP + ".for", HELP_FOR) + " Bukkit 1.7.9-R0.1.",
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".downloads", HELP_DOWNLOADS) + ", Wiki, & " + langConfig.getString(lang + Constants.HELP + ".error", HELP_BUGS) + ": " + ChatColor.WHITE + "http://dev.bukkit.org/bukkit-plugins/item_bank/",
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".specific", HELP_SPECIFIC) + ChatColor.WHITE + " /itembank help <command>");
 		
@@ -64,13 +64,6 @@ public class Messages
 		VAULT_NO_CONFIG = langConfig.getString(lang + Constants.VAULT + ".noconfig", VAULT_NO_CONFIG_DEFAULT);
 		VAULT_NOT_INSTALLED = langConfig.getString(lang + Constants.VAULT + ".novault", VAULT_NOT_INSTALLED_DEFAULT);
 		YAML_PARSE_EX = PREFIX + langConfig.getString(lang + ".yamlparseex", YAML_PARSE_EX_DEFAULT);
-		
-		if (!langConfig.isSet(lang + ".yamlparseex"))
-		{
-			Bukkit.getPluginManager().getPlugin("ItemBank").getLogger().warning("An update has changed language configuration slightly. Please change yamlex to yamlparseex. This warning will only be in this version of the plugin.");
-			Bukkit.getPluginManager().getPlugin("ItemBank").getLogger().warning("This warning will only be in this version of the plugin (ItemBank v" + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getVersion() + ").");
-			YAML_PARSE_EX = PREFIX + langConfig.getString(lang + ".yamlex", YAML_PARSE_EX_DEFAULT);
-		}
 	}
 	
 	/** Formatting */
