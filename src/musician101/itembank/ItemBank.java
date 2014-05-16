@@ -11,8 +11,6 @@ import musician101.itembank.config.Config;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;
 import musician101.itembank.listeners.InventoryListener;
-import musician101.itembank.listeners.PlayerListener;
-import musician101.itembank.util.IBUtils;
 import musician101.itembank.util.Updater;
 import musician101.itembank.util.Updater.UpdateResult;
 import musician101.itembank.util.Updater.UpdateType;
@@ -29,6 +27,7 @@ public class ItemBank extends JavaPlugin
 	public File playerData;
 	public MySQL mysql = null;
 	public Connection c = null;
+	
 	//TODO enable page permission i.e. itembank.account.page.#
 	private void setupEconomy()
 	{
@@ -62,11 +61,7 @@ public class ItemBank extends JavaPlugin
 		config = new Config(this);
 		versionCheck();
 		setupEconomy();
-
-		if (!config.useMYSQL)
-			IBUtils.createPlayerFiles(this);
 		
-		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
 		
 		getCommand(Constants.ACCOUNT_CMD).setExecutor(new AccountCommand(this));
