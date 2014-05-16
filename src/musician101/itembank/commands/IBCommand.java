@@ -1,6 +1,7 @@
 package musician101.itembank.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -95,7 +96,16 @@ public class IBCommand implements CommandExecutor
 					}
 					
 					file.delete();
-					IBUtils.createPlayerFile(file);
+					try
+					{
+						IBUtils.createPlayerFile(file);
+					}
+					catch (IOException e)
+					{
+						sender.sendMessage(Messages.IO_EX);
+						return false;
+					}
+					
 					sender.sendMessage(Messages.PURGE_SINGLE);
 					return true;
 				}
@@ -126,7 +136,16 @@ public class IBCommand implements CommandExecutor
 				for (File file : plugin.playerData.listFiles())
 					file.delete();
 				
-				IBUtils.createPlayerFiles(plugin);
+				try
+				{
+					IBUtils.createPlayerFiles(plugin);
+				}
+				catch (IOException e)
+				{
+					sender.sendMessage(Messages.IO_EX);
+					return false;
+				}
+				
 				sender.sendMessage(Messages.PURGE_MULTIPLE);
 				return true;
 			}
