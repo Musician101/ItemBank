@@ -57,9 +57,9 @@ public class AccountCommand implements CommandExecutor
 			return false;
 		}
 		
-		if (sender.getName().equals(uuid) && plugin.economy.isEnabled() && plugin.config.enableVault)
+		/*TODO disabled until Vault updates to Bukkit 1.7.9
+		if (((Player) sender).getUniqueId().toString().equals(uuid) && plugin.economy.isEnabled() && plugin.config.enableVault)
 		{
-			
 			if (plugin.economy.getMoney(sender.getName()) < plugin.config.transactionCost)
 			{
 				sender.sendMessage(Messages.ACCOUNT_TRANSACTION_FAIL);
@@ -68,7 +68,7 @@ public class AccountCommand implements CommandExecutor
 			
 			sender.sendMessage(Messages.ACCOUNT_ECON_SUCCESS.replace("$", "$" + plugin.config.transactionCost));
 			plugin.economy.takeMoney(sender.getName(), plugin.config.transactionCost);
-		}
+		}*/
 		
 		((Player) sender).openInventory(inv);
 		return true;
@@ -93,7 +93,7 @@ public class AccountCommand implements CommandExecutor
 					return false;
 				}
 				
-				return openInv(sender, IBUtils.getWorldName(plugin, (Player) sender), sender.getName(), Integer.valueOf(args[0]));
+				return openInv(sender, IBUtils.getWorldName(plugin, (Player) sender), ((Player) sender).getUniqueId().toString(), Integer.valueOf(args[0]));
 			}
 			
 			if (!sender.hasPermission(Constants.ADMIN_ACCOUNT_PERM))
