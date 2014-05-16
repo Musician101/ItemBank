@@ -37,7 +37,7 @@ public class Messages
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".specific", HELP_SPECIFIC) + ChatColor.WHITE + " /itembank help <command>");
 		
 		IO_EX = PREFIX + langConfig.getString(lang + ".ioex", IO_EX_DEFAULT);
-		NEW_PLAYER_FILE = "# " + langConfig.getString(lang + ".newplayerfile", NEW_PLAYER_FILE_DEFAULT) + "\n";
+		NEW_PLAYER_FILE = langConfig.getString(lang + ".newplayerfile", NEW_PLAYER_FILE_DEFAULT);
 		NO_FILE_EX = PREFIX + langConfig.getString(lang + ".nofile", NO_FILE_EX_DEFAULT);
 		NO_PERMISSION = PREFIX + langConfig.getString(lang + ".nopermission", NO_PERMISSION_DEFAULT);
 		PAGE = langConfig.getString(lang + Constants.ACCOUNT + ".page", PAGE_DEFAULT);

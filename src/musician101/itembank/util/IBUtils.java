@@ -68,14 +68,14 @@ public class IBUtils
 				file.createNewFile();
 				BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
 				if (FilenameUtils.getExtension(file.getName()).equals("json"))
-					bw.write("{\"_comment\":\"" + Messages.NEW_PLAYER_FILE.replace("# ", "").replace("\n", "") + "\"}");
+					bw.write("{\"_comment\":\"" + Messages.NEW_PLAYER_FILE + "\"}");
 				else if (FilenameUtils.getExtension(file.getName()).equals("csv"))
 				{
-					bw.write(Messages.NEW_PLAYER_FILE);
+					bw.write("# " + Messages.NEW_PLAYER_FILE + "\n");
 					bw.write("# world|page|slot|material|damage/durability|amount|meta data");
 				}
 				else
-					bw.write(Messages.NEW_PLAYER_FILE);
+					bw.write("# " + Messages.NEW_PLAYER_FILE);
 				
 				bw.close();
 			}
