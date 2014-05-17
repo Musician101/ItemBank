@@ -21,7 +21,6 @@ import java.util.UUID;
 import musician101.itembank.ItemBank;
 import musician101.itembank.config.CustomYamlConfig;
 import musician101.itembank.lib.Messages;
-import net.minecraft.util.org.apache.commons.io.FilenameUtils;
 
 import org.apache.commons.lang.text.StrBuilder;
 import org.bukkit.Bukkit;
@@ -65,9 +64,9 @@ public class IBUtils
 		{
 			file.createNewFile();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-			if (FilenameUtils.getExtension(file.getName()).equals("json"))
+			if (file.getName().endsWith(".json"))
 				bw.write("{\"_comment\":\"" + Messages.NEW_PLAYER_FILE + "\"}");
-			else if (FilenameUtils.getExtension(file.getName()).equals("csv"))
+			else if (file.getName().endsWith(".csv"))
 			{
 				bw.write("# " + Messages.NEW_PLAYER_FILE + "\n");
 				bw.write("# world|page|slot|material|damage/durability|amount|meta data");
@@ -115,7 +114,7 @@ public class IBUtils
 		if (inv != null)
 			createPlayerFile(file);
 		
-		if (FilenameUtils.getExtension(file.getName()).equals("csv"))
+		if (file.getName().endsWith(".csv"))
 		{
 			for (String[] s : CSV.separator('|').create().reader(new FileReader(file)).readAll())
 			{
@@ -135,7 +134,7 @@ public class IBUtils
 			
 			return inv;
 		}
-		else if (FilenameUtils.getExtension(file.getName()).equals("json"))
+		else if (file.getName().endsWith("json"))
 		{
 			JSONParser parser = new JSONParser();
 			JSONObject account = (JSONObject) parser.parse(new FileReader(file));
@@ -183,7 +182,7 @@ public class IBUtils
 		}
 
 		File file = new File(plugin.playerData, uuid + "." + plugin.config.format);
-		if (FilenameUtils.getExtension(file.getName()).equals("csv"))
+		if (file.getName().endsWith("csv"))
 		{
 			List<String> account = new ArrayList<String>();
 			for (String[] s : CSV.separator('|').create().reader(new FileReader(file)).readAll())
@@ -216,7 +215,7 @@ public class IBUtils
 			bw.close();
 			return;
 		}
-		else if (FilenameUtils.getExtension(file.getName()).equals("json"))
+		else if (file.getName().endsWith("json"))
 		{
 			JSONParser parser = new JSONParser();
 			JSONObject account = (JSONObject) parser.parse(new FileReader(file));
