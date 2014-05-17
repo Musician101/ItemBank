@@ -3,11 +3,11 @@ package musician101.itembank.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1062,14 +1062,14 @@ public class IBUtils
 		return player.getWorld().getName();
 	}
 	
-	public static FileConfiguration getYamlConfig(InputStream stream, boolean forceEncode) throws IOException, InvalidConfigurationException
+	public static FileConfiguration getYamlConfig(File file, boolean forceEncode) throws IOException, InvalidConfigurationException
 	{
 		CustomYamlConfig config = new CustomYamlConfig();
 		InputStreamReader reader = null;
 		BufferedReader br = null;
 		try
 		{
-			reader = forceEncode ? new InputStreamReader(stream, "UTF-8") : new InputStreamReader(stream);
+			reader = forceEncode ? new InputStreamReader(new FileInputStream(file), "UTF-8") : new InputStreamReader(new FileInputStream(file));
 			br = new BufferedReader(reader);
 			StrBuilder builder = new StrBuilder();
 			String line = null;

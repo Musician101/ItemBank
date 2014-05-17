@@ -3,7 +3,6 @@ package musician101.itembank.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -83,26 +82,6 @@ public class CustomYamlConfig extends YamlConfiguration
 		catch (InvalidConfigurationException e)
 		{
 			Bukkit.getLogger().log(Level.SEVERE, "Cannot load " + file, e);
-		}
-		
-		return config;
-	}
-	
-	public static CustomYamlConfig loadConfiguration(InputStream stream)
-	{
-		Validate.notNull(stream, "Stream cannot be null");
-		CustomYamlConfig config = new CustomYamlConfig();
-		try
-		{
-			config.load(stream);
-		}
-		catch (IOException e)
-		{
-			Bukkit.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", e);
-		}
-		catch (InvalidConfigurationException e)
-		{
-			Bukkit.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", e);
 		}
 		
 		return config;
