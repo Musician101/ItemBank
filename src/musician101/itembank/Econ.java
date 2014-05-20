@@ -9,7 +9,7 @@ public class Econ
 {
 	protected Economy econ = null;
 	private boolean enabled = false;
-	
+	//TODO Disabled until Vault updates to 1.7.9
 	protected Econ()
 	{
 		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") == null)

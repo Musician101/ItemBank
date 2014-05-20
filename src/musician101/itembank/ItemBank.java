@@ -28,7 +28,6 @@ public class ItemBank extends JavaPlugin
 	public MySQL mysql = null;
 	public Connection c = null;
 	
-	//TODO enable page permission i.e. itembank.account.page.#
 	private void setupEconomy()
 	{
 		economy = new Econ();
