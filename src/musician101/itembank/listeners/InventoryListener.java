@@ -168,7 +168,7 @@ public class InventoryListener implements Listener
 				saveAccount(player, Bukkit.getWorlds().get(0).getName(), plugin.config.uuids.getOfflinePlayer(inv.getName().substring(0, inv.getName().indexOf(" "))).getUniqueId().toString(), inv, player.getInventory(), page);
 				return;
 			}
-			catch (StringIndexOutOfBoundsException e)
+			catch (NumberFormatException | StringIndexOutOfBoundsException e)
 			{
 				return;
 			}
