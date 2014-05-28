@@ -57,17 +57,16 @@ public class AccountCommand implements CommandExecutor
 			return false;
 		}
 		
-		if (((Player) sender).getUniqueId().toString().equals(uuid) && plugin.economy.isEnabled() && plugin.config.enableVault)
+		OfflinePlayer player = plugin.getServer().getOfflinePlayer(((Player) sender).getUniqueId());
+		if (player.getUniqueId().toString().equals(uuid) && plugin.econ != null && plugin.config.enableVault)
 		{
-			OfflinePlayer player = plugin.getServer().getOfflinePlayer(((Player) sender).getUniqueId());
-			if (plugin.economy.getMoney(player) < plugin.config.transactionCost)
+			if (!plugin.econ.depositPlayer(player, plugin.config.transactionCost).transactionSuccess())
 			{
 				sender.sendMessage(Messages.ACCOUNT_TRANSACTION_FAIL);
 				return false;
 			}
 			
 			sender.sendMessage(Messages.ACCOUNT_ECON_SUCCESS.replace("$", "$" + plugin.config.transactionCost));
-			plugin.economy.takeMoney(player, plugin.config.transactionCost);
 		}
 		
 		((Player) sender).openInventory(inv);

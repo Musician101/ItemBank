@@ -14,8 +14,10 @@ import musician101.itembank.listeners.InventoryListener;
 import musician101.itembank.util.Updater;
 import musician101.itembank.util.Updater.UpdateResult;
 import musician101.itembank.util.Updater.UpdateType;
+import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import code.husky.mysql.MySQL;
@@ -23,20 +25,19 @@ import code.husky.mysql.MySQL;
 public class ItemBank extends JavaPlugin
 {
 	public Config config;
-	public Econ economy = null;
+	public Economy econ = null;
 	public File playerData;
 	public MySQL mysql = null;
 	public Connection c = null;
 	
-	private void setupEconomy()
+	private boolean setupEconomy()
 	{
-		economy = new Econ();
-		if (economy.isEnabled() && config.enableVault)
-			getLogger().info(Messages.VAULT_BOTH_ENABLED);
-		else if (!economy.isEnabled())
-			getLogger().info(Messages.VAULT_NOT_INSTALLED);
-		else if (!config.enableVault)
-			getLogger().info(Messages.VAULT_NO_CONFIG);
+		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+		if (rsp == null)
+			return false;
+		
+		econ = rsp.getProvider();
+		return econ != null;
 	}
 	
 	private void versionCheck()
