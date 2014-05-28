@@ -3,13 +3,14 @@ package musician101.itembank;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class Econ
 {
 	protected Economy econ = null;
 	private boolean enabled = false;
-	//TODO Disabled until Vault updates to 1.7.9
+	
 	protected Econ()
 	{
 		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") == null)
@@ -36,7 +37,7 @@ public class Econ
 		return enabled;
 	}
 	
-	public double getMoney(String player)
+	public double getMoney(OfflinePlayer player)
 	{
 		if (!enabled)
 			return 0;
@@ -47,7 +48,7 @@ public class Econ
 		return 0;
 	}
 	
-	public void giveMoney(String player, double amount)
+	public void giveMoney(OfflinePlayer player, double amount)
 	{
 		if (!enabled || amount == 0)
 			return;
@@ -56,7 +57,7 @@ public class Econ
 			econ.depositPlayer(player, amount);
 	}
 	
-	public void takeMoney(String player, double amount)
+	public void takeMoney(OfflinePlayer player, double amount)
 	{
 		if (!enabled || amount == 0)
 			return;

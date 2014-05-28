@@ -57,18 +57,18 @@ public class AccountCommand implements CommandExecutor
 			return false;
 		}
 		
-		/*TODO disabled until Vault updates to Bukkit 1.7.9
 		if (((Player) sender).getUniqueId().toString().equals(uuid) && plugin.economy.isEnabled() && plugin.config.enableVault)
 		{
-			if (plugin.economy.getMoney(sender.getName()) < plugin.config.transactionCost)
+			OfflinePlayer player = plugin.getServer().getOfflinePlayer(((Player) sender).getUniqueId());
+			if (plugin.economy.getMoney(player) < plugin.config.transactionCost)
 			{
 				sender.sendMessage(Messages.ACCOUNT_TRANSACTION_FAIL);
 				return false;
 			}
 			
 			sender.sendMessage(Messages.ACCOUNT_ECON_SUCCESS.replace("$", "$" + plugin.config.transactionCost));
-			plugin.economy.takeMoney(sender.getName(), plugin.config.transactionCost);
-		}*/
+			plugin.economy.takeMoney(player, plugin.config.transactionCost);
+		}
 		
 		((Player) sender).openInventory(inv);
 		return true;
