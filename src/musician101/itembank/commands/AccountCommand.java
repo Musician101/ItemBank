@@ -60,7 +60,7 @@ public class AccountCommand implements CommandExecutor
 		OfflinePlayer player = plugin.getServer().getOfflinePlayer(((Player) sender).getUniqueId());
 		if (player.getUniqueId().toString().equals(uuid) && plugin.econ != null && plugin.config.enableVault)
 		{
-			if (!plugin.econ.depositPlayer(player, plugin.config.transactionCost).transactionSuccess())
+			if (plugin.econ != null && !plugin.econ.depositPlayer(player, plugin.config.transactionCost).transactionSuccess())
 			{
 				sender.sendMessage(Messages.ACCOUNT_TRANSACTION_FAIL);
 				return false;

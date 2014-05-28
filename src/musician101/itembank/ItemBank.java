@@ -32,6 +32,9 @@ public class ItemBank extends JavaPlugin
 	
 	private boolean setupEconomy()
 	{
+		if (config.enableVault == false)
+			return false;
+		
 		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp == null)
 			return false;
