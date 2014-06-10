@@ -11,6 +11,7 @@ import musician101.itembank.config.Config;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;
 import musician101.itembank.listeners.InventoryListener;
+import musician101.itembank.listeners.PlayerListener;
 import musician101.itembank.util.Updater;
 import musician101.itembank.util.Updater.UpdateResult;
 import musician101.itembank.util.Updater.UpdateType;
@@ -66,6 +67,7 @@ public class ItemBank extends JavaPlugin
 		setupEconomy();
 		
 		getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
+		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		
 		getCommand(Constants.ACCOUNT_CMD).setExecutor(new AccountCommand(this));
 		getCommand(Constants.ITEMBANK_CMD).setExecutor(new IBCommand(this));

@@ -11,7 +11,7 @@ public class Constants
 	public static final String UUID_CMD = "uuid";
 	
 	/** Config */
-	public static final String BLACKLIST = "blacklist";
+	public static final String ITEMLIST = "itemlist";
 	public static final String ENABLE_VAULT = "enableVault";
 	public static final String FORMAT = "format";
 	public static final String LANG = "lang";

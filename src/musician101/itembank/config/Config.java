@@ -21,7 +21,8 @@ import code.husky.mysql.MySQL;
 public class Config
 {
 	ItemBank plugin;
-	public Map<String, Integer> blacklist = new HashMap<String, Integer>();
+	public Map<String, Integer> itemlist = new HashMap<String, Integer>();
+	public boolean isWhitelist;
 	public String database = "";
 	public boolean enableVault;
 	public String format = "";
@@ -70,6 +71,7 @@ public class Config
 	{
 		plugin.reloadConfig();
 		final FileConfiguration config = plugin.getConfig();
+		isWhitelist = config.getBoolean("whitelist", false);
 		enableVault = config.getBoolean(Constants.ENABLE_VAULT, false);
 		format = config.getString(Constants.FORMAT, "yml").toLowerCase();
 		multiWorld = config.getString(Constants.MULTI_WORLD, "none").toLowerCase();
@@ -77,10 +79,10 @@ public class Config
 		transactionCost = config.getDouble(Constants.TRANSACTION_COST, 5);
 		updateCheck = config.getBoolean(Constants.UPDATE_CHECK, true);
 		
-		for (Entry<String, Object> material : config.getConfigurationSection(Constants.BLACKLIST).getValues(true).entrySet())
+		for (Entry<String, Object> material : config.getConfigurationSection(Constants.ITEMLIST).getValues(true).entrySet())
 		{
 			if (!(material.getValue() instanceof MemorySection))
-				blacklist.put(material.getKey(), (Integer) material.getValue());
+				itemlist.put(material.getKey(), (Integer) material.getValue());
 		}
 		
 		try

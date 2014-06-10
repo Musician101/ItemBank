@@ -122,12 +122,12 @@ public class InventoryListener implements Listener
 		if (item == null)
 			return;
 		
-		String blacklistPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
+		String itemlistPath = item.getType().toString().toLowerCase() + "." + item.getDurability();
 		int amountInAccount = IBUtils.getAmount(account, item.getType(), item.getDurability());
 		int newAmount = amountInAccount + item.getAmount();
-		if (plugin.config.blacklist.containsKey(blacklistPath))
+		if (plugin.config.itemlist.containsKey(itemlistPath) && !plugin.config.isWhitelist)
 		{
-			int maxAmount = plugin.config.blacklist.get(blacklistPath);
+			int maxAmount = plugin.config.itemlist.get(itemlistPath);
 			if (maxAmount == 0)
 			{
 				event.setCancelled(true);
@@ -147,6 +147,12 @@ public class InventoryListener implements Listener
 						Messages.PREFIX + Messages.ACCOUNT_ILLEGAL_STACK_MAXIMUM + ": " + maxAmount + ", " + Messages.ACCOUNT_ILLEGAL_AMOUNT + ": " + amountInAccount});
 				player.closeInventory();
 			}
+		}
+		else if (!plugin.config.itemlist.containsKey(itemlistPath) && plugin.config.isWhitelist)
+		{
+			event.setCancelled(true);
+			player.sendMessage(Messages.ACCOUNT_ILLEGAL_ITEM);
+			player.closeInventory();
 		}
 	}
 	
