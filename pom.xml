@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>musician101</groupId>
   <artifactId>itembank</artifactId>
-  <version>2.4</version>
+  <version>2.4.1</version>
   <name>ItemBank</name>
   <description>Virtual chest with configurable limits.</description>
   <packaging>jar</packaging>
