@@ -1,7 +1,7 @@
 name: ${project.name}
 main: ${mainClass}
-version: 2.4.2
-description: Virtual chest with configurable limits.
+version: ${project.version}
+description: ${project.description}
 author: Musician101
 softdepend: [Vault]
 
