@@ -7,8 +7,20 @@
   <description>Virtual chest with configurable limits.</description>
   <packaging>jar</packaging>
   
+  <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  	<bukkitVersion>1.7.9-R0.2</bukkitVersion>
+  	<mainClass>${project.groupId}.${project.artifactId}.${project.name}</mainClass>
+  </properties>
+  
   <build>
     <sourceDirectory>src</sourceDirectory>
+    <resources>
+    	<resource>
+    		<directory>src</directory>
+    		<filtering>true</filtering>
+    	</resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -38,7 +50,7 @@
   	<dependency>
   		<groupId>org.bukkit</groupId>
   		<artifactId>bukkit</artifactId>
-  		<version>1.7.9-R0.2</version>
+  		<version>${bukkitVersion}</version>
   	</dependency>
   </dependencies>
   <repositories>

@@ -8,7 +8,6 @@ import java.util.List;
 
 import musician101.itembank.util.IBUtils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -31,7 +30,7 @@ public class Messages
 		ACCOUNT_ILLEGAL_STACK_MAXIMUM = langConfig.getString(lang + Constants.STACK + ".maximum", ACCOUNT_ILLEGAL_STACK_MAXIMUM);
 		ACCOUNT_TRANSACTION_FAIL = PREFIX + langConfig.getString(lang + Constants.ECONOMY + ".fail", ACCOUNT_TRANSACTION_FAIL_DEFAULT);
 		ACCOUNT_UPDATED = PREFIX + langConfig.getString(lang + Constants.ACCOUNT + ".updated", ACCOUNT_UPDATED_DEFAULT);
-		HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".version", HELP_VERSION) + ": " + ChatColor.WHITE + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getVersion() + " " + langConfig.getString(lang + Constants.HELP + ".for", HELP_FOR) + " Bukkit 1.7.9-R0.2.",
+		HELP_MSG = Arrays.asList(HEADER, ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".version", HELP_VERSION) + ": " + ChatColor.WHITE + "${project.version} " + langConfig.getString(lang + Constants.HELP + ".for", HELP_FOR) + " ${bukkitVersion}.",
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".downloads", HELP_DOWNLOADS) + ", Wiki, & " + langConfig.getString(lang + Constants.HELP + ".error", HELP_BUGS) + ": " + ChatColor.WHITE + "http://dev.bukkit.org/bukkit-plugins/item_bank/",
 				ChatColor.DARK_RED + langConfig.getString(lang + Constants.HELP + ".specific", HELP_SPECIFIC) + ChatColor.WHITE + " /itembank help <command>");
 		
@@ -66,8 +65,8 @@ public class Messages
 	}
 	
 	/** Formatting */
-	public static final String HEADER = "--------" + ChatColor.DARK_RED + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getPrefix() + ChatColor.WHITE + "--------";
-	public static final String PREFIX = ChatColor.DARK_RED + "[" + Bukkit.getPluginManager().getPlugin("ItemBank").getDescription().getPrefix() + "] ";
+	public static final String HEADER = "--------" + ChatColor.DARK_RED + "${project.name}" + ChatColor.WHITE + "--------";
+	public static final String PREFIX = ChatColor.DARK_RED + "[${project.name}] ";
 	
 	/** Command Help */
 	public static final String ACCOUNT_HELP_DESC = "Opens a GUI with the items stored in the account.";
