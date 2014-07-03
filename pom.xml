@@ -9,7 +9,7 @@
   
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  	<bukkitVersion>1.7.9-R0.2</bukkitVersion>
+  	<bukkitVersion>1.7.9-R0.3-SNAPSHOT</bukkitVersion>
   	<mainClass>${project.groupId}.${project.artifactId}</mainClass>
   </properties>
   

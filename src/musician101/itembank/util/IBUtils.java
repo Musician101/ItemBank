@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -80,8 +81,8 @@ public class IBUtils
 	
 	public static void createPlayerFiles(ItemBank plugin) throws IOException
 	{
-		Player[] players = Bukkit.getOnlinePlayers();
-		if (players.length > 0)
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		if (players.size() > 0)
 			for (Player player : players)
 				createPlayerFile(new File(plugin.playerData, player.getUniqueId() + "." + plugin.config.format));
 	}
