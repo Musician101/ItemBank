@@ -55,7 +55,7 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import au.com.bytecode.opencsv.CSV;
+import au.com.bytecode.opencsv.CSVReader;
 
 public class IBUtils
 {
@@ -117,7 +117,7 @@ public class IBUtils
 		
 		if (file.getName().endsWith(".csv"))
 		{
-			for (String[] s : CSV.separator('|').create().reader(new FileReader(file)).readAll())
+			for (String[] s : new CSVReader(new FileReader(file), '|').readAll())
 			{
 				if (!s[0].startsWith("#"))
 				{
@@ -186,7 +186,7 @@ public class IBUtils
 		if (file.getName().endsWith("csv"))
 		{
 			List<String> account = new ArrayList<String>();
-			for (String[] s : CSV.separator('|').create().reader(new FileReader(file)).readAll())
+			for (String[] s : new CSVReader(new FileReader(file), '|').readAll())
 			{
 				if (!s[0].startsWith("#"))
 				{
