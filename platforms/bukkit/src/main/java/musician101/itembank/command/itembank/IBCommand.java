@@ -1,4 +1,4 @@
-package musician101.itembank.commands;
+package musician101.itembank.command.itembank;
 
 import java.io.File;
 import java.io.IOException;

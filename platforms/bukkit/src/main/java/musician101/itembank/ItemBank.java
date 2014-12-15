@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 
-import musician101.itembank.commands.AccountCommand;
-import musician101.itembank.commands.IBCommand;
+import musician101.itembank.command.account.AccountCommand;
+import musician101.itembank.command.itembank.IBCommand;
 import musician101.itembank.config.Config;
 import musician101.itembank.lib.Constants;
 import musician101.itembank.lib.Messages;

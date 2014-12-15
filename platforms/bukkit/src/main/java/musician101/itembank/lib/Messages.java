@@ -65,8 +65,8 @@ public class Messages
 	}
 	
 	/** Formatting */
-	public static final String HEADER = "--------" + ChatColor.DARK_RED + "${project.name}" + ChatColor.WHITE + "--------";
-	public static final String PREFIX = ChatColor.DARK_RED + "[${project.name}] ";
+	public static final String HEADER = ChatColor.DARK_RED + "===== ItemBank =====";
+	public static final String PREFIX = ChatColor.DARK_RED + "[ItemBank] ";
 	
 	/** Command Help */
 	public static final String ACCOUNT_HELP_DESC = "Opens a GUI with the items stored in the account.";
@@ -77,7 +77,8 @@ public class Messages
 	public static final String HELP_FOR = "for";
 	public static List<String> HELP_MSG;
 	public static final String HELP_SPECIFIC = "For specific command help use";
-	public static final String HELP_VERSION = "Version";
+	public static final String HELP_VERSION_DEFAULT = "Version";
+	public static String HELP_VERSION;
 	public static final String PURGE_HELP_DESC = "Delete all or a specified player's account.";
 	public static List<String> PURGE_HELP_MSG;
 	public static final String RELOAD_HELP_DESC = "Reloads the plugin's config file.";

@@ -1,4 +1,4 @@
-package musician101.itembank.commands;
+package musician101.itembank.command.account;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
