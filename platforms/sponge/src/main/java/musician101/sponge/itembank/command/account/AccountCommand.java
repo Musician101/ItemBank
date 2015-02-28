@@ -11,6 +11,7 @@ import musician101.sponge.itembank.util.IBUtils;
 
 import org.json.simple.parser.ParseException;
 import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandSource;
@@ -22,9 +23,9 @@ import com.google.common.base.Optional;
 //TODO Special parameters for arguments to make coding easier
 @Deprecated
 public class AccountCommand implements CommandCallable
-{//TODO update bukkit/spigot version to use special parameters before applying it here
+{
+	//TODO update bukkit/spigot version to use special parameters before applying it here
 	// sender.getName() and playerName are not always the same.
-	//TODO create a storage system in the server memory & save the files to the server when the storage updates?
 	@Deprecated
 	public void openInv(Player player, String worldName, String uuid, int page)
 	{
@@ -49,19 +50,7 @@ public class AccountCommand implements CommandCallable
 			return;
 		}
 		
-		//TODO no economy support just yet
-		/*if (player.getUniqueId().toString().equals(uuid) && plugin.econ != null && plugin.config.enableVault)
-		{
-			if (plugin.econ != null && !plugin.econ.withdrawPlayer(player, plugin.config.transactionCost).transactionSuccess())
-			{
-				source.sendMessage(Messages.ACCOUNT_TRANSACTION_FAIL);
-				return;
-			}
-			
-			source.sendMessage(Messages.ACCOUNT_ECON_SUCCESS.replace("$", "$" + plugin.config.transactionCost));
-		}*/
-		
-		((Player) player).openInventory(inv);
+		player.openInventory(inv);
 		return;
 	}
 

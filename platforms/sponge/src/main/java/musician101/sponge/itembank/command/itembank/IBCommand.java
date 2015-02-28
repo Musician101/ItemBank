@@ -5,12 +5,11 @@ import java.io.IOException;
 import java.util.List;
 
 import musician101.sponge.itembank.ItemBank;
-import musician101.sponge.itembank.lib.Constants;
-import musician101.sponge.itembank.lib.Messages;
+import musician101.sponge.itembank.lib.Reference.Constants;
+import musician101.sponge.itembank.lib.Reference.Messages;
 import musician101.sponge.itembank.util.IBUtils;
 
 import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.event.message.CommandEvent;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandSource;
@@ -101,7 +100,7 @@ public class IBCommand implements CommandCallable
 				
 				try
 				{
-					IBUtils.createPlayerFiles(plugin);
+					IBUtils.createPlayerFiles();
 				}
 				catch (IOException e)
 				{

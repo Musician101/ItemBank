@@ -1,32 +1,44 @@
-package musician101.sponge.itembank.listeners;
+package musician101.itembank.forge.listeners;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.UUID;
 
-import musician101.sponge.itembank.ItemBank;
-import musician101.sponge.itembank.lib.Reference.Constants;
-import musician101.sponge.itembank.lib.Reference.Messages;
-import musician101.sponge.itembank.util.IBUtils;
+import musician101.itembank.forge.ItemBank;
+import musician101.itembank.forge.lib.Constants;
+import musician101.itembank.forge.lib.Messages;
+import musician101.itembank.forge.util.IBUtils;
 
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.json.simple.parser.ParseException;
-import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.event.inventory.InventoryClickEvent;
-import org.spongepowered.api.event.inventory.InventoryCloseEvent;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.util.event.Subscribe;
 
-public class InventoryListener
+import com.evilmidget38.UUIDFetcher;
+
+public class InventoryListener implements Listener
 {
-	// player.getUniqueId() and UUID are not always the same.
-	public void saveAccount(Player player, String worldName, String uuid, Inventory topInv, Inventory playerInv, int page)
+	ItemBank plugin;
+	
+	public InventoryListener(ItemBank plugin)
 	{
-		//TODO need a method to transfer inventory contents from one inventory to another
+		this.plugin = plugin;
+	}
+	
+	// player.getUniqueId() and UUID are not always the same.
+	public void saveAccount(Player player, String worldName, UUID uuid, Inventory topInv, Inventory playerInv, int page)
+	{
 		Inventory account = null;
 		try
 		{
-			account = IBUtils.getAccount(worldName, uuid, page);
+			account = IBUtils.getAccount(plugin, worldName, uuid, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -40,9 +52,15 @@ public class InventoryListener
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
-		catch (ParseException e)
+		catch (InvalidConfigurationException | ParseException e)
 		{
 			player.sendMessage(Messages.YAML_PARSE_EX);
+			player.getInventory().setContents(playerInv.getContents());
+			return;
+		}
+		catch (ClassNotFoundException | SQLException e)
+		{
+			player.sendMessage(Messages.SQL_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
@@ -50,7 +68,7 @@ public class InventoryListener
 		account.setContents(topInv.getContents());
 		try
 		{
-			IBUtils.saveAccount(worldName, uuid, account, page);
+			IBUtils.saveAccount(plugin, worldName, uuid, account, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -64,13 +82,13 @@ public class InventoryListener
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
-		catch (ParseException e)
+		catch (InvalidConfigurationException | ParseException e)
 		{
 			player.sendMessage(Messages.YAML_PARSE_EX);
 			player.getInventory().setContents(playerInv.getContents());
 			return;
 		}
-		catch (SQLException e)
+		catch (ClassNotFoundException | SQLException e)
 		{
 			player.sendMessage(Messages.SQL_EX);
 			player.getInventory().setContents(playerInv.getContents());
@@ -80,10 +98,9 @@ public class InventoryListener
 		player.sendMessage(Messages.ACCOUNT_UPDATED);
 	}
 	
-	@Subscribe
+	@EventHandler
 	public void onItemClick(InventoryClickEvent event)
 	{
-		//TODO missing methods
 		if (event.getRawSlot() == event.getSlot()) return;
 		Inventory account = event.getView().getTopInventory();
 		Inventory clickedInv = event.getInventory();
@@ -97,7 +114,7 @@ public class InventoryListener
 			return;
 		
 		int page = Integer.valueOf(account.getName().substring(account.getName().indexOf("-")).replaceAll("\\D+", ""));
-		if (ItemBank.getConfig().pageLimit > 0 && ItemBank.getConfig().pageLimit < page)
+		if (plugin.getPluginConfig().getPageLimit() > 0 && plugin.getPluginConfig().getPageLimit() < page)
 		{
 			event.setCancelled(true);
 			player.sendMessage(Messages.ACCOUNT_ILLEGAL_PAGE);
@@ -108,12 +125,12 @@ public class InventoryListener
 		if (item == null)
 			return;
 		
-		String itemlistPath = item.getItem().toString().toLowerCase() + "." + item.getDamage();
-		int amountInAccount = IBUtils.getAmount(account, item.getItem(), item.getDamage());
-		int newAmount = amountInAccount + item.getQuantity();
-		if (ItemBank.getConfig().itemlist.containsKey(itemlistPath) && !ItemBank.getConfig().isWhitelist)
+		ItemStack listedItem = plugin.getPluginConfig().getItem(item.getType(), item.getDurability());
+		int amountInAccount = IBUtils.getAmount(account, item.getType(), item.getDurability());
+		int newAmount = amountInAccount + item.getAmount();
+		if (listedItem != null && !plugin.getPluginConfig().isWhitelist())
 		{
-			int maxAmount = ItemBank.getConfig().itemlist.get(itemlistPath);
+			int maxAmount = listedItem.getAmount();
 			if (maxAmount == 0)
 			{
 				event.setCancelled(true);
@@ -134,7 +151,7 @@ public class InventoryListener
 				player.closeInventory();
 			}
 		}
-		else if (!ItemBank.getConfig().itemlist.containsKey(itemlistPath) && ItemBank.getConfig().isWhitelist)
+		else if (listedItem != null && plugin.getPluginConfig().isWhitelist())
 		{
 			event.setCancelled(true);
 			player.sendMessage(Messages.ACCOUNT_ILLEGAL_ITEM);
@@ -142,10 +159,9 @@ public class InventoryListener
 		}
 	}
 	
-	@Subscribe
+	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event)
 	{
-		//TODO missing methods
 		Inventory inv = event.getView().getTopInventory();
 		Player player = (Player) event.getPlayer();
 		int page = 1;
@@ -158,16 +174,20 @@ public class InventoryListener
 			try
 			{	
 				page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-				saveAccount(player, IBUtils.getWorlds().get(0).getName(), player.getUniqueId().toString(), inv, player.getInventory(), page);
+				saveAccount(player, Bukkit.getWorlds().get(0).getName(), UUIDFetcher.getUUIDOf(inv.getName().substring(0, inv.getName().indexOf(" "))), inv, player.getInventory(), page);
 				return;
 			}
-			catch (NumberFormatException | StringIndexOutOfBoundsException e)
+			catch (Exception e)
 			{
+				if (e instanceof NumberFormatException || e instanceof StringIndexOutOfBoundsException)
+					return;
+				
+				player.sendMessage(Messages.UNKNOWN_EX);
 				return;
 			}
 		}
 		
 		page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-		saveAccount(player, IBUtils.getWorldName(player), player.getUniqueId().toString(), inv, player.getInventory(), page);
+		saveAccount(player, IBUtils.getWorldName(plugin, player), player.getUniqueId(), inv, player.getInventory(), page);
 	}
 }

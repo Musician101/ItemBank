@@ -49,6 +49,7 @@ public class Config
 	@SuppressWarnings({ "unused", "null" })
 	public void reloadConfiguration()
 	{
+		//TODO still haven't figured out how to do configurations in this
 		//plugin.reloadConfig();
 		final YamlConfiguration config = null;//plugin.getConfig();
 		isWhitelist = config.getBoolean("whitelist", false);

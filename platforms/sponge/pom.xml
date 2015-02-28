@@ -1,12 +1,84 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>musician101</groupId>
-    <artifactId>itembank</artifactId>
-    <version>3.0</version>
-  </parent>
-  <groupId>musician101.itembank</groupId>
-  <artifactId>sponge</artifactId>
-  <name>ItemBank-Sponge</name>
-  <description>ItemBank for Sponge</description>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>musician101.itembank</groupId>
+	<artifactId>sponge</artifactId>
+	<name>ItemBank-Sponge</name>
+	<description>ItemBank for Sponge</description>
+	
+	<parent>
+		<groupId>musician101</groupId>
+		<artifactId>itembank</artifactId>
+		<version>3.0</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
+	
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<finalName>ItemBank</finalName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<includes>
+									<include>net.sf.opencsv:opencsv</include>
+									<include>musician101.itembank:common</include>
+								</includes>
+							</artifactSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>musician101.itembank</groupId>
+			<artifactId>common</artifactId>
+			<version>3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.spongepowered</groupId>
+			<artifactId>spongeapi</artifactId>
+			<version>1.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>spongeapi-repo</id>
+			<url>http://repo.spongepowered.org/maven/</url>
+		</repository>
+	</repositories>
 </project>

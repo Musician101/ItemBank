@@ -32,7 +32,7 @@ local.properties
 target/
 
 # Dependencies
-au/
 code/
-luc/
+com/
 dependency-reduced-pom.xml
+*.jar
