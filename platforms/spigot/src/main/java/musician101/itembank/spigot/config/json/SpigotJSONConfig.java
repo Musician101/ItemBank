@@ -38,36 +38,36 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings("serial")
-public class BukkitJSONConfig extends AbstractJSONConfig
+public class SpigotJSONConfig extends AbstractJSONConfig
 {
-	public BukkitJSONConfig()
+	public SpigotJSONConfig()
 	{
 		super();
 	}
 	
-	public BukkitJSONConfig getBukkitJSONConfig(String key)
+	public SpigotJSONConfig getSpigotJSONConfig(String key)
 	{
-		return (BukkitJSONConfig) get(key);
+		return (SpigotJSONConfig) get(key);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public BukkitJSONConfig setBukkitJSONConfig(String key, BukkitJSONConfig config)
+	public SpigotJSONConfig setSpigotJSONConfig(String key, SpigotJSONConfig config)
 	{
 		put(key, config);
 		return this;
 	}
 	
-	public List<BukkitJSONConfig> getBukkitJSONConfigList(String key)
+	public List<SpigotJSONConfig> getSpigotJSONConfigList(String key)
 	{
-		List<BukkitJSONConfig> jsons = Lists.newArrayList();
+		List<SpigotJSONConfig> jsons = Lists.newArrayList();
 		for (Object object : (JSONArray) get(key))
-			jsons.add((BukkitJSONConfig) object);
+			jsons.add((SpigotJSONConfig) object);
 		
 		return jsons;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public BukkitJSONConfig setBukkitJSONConfigList(String key, List<BukkitJSONConfig> configs)
+	public SpigotJSONConfig setSpigotJSONConfigList(String key, List<SpigotJSONConfig> configs)
 	{
 		put(key, configs);
 		return this;
@@ -75,7 +75,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 	
 	public Color getColor(String key)
 	{
-		BukkitJSONConfig colorJson = getBukkitJSONConfig(key);
+		SpigotJSONConfig colorJson = getSpigotJSONConfig(key);
 		int blue = 0;
 		int green = 0;
 		int red = 0;
@@ -92,20 +92,20 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return Color.fromRGB(red, green, blue);
 	}
 	
-	public BukkitJSONConfig setColor(String key, Color color)
+	public SpigotJSONConfig setColor(String key, Color color)
 	{
-		BukkitJSONConfig colorJson = new BukkitJSONConfig();
+		SpigotJSONConfig colorJson = new SpigotJSONConfig();
 		colorJson.setInt("BLUE", color.getBlue());
 		colorJson.setInt("GREEN", color.getGreen());
 		colorJson.setInt("RED", color.getRed());
-		setBukkitJSONConfig(key, colorJson);
+		setSpigotJSONConfig(key, colorJson);
 		return this;
 	}
 	
 	public List<Color> getColorList(String key)
 	{
 		List<Color> colors = Lists.newArrayList();
-		for (BukkitJSONConfig colorJson : getBukkitJSONConfigList(key))
+		for (SpigotJSONConfig colorJson : getSpigotJSONConfigList(key))
 		{
 			int blue = 0;
 			int green = 0;
@@ -126,25 +126,25 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return colors;
 	}
 	
-	public BukkitJSONConfig setColorList(String key, List<Color> colors)
+	public SpigotJSONConfig setColorList(String key, List<Color> colors)
 	{
-		List<BukkitJSONConfig> colorsJson = Lists.newArrayList();
+		List<SpigotJSONConfig> colorsJson = Lists.newArrayList();
 		for (Color color : colors)
 		{
-			BukkitJSONConfig colorJson = new BukkitJSONConfig();
+			SpigotJSONConfig colorJson = new SpigotJSONConfig();
 			colorJson.setInt("BLUE", color.getBlue());
 			colorJson.setInt("GREEN", color.getGreen());
 			colorJson.setInt("RED", color.getRed());
 			colorsJson.add(colorJson);
 		}
 		
-		setBukkitJSONConfigList(key, colorsJson);
+		setSpigotJSONConfigList(key, colorsJson);
 		return this;
 	}
 	
 	public Map<Enchantment, Integer> getEnchants(String key)
 	{
-		BukkitJSONConfig enchantsJson = getBukkitJSONConfig(key);
+		SpigotJSONConfig enchantsJson = getSpigotJSONConfig(key);
 		Map<Enchantment, Integer> enchants = Maps.newHashMap();
 		for (Enchantment enchant : Enchantment.values())
 			if (enchantsJson.containsKey(enchant.toString()))
@@ -153,19 +153,19 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return enchants;
 	}
 	
-	public BukkitJSONConfig setEnchants(String key, Map<Enchantment, Integer> enchants)
+	public SpigotJSONConfig setEnchants(String key, Map<Enchantment, Integer> enchants)
 	{
-		BukkitJSONConfig enchantsJson = new BukkitJSONConfig();
+		SpigotJSONConfig enchantsJson = new SpigotJSONConfig();
 		for (Enchantment enchant : enchants.keySet())
 			enchantsJson.setInt(enchant.toString(), enchants.get(enchant));
 		
-		setBukkitJSONConfig(key, enchantsJson);
+		setSpigotJSONConfig(key, enchantsJson);
 		return this;
 	}
 	
 	public FireworkEffect getFireworkEffect(String key)
 	{
-		BukkitJSONConfig fwJson = getBukkitJSONConfig(key);
+		SpigotJSONConfig fwJson = getSpigotJSONConfig(key);
 		Builder fw = FireworkEffect.builder();
 		if (fwJson.containsKey("flicker"))
 			fw.flicker(fwJson.getBoolean("flicker"));
@@ -187,22 +187,22 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return fw.build();
 	}
 	
-	public BukkitJSONConfig setFireworkEffect(String key, FireworkEffect effect)
+	public SpigotJSONConfig setFireworkEffect(String key, FireworkEffect effect)
 	{
-		BukkitJSONConfig fwJson = new BukkitJSONConfig();
+		SpigotJSONConfig fwJson = new SpigotJSONConfig();
 		fwJson.setBoolean("flicker", effect.hasFlicker());
 		fwJson.setBoolean("trail", effect.hasTrail());
 		fwJson.setString("type", effect.getType().toString());
 		fwJson.setColorList("colors", effect.getColors());
 		fwJson.setColorList("fade-colors", effect.getFadeColors());
-		setBukkitJSONConfig(key, fwJson);
+		setSpigotJSONConfig(key, fwJson);
 		return this;
 	}
 	
 	public List<FireworkEffect> getFireworkEffectList(String key)
 	{
 		List<FireworkEffect> effects = Lists.newArrayList();
-		for (BukkitJSONConfig fwJson: getBukkitJSONConfigList(key))
+		for (SpigotJSONConfig fwJson: getSpigotJSONConfigList(key))
 		{
 			Builder fw = FireworkEffect.builder();
 			if (fwJson.containsKey("flicker"))
@@ -228,17 +228,17 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return effects;
 	}
 	
-	public BukkitJSONConfig setFireworkEffectList(String key, List<FireworkEffect> effects)
+	public SpigotJSONConfig setFireworkEffectList(String key, List<FireworkEffect> effects)
 	{
 		for (FireworkEffect effect : effects)
 		{
-			BukkitJSONConfig fwJson = new BukkitJSONConfig();
+			SpigotJSONConfig fwJson = new SpigotJSONConfig();
 			fwJson.setBoolean("flicker", effect.hasFlicker());
 			fwJson.setBoolean("trail", effect.hasTrail());
 			fwJson.setString("type", effect.getType().toString());
 			fwJson.setColorList("colors", effect.getColors());
 			fwJson.setColorList("fade-colors", effect.getFadeColors());
-			setBukkitJSONConfig(key, fwJson);
+			setSpigotJSONConfig(key, fwJson);
 		}
 		
 		return this;
@@ -249,7 +249,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		if (!containsKey(key))
 			return null;
 		
-		BukkitJSONConfig invJson = getBukkitJSONConfig(key);
+		SpigotJSONConfig invJson = getSpigotJSONConfig(key);
 		Inventory inv = null;
 		InventoryType invType = InventoryType.valueOf(invJson.getString("type"));
 		if (invType == InventoryType.CHEST)
@@ -259,7 +259,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		
 		if (invJson.containsKey("items"))
 		{
-			BukkitJSONConfig items = invJson.getBukkitJSONConfig("items");
+			SpigotJSONConfig items = invJson.getSpigotJSONConfig("items");
 			for (int x = 0; x < inv.getSize(); x++)
 				inv.setItem(x, items.getItemStack(x));
 		}
@@ -267,9 +267,9 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return inv;
 	}
 	
-	public BukkitJSONConfig setInventory(String key, Inventory inv)
+	public SpigotJSONConfig setInventory(String key, Inventory inv)
 	{
-		BukkitJSONConfig invJson = new BukkitJSONConfig();
+		SpigotJSONConfig invJson = new SpigotJSONConfig();
 		invJson.setString("type", inv.getType().toString());
 		invJson.setInt("slots", inv.getSize());
 		invJson.setString("title", inv.getTitle());
@@ -277,19 +277,19 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 			if (inv.getItem(x) != null)
 				invJson.setItemStack(x, inv.getItem(x));
 		
-		setBukkitJSONConfig(key, invJson);
+		setSpigotJSONConfig(key, invJson);
 		return this;
 	}
 	
 	public ItemMeta getItemMeta(String key)
 	{
-		BukkitJSONConfig metaJson = getBukkitJSONConfig(key);
+		SpigotJSONConfig metaJson = getSpigotJSONConfig(key);
 		return metaJson.toItemMeta();
 	}
 	
-	public BukkitJSONConfig setItemMeta(String key, ItemMeta meta, Material material)
+	public SpigotJSONConfig setItemMeta(String key, ItemMeta meta, Material material)
 	{
-		BukkitJSONConfig metaJson = new BukkitJSONConfig();
+		SpigotJSONConfig metaJson = new SpigotJSONConfig();
 		String type = "";
 		if (material == Material.ENCHANTED_BOOK)
 		{
@@ -338,7 +338,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		}
 		
 		metaJson.setString("type", type);
-		setBukkitJSONConfig(key, metaJson);
+		setSpigotJSONConfig(key, metaJson);
 		return this;
 	}
 	
@@ -367,7 +367,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return im;
 	}
 	
-	private EnchantmentStorageMeta getEnchantedBookMeta(BukkitJSONConfig metaJson)
+	private EnchantmentStorageMeta getEnchantedBookMeta(SpigotJSONConfig metaJson)
 	{
 		EnchantmentStorageMeta meta = (EnchantmentStorageMeta) newItemMeta();
 		if (metaJson.containsKey("stored-enchants"))
@@ -381,14 +381,14 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return meta;
 	}
 	
-	private BukkitJSONConfig setEnchantmentStorageMeta(EnchantmentStorageMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setEnchantmentStorageMeta(EnchantmentStorageMeta meta, SpigotJSONConfig metaJson)
 	{
 		metaJson.setEnchants("stored-enchants", meta.getStoredEnchants());
 		setGeneralItemMeta(meta, metaJson);
 		return this;
 	}
 	
-	private FireworkEffectMeta getFireworkEffectMeta(BukkitJSONConfig metaJson)
+	private FireworkEffectMeta getFireworkEffectMeta(SpigotJSONConfig metaJson)
 	{
 		FireworkEffectMeta meta = (FireworkEffectMeta) newItemMeta();
 		if (metaJson.containsKey("effect"))
@@ -398,7 +398,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return meta;
 	}
 	
-	private BukkitJSONConfig setFireworkEffectMeta(FireworkEffectMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setFireworkEffectMeta(FireworkEffectMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasEffect())
 			metaJson.setFireworkEffect("effect", meta.getEffect());
@@ -407,7 +407,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return this;
 	}
 	
-	private FireworkMeta getFireworkMeta(BukkitJSONConfig metaJson)
+	private FireworkMeta getFireworkMeta(SpigotJSONConfig metaJson)
 	{
 		FireworkMeta meta = (FireworkMeta) newItemMeta();
 		if (metaJson.containsKey("effects"))
@@ -418,7 +418,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return meta;
 	}
 	
-	private BukkitJSONConfig setFireworkMeta(FireworkMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setFireworkMeta(FireworkMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasEffects())
 			metaJson.setFireworkEffectList("effects", meta.getEffects());
@@ -427,7 +427,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return this;
 	}
 	
-	private LeatherArmorMeta getLeatherArmorMeta(BukkitJSONConfig metaJson)
+	private LeatherArmorMeta getLeatherArmorMeta(SpigotJSONConfig metaJson)
 	{
 		LeatherArmorMeta meta = (LeatherArmorMeta) newItemMeta();
 		if (metaJson.containsKey("color"))
@@ -437,14 +437,14 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return meta;
 	}
 	
-	private BukkitJSONConfig setLeatherArmorMeta(LeatherArmorMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setLeatherArmorMeta(LeatherArmorMeta meta, SpigotJSONConfig metaJson)
 	{
 		metaJson.setColor("color", meta.getColor());
 		getGeneralItemMeta(meta, metaJson);
 		return this;
 	}
 	
-	private MapMeta getMapMeta(BukkitJSONConfig metaJson)
+	private MapMeta getMapMeta(SpigotJSONConfig metaJson)
 	{
 		MapMeta meta = (MapMeta) newItemMeta();
 		if (metaJson.containsKey("scaling"))
@@ -454,14 +454,14 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return meta;
 	}
 	
-	private BukkitJSONConfig setMapMeta(MapMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setMapMeta(MapMeta meta, SpigotJSONConfig metaJson)
 	{
 		metaJson.setBoolean("scaling", meta.isScaling());
 		getGeneralItemMeta(meta, metaJson);
 		return this;
 	}
 	
-	private PotionMeta getPotionMeta(BukkitJSONConfig metaJson)
+	private PotionMeta getPotionMeta(SpigotJSONConfig metaJson)
 	{
 		PotionMeta meta = (PotionMeta) newItemMeta();
 		if (metaJson.containsKey("effects"))
@@ -472,7 +472,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return meta;
 	}
 	
-	private BukkitJSONConfig setPotionMeta(PotionMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setPotionMeta(PotionMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasCustomEffects())
 			metaJson.setPotionEffectList("effects", meta.getCustomEffects());
@@ -481,7 +481,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return this;
 	}
 	
-	private SkullMeta getSkullMeta(BukkitJSONConfig metaJson)
+	private SkullMeta getSkullMeta(SpigotJSONConfig metaJson)
 	{
 		SkullMeta meta = (SkullMeta) newItemMeta();
 		if (metaJson.containsKey("owner"))
@@ -491,7 +491,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return meta;
 	}
 	
-	private BukkitJSONConfig setSkullMeta(SkullMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setSkullMeta(SkullMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasOwner())
 			metaJson.setString("owner", meta.getOwner());
@@ -500,7 +500,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return this;
 	}
 	
-	private BookMeta getWrittenBookMeta(BukkitJSONConfig metaJson)
+	private BookMeta getWrittenBookMeta(SpigotJSONConfig metaJson)
 	{
 		BookMeta meta = (BookMeta) newItemMeta();
 		meta.setAuthor(metaJson.getString("author"));
@@ -516,7 +516,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return meta;
 	}
 	
-	private BukkitJSONConfig setBookMeta(BookMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setBookMeta(BookMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasAuthor())
 			metaJson.setString("author", meta.getAuthor());
@@ -531,7 +531,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return this;
 	}
 	
-	private BukkitJSONConfig getGeneralItemMeta(ItemMeta im, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig getGeneralItemMeta(ItemMeta im, SpigotJSONConfig metaJson)
 	{
 		if (metaJson.containsKey("displayName"))
 			im.setDisplayName(metaJson.getString("displayName"));
@@ -548,7 +548,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return this;
 	}
 	
-	private BukkitJSONConfig setGeneralItemMeta(ItemMeta meta, BukkitJSONConfig metaJson)
+	private SpigotJSONConfig setGeneralItemMeta(ItemMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasDisplayName())
 			metaJson.setString("name", meta.getDisplayName());
@@ -572,7 +572,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return getItemStack(key + "");
 	}
 	
-	private BukkitJSONConfig setItemStack(int key, ItemStack item)
+	private SpigotJSONConfig setItemStack(int key, ItemStack item)
 	{
 		setItemStack(key + "", item);
 		return this;
@@ -580,7 +580,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 	
 	public ItemStack getItemStack(String key)
 	{
-		BukkitJSONConfig itemJson = getBukkitJSONConfig(key);
+		SpigotJSONConfig itemJson = getSpigotJSONConfig(key);
 		ItemStack item = new ItemStack(itemJson.getMaterial("material"), itemJson.getInt("amount"), itemJson.getShort("durability"));
 		if (itemJson.containsKey("meta"))
 			item.setItemMeta(itemJson.getItemMeta("meta"));
@@ -588,16 +588,16 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return item;
 	}
 	
-	public BukkitJSONConfig setItemStack(String key, ItemStack item)
+	public SpigotJSONConfig setItemStack(String key, ItemStack item)
 	{
-		BukkitJSONConfig itemJson = getBukkitJSONConfig(key);
+		SpigotJSONConfig itemJson = getSpigotJSONConfig(key);
 		itemJson.setMaterial("material", item.getType());
 		itemJson.setInt("amount", item.getAmount());
 		itemJson.setShort("durability", item.getDurability());
 		if (item.hasItemMeta())
 			itemJson.setItemMeta("meta", item.getItemMeta(), item.getType());
 		
-		setBukkitJSONConfig(key, itemJson);
+		setSpigotJSONConfig(key, itemJson);
 		return this;
 	}
 	
@@ -606,7 +606,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return Material.matchMaterial(getString(key).toUpperCase());
 	}
 	
-	public BukkitJSONConfig setMaterial(String key, Material material)
+	public SpigotJSONConfig setMaterial(String key, Material material)
 	{
 		setString(key, material.toString());
 		return this;
@@ -614,7 +614,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 	
 	public PotionEffect getPotionEffect(String key)
 	{
-		BukkitJSONConfig potionJson = getBukkitJSONConfig(key);
+		SpigotJSONConfig potionJson = getSpigotJSONConfig(key);
 		boolean ambient = potionJson.getBoolean("ambient");
 		int amplifier = potionJson.getInt("amplifier");
 		int duration = potionJson.getInt("duration");
@@ -622,9 +622,9 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return new PotionEffect(type, duration, amplifier, ambient);
 	}
 	
-	public BukkitJSONConfig setPotionEffect(String key, PotionEffect effect)
+	public SpigotJSONConfig setPotionEffect(String key, PotionEffect effect)
 	{
-		BukkitJSONConfig potionJson = new BukkitJSONConfig();
+		SpigotJSONConfig potionJson = new SpigotJSONConfig();
 		potionJson.setString("effect", effect.getType().toString());
 		potionJson.setInt("amplifier", effect.getAmplifier());
 		potionJson.setInt("duration", effect.getDuration());
@@ -635,7 +635,7 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 	public List<PotionEffect> getPotionEffectList(String key)
 	{
 		List<PotionEffect> effects = Lists.newArrayList();
-		for (BukkitJSONConfig potionJson : getBukkitJSONConfigList(key))
+		for (SpigotJSONConfig potionJson : getSpigotJSONConfigList(key))
 		{
 			boolean ambient = potionJson.getBoolean("ambient");
 			int amplifier = potionJson.getInt("amplifier");
@@ -647,12 +647,12 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 		return effects;
 	}
 	
-	public BukkitJSONConfig setPotionEffectList(String key, List<PotionEffect> effects)
+	public SpigotJSONConfig setPotionEffectList(String key, List<PotionEffect> effects)
 	{
-		List<BukkitJSONConfig> potionsJson = Lists.newArrayList();
+		List<SpigotJSONConfig> potionsJson = Lists.newArrayList();
 		for (PotionEffect effect : effects)
 		{
-			BukkitJSONConfig potionJson = new BukkitJSONConfig();
+			SpigotJSONConfig potionJson = new SpigotJSONConfig();
 			potionJson.setString("effect", effect.getType().toString());
 			potionJson.setInt("amplifier", effect.getAmplifier());
 			potionJson.setInt("duration", effect.getDuration());
@@ -660,17 +660,17 @@ public class BukkitJSONConfig extends AbstractJSONConfig
 			potionsJson.add(potionJson);
 		}
 		
-		setBukkitJSONConfigList(key, potionsJson);
+		setSpigotJSONConfigList(key, potionsJson);
 		return this;
 	}
 	
-	public static BukkitJSONConfig loadBukkitJSONConfig(File file) throws FileNotFoundException, IOException, ParseException
+	public static SpigotJSONConfig loadSpigotJSONConfig(File file) throws FileNotFoundException, IOException, ParseException
 	{
-		return (BukkitJSONConfig) new JSONParser().parse(new FileReader(file));
+		return (SpigotJSONConfig) new JSONParser().parse(new FileReader(file));
 	}
 	
-	public static BukkitJSONConfig loadBukkitJSONConfig(String string) throws ParseException
+	public static SpigotJSONConfig loadSpigotJSONConfig(String string) throws ParseException
 	{
-		return (BukkitJSONConfig) new JSONParser().parse(string);
+		return (SpigotJSONConfig) new JSONParser().parse(string);
 	}
 }

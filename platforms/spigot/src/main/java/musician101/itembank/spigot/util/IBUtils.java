@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import musician101.itembank.spigot.ItemBank;
-import musician101.itembank.spigot.config.json.BukkitJSONConfig;
+import musician101.itembank.spigot.config.json.SpigotJSONConfig;
 import musician101.itembank.spigot.config.yaml.CustomYamlConfig;
 import musician101.itembank.spigot.lib.Messages;
 
@@ -158,7 +158,7 @@ public class IBUtils
 						if (Integer.valueOf(s[1]) == page)
 						{
 							ItemStack item = new ItemStack(Material.getMaterial(s[3]), Integer.valueOf(s[5]), Short.valueOf(s[4]));
-							item.setItemMeta(BukkitJSONConfig.loadBukkitJSONConfig(s[6]).toItemMeta());
+							item.setItemMeta(SpigotJSONConfig.loadSpigotJSONConfig(s[6]).toItemMeta());
 							inv.setItem(Integer.valueOf(s[2]), item);
 						}
 					}
@@ -169,16 +169,16 @@ public class IBUtils
 		}
 		else if (file.getName().endsWith("json"))
 		{
-			BukkitJSONConfig account = BukkitJSONConfig.loadBukkitJSONConfig(file);
+			SpigotJSONConfig account = SpigotJSONConfig.loadSpigotJSONConfig(file);
 			
 			if (!account.containsKey(worldName))
 				return inv;
 			
-			BukkitJSONConfig world = account.getBukkitJSONConfig(worldName);
+			SpigotJSONConfig world = account.getSpigotJSONConfig(worldName);
 			if (!world.containsKey(page + ""))
 				return inv;
 			
-			BukkitJSONConfig pg = world.getBukkitJSONConfig(page + "");
+			SpigotJSONConfig pg = world.getSpigotJSONConfig(page + "");
 			for (int slot = 0; slot < inv.getSize(); slot++)
 				if (pg.containsKey(slot + ""))
 					inv.setItem(slot, pg.getItemStack(slot + ""));
@@ -246,13 +246,13 @@ public class IBUtils
 		}
 		else if (file.getName().endsWith("json"))
 		{
-			BukkitJSONConfig account = BukkitJSONConfig.loadBukkitJSONConfig(file);
-			BukkitJSONConfig pg = new BukkitJSONConfig();
+			SpigotJSONConfig account = SpigotJSONConfig.loadSpigotJSONConfig(file);
+			SpigotJSONConfig pg = new SpigotJSONConfig();
 			pg.setInventory(page + "", inventory);
 			if (account == null)
-				account = new BukkitJSONConfig();
+				account = new SpigotJSONConfig();
 			
-			account.setBukkitJSONConfig(worldName, pg);
+			account.setSpigotJSONConfig(worldName, pg);
 			FileWriter fw = new FileWriter(file);
 			fw.write(account.toJSONString());
 			fw.close();
@@ -289,9 +289,9 @@ public class IBUtils
 	
 	private static String metaToJson(ItemStack is)
 	{
-		BukkitJSONConfig meta = new BukkitJSONConfig();
+		SpigotJSONConfig meta = new SpigotJSONConfig();
 		meta.setItemMeta("meta", is.getItemMeta(), is.getType());
-		return meta.getBukkitJSONConfig("meta").toJSONString();
+		return meta.getSpigotJSONConfig("meta").toJSONString();
 	}
 	
 	private static ItemStack getItem(ResultSet rs) throws ParseException, SQLException
@@ -299,7 +299,7 @@ public class IBUtils
 		while (rs.next())
 		{
 			ItemStack item = new ItemStack(Material.getMaterial(rs.getString("Material")), rs.getInt("Amount"), (short) rs.getInt("Damage"));
-			item.setItemMeta(BukkitJSONConfig.loadBukkitJSONConfig(rs.getString("ItemMeta")).toItemMeta());
+			item.setItemMeta(SpigotJSONConfig.loadSpigotJSONConfig(rs.getString("ItemMeta")).toItemMeta());
 			return item;
 		}
 		
