@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import musician101.itembank.common.command.AbstractCommand;
 import musician101.sponge.itembank.ItemBank;
 import musician101.sponge.itembank.lib.Reference.Constants;
 import musician101.sponge.itembank.lib.Reference.Messages;
@@ -12,6 +13,9 @@ import musician101.sponge.itembank.util.IBUtils;
 import org.json.simple.parser.ParseException;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextBuilder;
+import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandSource;
@@ -66,7 +70,7 @@ public class AccountCommand implements CommandCallable
 		String args[] = arguments.split("\\s+");
 		if (!(source instanceof Player))
 		{
-			source.sendMessage(Messages.PLAYER_CMD);
+			source.sendMessage(Texts.builder(Messages.PLAYER_CMD).build());
 			return true;
 		}
 		
@@ -134,20 +138,23 @@ public class AccountCommand implements CommandCallable
 	}
 
 	@Override
-	public Optional<String> getShortDescription()
+	public Text getHelp(CommandSource arg0)
 	{
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Optional<String> getHelp()
+	public String getShortDescription(CommandSource arg0)
 	{
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getUsage()
+	public String getUsage(CommandSource arg0)
 	{
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

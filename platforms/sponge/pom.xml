@@ -51,7 +51,6 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>net.sf.opencsv:opencsv</include>
 									<include>musician101.itembank:common</include>
 								</includes>
 							</artifactSet>
@@ -68,17 +67,28 @@
 			<artifactId>common</artifactId>
 			<version>3.0</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>org.spongepowered</groupId>
 			<artifactId>spongeapi</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>2.0</version>
+		</dependency>
+		<Temporary repo until Sponge fixes theres -->
+		<dependency>
+			<groupId>com.github.SpongePowered</groupId>
+			<artifactId>SpongeAPI</artifactId>
+			<version>b995b94</version>
 		</dependency>
 	</dependencies>
 	
 	<repositories>
-		<repository>
+		<!--repository>
 			<id>spongeapi-repo</id>
 			<url>http://repo.spongepowered.org/maven/</url>
+		</repository>
+		Temporary repo until Sponge fixes theres -->
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
 </project>

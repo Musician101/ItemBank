@@ -89,7 +89,7 @@ public class InventoryListener
 		Inventory clickedInv = event.getInventory();
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
-		String name = player.getName() + " - " + Messages.PAGE;
+		String name = player.getName() + " - " + Messages.ACCOUNT_PAGE;
 		if (player.hasPermission(Constants.EXEMPT_PERM))
 			return;
 		
@@ -149,7 +149,7 @@ public class InventoryListener
 		Inventory inv = event.getView().getTopInventory();
 		Player player = (Player) event.getPlayer();
 		int page = 1;
-		if (!inv.getName().contains(player.getName() + " - " + Messages.PAGE))
+		if (!inv.getName().contains(player.getName() + " - " + Messages.ACCOUNT_PAGE))
 		{
 			if (!player.hasPermission(Constants.EXEMPT_PERM))
 				return;
