@@ -19,7 +19,52 @@ public class AbstractJSONConfig extends JSONObject
 		return Boolean.valueOf(getString(key));
 	}
 	
+	public boolean getBoolean(String key, boolean defaultValue)
+	{
+		return (get(key) != null ? Boolean.valueOf(getString(key)) : defaultValue);
+	}
+	
 	public void setBoolean(String key, boolean value)
+	{
+		put(key, value);
+	}
+	
+	public Double getDouble(String key)
+	{
+		return Double.valueOf(getString(key));
+	}
+	
+	public double getDouble(String key, double defaultValue)
+	{
+		return (get(key) != null ? getDouble(key) : defaultValue);
+	}
+	
+	public void setDouble(String key, double value)
+	{
+		put(key, value);
+	}
+	
+	public int getInt(String key)
+	{
+		return Integer.valueOf(getString(key));
+	}
+	
+	public int getInt(String key, int defaultValue)
+	{
+		return (get(key) != null ? getInt(key) : defaultValue);
+	}
+	
+	public void setInt(String key, int value)
+	{
+		put(key, value);
+	}
+	
+	public short getShort(String key)
+	{
+		return Short.valueOf(get(key).toString());
+	}
+	
+	public void setShort(String key, short value)
 	{
 		put(key, value);
 	}
@@ -27,6 +72,11 @@ public class AbstractJSONConfig extends JSONObject
 	public String getString(String key)
 	{
 		return get(key).toString();
+	}
+	
+	public String getString(String key, String defaultValue)
+	{
+		return (get(key) != null ? getString(key) : defaultValue);
 	}
 	
 	public void setString(String key, String value)
@@ -49,23 +99,8 @@ public class AbstractJSONConfig extends JSONObject
 		put(key, value);
 	}
 	
-	public int getInt(String key)
+	public boolean isSet(String key)
 	{
-		return Integer.valueOf(get(key).toString());
-	}
-	
-	public void setInt(String key, int value)
-	{
-		put(key, value);
-	}
-	
-	public short getShort(String key)
-	{
-		return Short.valueOf(get(key).toString());
-	}
-	
-	public void setShort(String key, short value)
-	{
-		put(key, value);
+		return (get(key) == null);
 	}
 }
