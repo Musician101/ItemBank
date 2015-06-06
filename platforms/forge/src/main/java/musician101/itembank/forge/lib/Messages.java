@@ -14,7 +14,7 @@ public class Messages
 	/** Formatting */
 	private static final EnumChatFormatting darkRed = EnumChatFormatting.DARK_RED;
 	public static final IChatComponent HEADER = IBUtils.getChatComponent("===== ItemBank =====", darkRed);
-	private static final IChatComponent PREFIX = IBUtils.getChatComponent("[ItemBank] ", darkRed);
+	public static final IChatComponent PREFIX = IBUtils.getChatComponent("[ItemBank] ", darkRed);
 	
 	//TODO left off here
 	/** Command Help */

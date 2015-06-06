@@ -40,7 +40,7 @@ public class ForgeJSONConfig extends AbstractJSONConfig
 			}
 			catch (Exception e)
 			{
-				ItemBank.getLogger().warn("Error while parsing items.json: " + json.toJSONString());
+				ItemBank.log.warn("Error while parsing items.json: " + json.toJSONString());
 			}
 		}
 		

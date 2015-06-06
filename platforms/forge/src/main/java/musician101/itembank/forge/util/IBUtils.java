@@ -12,6 +12,7 @@ import musician101.itembank.forge.lib.Messages;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -50,12 +51,15 @@ public class IBUtils
 		}
 	}
 	
-	public static int getAmount(ItemStack[] items, Item item, int damage)
+	public static int getAmount(IInventory inventory, Item item, int damage)
 	{
 		int amount = 0;
-		for (ItemStack is : items)
+		for (int i = 0; i < inventory.getSizeInventory(); i++)
+		{
+			ItemStack is = inventory.getStackInSlot(i);
 			if (is != null && is.getItem() == item && is.getItemDamage() == damage)
 				amount += is.stackSize;
+		}
 		
 		return amount;
 	}

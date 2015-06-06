@@ -71,9 +71,16 @@
 		<dependency>
 			<groupId>net.minecraftforge</groupId>
 			<artifactId>forge</artifactId>
-			<version>1.8-11.14.0.1295-1.8</version>
+			<version>1.8-11.14.1.1397</version>
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/forge.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.mojang</groupId>
+			<artifactId>authlib</artifactId>
+			<version>1.5.17</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/authlib-1.5.17.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

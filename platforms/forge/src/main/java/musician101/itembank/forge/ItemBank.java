@@ -6,6 +6,7 @@ import musician101.itembank.forge.lib.Constants.ModInfo;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
@@ -15,6 +16,9 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid=ModInfo.ID, name=ModInfo.NAME, version=ModInfo.VERSION)
 public class ItemBank
 {
+	@Instance(value=ModInfo.ID)
+	public static ItemBank instance;
+	
 	public static Logger log = LogManager.getLogger(ModInfo.NAME);
 	
 	@EventHandler
