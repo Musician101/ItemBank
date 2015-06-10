@@ -39,8 +39,8 @@ public class Messages
 	public static final IChatComponent RELOAD_SUCCESS = PREFIX.appendSibling(IBUtils.getChatComponent("Config reloaded."));
 	
 	/** Error Messages */
-	public static final IChatComponent ACCOUNT_ILLEGAL_AMOUNT = PREFIX.appendSibling(IBUtils.getChatComponent("You are unable to add this item to your account."));
-	public static final IChatComponent ACCOUNT_ILLEGAL_ITEM = PREFIX.appendSibling(IBUtils.getChatComponent("This item is non depositable."));
+	//public static final IChatComponent ACCOUNT_ILLEGAL_AMOUNT = PREFIX.appendSibling(IBUtils.getChatComponent("You are unable to add this item to your account."));
+	public static final IChatComponent ACCOUNT_ILLEGAL_ITEM = PREFIX.appendSibling(IBUtils.getChatComponent("Some items could not be stored and were returned to you."));
 	public static final IChatComponent ACCOUNT_ILLEGAL_PAGE = PREFIX.appendSibling(IBUtils.getChatComponent("You cannot add items to this page."));
 	public static final IChatComponent ACCOUNT_ILLEGAL_STACK_AMOUNT = PREFIX.appendSibling(IBUtils.getChatComponent("Amount in account"));
 	public static final IChatComponent ACCOUNT_ILLEGAL_STACK_EXPLAIN = PREFIX.appendSibling(IBUtils.getChatComponent("The stack you selected puts you over the limit. Please split the stack and try again."));
