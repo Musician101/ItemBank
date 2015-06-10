@@ -20,6 +20,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
+import com.mojang.authlib.GameProfile;
+
 public class IBUtils
 {
 	public static void createPlayerFile(File file) throws IOException
@@ -1036,31 +1038,12 @@ public class IBUtils
 		return player.dimension;
 	}
 	
-	/*public static FileConfiguration getYamlConfig(File file, boolean forceEncode) throws IOException, InvalidConfigurationException
+	public static boolean isPlayerOpped(GameProfile profile)
 	{
-		CustomYamlConfig config = new CustomYamlConfig();
-		InputStreamReader reader = null;
-		BufferedReader br = null;
-		try
-		{
-			reader = forceEncode ? new InputStreamReader(new FileInputStream(file), "UTF-8") : new InputStreamReader(new FileInputStream(file));
-			br = new BufferedReader(reader);
-			StrBuilder builder = new StrBuilder();
-			String line = null;
-			while ((line = br.readLine()) != null)
-				builder.appendln(line);
-			
-			config.loadFromString(builder.toString());
-		}
-		finally
-		{
-			if (br != null)
-				br.close();
-			
-			if (reader != null)
-				reader.close();
-		}
+		for (String name : MinecraftServer.getServer().getConfigurationManager().getOppedPlayerNames())
+			if (name.equals(profile.getName()))
+				return true;
 		
-		return config;
-	}*/
+		return false;
+	}
 }
