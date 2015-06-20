@@ -1,8 +1,12 @@
 package musician101.itembank.forge;
 
+import java.io.File;
+
+import musician101.itembank.forge.command.account.AccountCommand;
 import musician101.itembank.forge.command.itembank.IBCommand;
 import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.lib.Constants.ModInfo;
+import musician101.itembank.forge.util.Permissions;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -19,14 +23,16 @@ public class ItemBank
 	@Instance(value=ModInfo.ID)
 	public static ItemBank instance;
 	
-	public static Logger log = LogManager.getLogger(ModInfo.NAME);
+	public static Logger logger = LogManager.getLogger(ModInfo.NAME);
+	public static Permissions permissions;
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		ConfigHandler.init(event.getModConfigurationDirectory());
 		FMLCommonHandler.instance().bus().register(new ConfigHandler());
-		log.info("Pre-Init complete");
+		permissions = new Permissions(new File(event.getModConfigurationDirectory(), "permissions.json"));
+		logger.info("Pre-Init complete");
 		
 		//versionCheck();
 		
@@ -41,6 +47,7 @@ public class ItemBank
 	public void onServerStarting(FMLServerStartingEvent event)
 	{
 		event.registerServerCommand(new IBCommand());
+		event.registerServerCommand(new AccountCommand());
 	}
 	
 	/*private void versionCheck()

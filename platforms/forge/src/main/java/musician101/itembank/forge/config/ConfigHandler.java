@@ -62,7 +62,7 @@ public class ConfigHandler
 		}
 		catch (IOException | ParseException e)
 		{
-			ItemBank.log.warn("An error occurred while reading the item lists.");
+			ItemBank.logger.warn("An error occurred while reading the item lists.");
 			blacklist = new ArrayList<ItemStack>();
 			restricted = new ArrayList<ItemStack>();
 			whitelist = new ArrayList<ItemStack>();

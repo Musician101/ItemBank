@@ -1262,8 +1262,8 @@ public class AccountUtil
 		{
 			SpongeJSONConfig durability = new SpongeJSONConfig();
 			DurabilityData data = item.getData(CatalogItemData.DURABILITY_DATA).get();
-			durability.setInt("uses", data.getDurability());
-			durability.setBoolean("breakable", data.isBreakable());
+			durability.set("uses", data.getDurability());
+			durability.set("breakable", data.isBreakable());
 			meta.setSpongeJSONConfig("durability", durability);
 		}
 		
@@ -1274,7 +1274,7 @@ public class AccountUtil
 			for (BlockType type : data.getAll())
 				can_destroy.add(type.getName());
 			
-			meta.setStringList("can_destroy", can_destroy);
+			meta.set("can_destroy", can_destroy);
 		}
 		
 		if (item.getData(CatalogItemData.PLACEABLE_DATA).isPresent())
@@ -1284,7 +1284,7 @@ public class AccountUtil
 			for (BlockType type : data.getAll())
 				can_place_on.add(type.getName());
 			
-			meta.setStringList("can_place_on", can_place_on);
+			meta.set("can_place_on", can_place_on);
 		}
 		
 		if (item.getData(CatalogItemData.ENCHANTMENT_DATA).isPresent())
@@ -1306,8 +1306,8 @@ public class AccountUtil
 			for (AttributeModifier am : data.getAll())
 			{
 				SpongeJSONConfig attribute = new SpongeJSONConfig();
-				attribute.setString("operation", am.getOperation().getName());
-				attribute.setDouble("value", am.getValue());
+				attribute.set("operation", am.getOperation().getName());
+				attribute.set("value", am.getValue());
 			}
 			
 			meta.setSpongeJSONConfigList("attirbutes", attributes);
@@ -1328,7 +1328,7 @@ public class AccountUtil
 		if (item.getData(CatalogItemData.DISPLAY_NAME_DATA).isPresent())
 		{
 			DisplayNameData data = item.getData(CatalogItemData.DISPLAY_NAME_DATA).get();
-			meta.setString("name", data.getValue().toString());
+			meta.set("name", data.getValue().toString());
 		}
 		
 		if (item.getData(CatalogItemData.LORE_DATA).isPresent())
@@ -1338,13 +1338,13 @@ public class AccountUtil
 			for (Text line : data.getAll())
 				lore.add(line.toString());
 			
-			meta.setStringList("lore", lore);
+			meta.set("lore", lore);
 		}
 		
 		if (item.getData(CatalogItemData.CLONEABLE_DATA).isPresent())
 		{
 			CloneableData data = item.getData(CatalogItemData.CLONEABLE_DATA).get();
-			meta.setInt("times_copied", data.getValue());
+			meta.set("times_copied", data.getValue());
 		}
 		
 		if (item.getData(CatalogItemData.PAGED_DATA).isPresent())
@@ -1354,15 +1354,15 @@ public class AccountUtil
 			for (Text page : data.getAll())
 				pages.add(page.toString());
 			
-			meta.setStringList("pages", pages);
+			meta.set("pages", pages);
 		}
 		
 		if (item.getData(CatalogTileEntityData.OWNABLE_DATA).isPresent())
 		{
 			SpongeJSONConfig owner = new SpongeJSONConfig();
 			OwnableData data = item.getData(CatalogTileEntityData.OWNABLE_DATA).get();
-			owner.setString("uuid", data.getValue().getUniqueId().toString());
-			owner.setString("name", data.getValue().getName());
+			owner.set("uuid", data.getValue().getUniqueId().toString());
+			owner.set("name", data.getValue().getName());
 			meta.setSpongeJSONConfig("owner", owner);
 		}
 		
@@ -1370,7 +1370,7 @@ public class AccountUtil
 		{
 			SpongeJSONConfig firework = new SpongeJSONConfig();
 			FireworkData data = item.getData(CatalogItemData.FIREWORK_DATA).get();
-			firework.setInt("flight_modifier", data.getFlightModifier());
+			firework.set("flight_modifier", data.getFlightModifier());
 			firework.setFireworkEffectList("effects", data.getAll());
 			meta.setSpongeJSONConfig("firework", firework);
 		}

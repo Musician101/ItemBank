@@ -138,21 +138,21 @@ public class AccountCommand implements CommandCallable
 	}
 
 	@Override
-	public Text getHelp(CommandSource arg0)
+	public Optional<? extends Text> getHelp(CommandSource arg0)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getShortDescription(CommandSource arg0)
+	public Optional<? extends Text> getShortDescription(CommandSource arg0)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getUsage(CommandSource arg0)
+	public Text getUsage(CommandSource arg0)
 	{
 		// TODO Auto-generated method stub
 		return null;

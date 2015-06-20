@@ -95,9 +95,9 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	public SpigotJSONConfig setColor(String key, Color color)
 	{
 		SpigotJSONConfig colorJson = new SpigotJSONConfig();
-		colorJson.setInt("BLUE", color.getBlue());
-		colorJson.setInt("GREEN", color.getGreen());
-		colorJson.setInt("RED", color.getRed());
+		colorJson.set("BLUE", color.getBlue());
+		colorJson.set("GREEN", color.getGreen());
+		colorJson.set("RED", color.getRed());
 		setSpigotJSONConfig(key, colorJson);
 		return this;
 	}
@@ -132,9 +132,9 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 		for (Color color : colors)
 		{
 			SpigotJSONConfig colorJson = new SpigotJSONConfig();
-			colorJson.setInt("BLUE", color.getBlue());
-			colorJson.setInt("GREEN", color.getGreen());
-			colorJson.setInt("RED", color.getRed());
+			colorJson.set("BLUE", color.getBlue());
+			colorJson.set("GREEN", color.getGreen());
+			colorJson.set("RED", color.getRed());
 			colorsJson.add(colorJson);
 		}
 		
@@ -157,7 +157,7 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	{
 		SpigotJSONConfig enchantsJson = new SpigotJSONConfig();
 		for (Enchantment enchant : enchants.keySet())
-			enchantsJson.setInt(enchant.toString(), enchants.get(enchant));
+			enchantsJson.set(enchant.toString(), enchants.get(enchant));
 		
 		setSpigotJSONConfig(key, enchantsJson);
 		return this;
@@ -190,9 +190,9 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	public SpigotJSONConfig setFireworkEffect(String key, FireworkEffect effect)
 	{
 		SpigotJSONConfig fwJson = new SpigotJSONConfig();
-		fwJson.setBoolean("flicker", effect.hasFlicker());
-		fwJson.setBoolean("trail", effect.hasTrail());
-		fwJson.setString("type", effect.getType().toString());
+		fwJson.set("flicker", effect.hasFlicker());
+		fwJson.set("trail", effect.hasTrail());
+		fwJson.set("type", effect.getType().toString());
 		fwJson.setColorList("colors", effect.getColors());
 		fwJson.setColorList("fade-colors", effect.getFadeColors());
 		setSpigotJSONConfig(key, fwJson);
@@ -233,9 +233,9 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 		for (FireworkEffect effect : effects)
 		{
 			SpigotJSONConfig fwJson = new SpigotJSONConfig();
-			fwJson.setBoolean("flicker", effect.hasFlicker());
-			fwJson.setBoolean("trail", effect.hasTrail());
-			fwJson.setString("type", effect.getType().toString());
+			fwJson.set("flicker", effect.hasFlicker());
+			fwJson.set("trail", effect.hasTrail());
+			fwJson.set("type", effect.getType().toString());
 			fwJson.setColorList("colors", effect.getColors());
 			fwJson.setColorList("fade-colors", effect.getFadeColors());
 			setSpigotJSONConfig(key, fwJson);
@@ -270,9 +270,9 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	public SpigotJSONConfig setInventory(String key, Inventory inv)
 	{
 		SpigotJSONConfig invJson = new SpigotJSONConfig();
-		invJson.setString("type", inv.getType().toString());
-		invJson.setInt("slots", inv.getSize());
-		invJson.setString("title", inv.getTitle());
+		invJson.set("type", inv.getType().toString());
+		invJson.set("slots", inv.getSize());
+		invJson.set("title", inv.getTitle());
 		for (int x = 0; x > inv.getSize(); x++)
 			if (inv.getItem(x) != null)
 				invJson.setItemStack(x, inv.getItem(x));
@@ -337,7 +337,7 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 			type = "GENERAL";
 		}
 		
-		metaJson.setString("type", type);
+		metaJson.set("type", type);
 		setSpigotJSONConfig(key, metaJson);
 		return this;
 	}
@@ -456,7 +456,7 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	
 	private SpigotJSONConfig setMapMeta(MapMeta meta, SpigotJSONConfig metaJson)
 	{
-		metaJson.setBoolean("scaling", meta.isScaling());
+		metaJson.set("scaling", meta.isScaling());
 		getGeneralItemMeta(meta, metaJson);
 		return this;
 	}
@@ -494,7 +494,7 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	private SpigotJSONConfig setSkullMeta(SkullMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasOwner())
-			metaJson.setString("owner", meta.getOwner());
+			metaJson.set("owner", meta.getOwner());
 		
 		setGeneralItemMeta(meta, metaJson);
 		return this;
@@ -519,13 +519,13 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	private SpigotJSONConfig setBookMeta(BookMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasAuthor())
-			metaJson.setString("author", meta.getAuthor());
+			metaJson.set("author", meta.getAuthor());
 		
 		if (meta.hasPages())
-			metaJson.setStringList("pages", meta.getPages());
+			metaJson.set("pages", meta.getPages());
 		
 		if (meta.hasTitle())
-			metaJson.setString("title", meta.getTitle());
+			metaJson.set("title", meta.getTitle());
 		
 		setGeneralItemMeta(meta, metaJson);
 		return this;
@@ -551,13 +551,13 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	private SpigotJSONConfig setGeneralItemMeta(ItemMeta meta, SpigotJSONConfig metaJson)
 	{
 		if (meta.hasDisplayName())
-			metaJson.setString("name", meta.getDisplayName());
+			metaJson.set("name", meta.getDisplayName());
 		
 		if (meta.hasEnchants())
 			metaJson.setEnchants("enchants", meta.getEnchants());
 		
 		if (meta.hasLore())
-			metaJson.setStringList("lore", meta.getLore());
+			metaJson.set("lore", meta.getLore());
 		
 		return this;
 	}
@@ -592,8 +592,8 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	{
 		SpigotJSONConfig itemJson = getSpigotJSONConfig(key);
 		itemJson.setMaterial("material", item.getType());
-		itemJson.setInt("amount", item.getAmount());
-		itemJson.setShort("durability", item.getDurability());
+		itemJson.set("amount", item.getAmount());
+		itemJson.set("durability", item.getDurability());
 		if (item.hasItemMeta())
 			itemJson.setItemMeta("meta", item.getItemMeta(), item.getType());
 		
@@ -608,7 +608,7 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	
 	public SpigotJSONConfig setMaterial(String key, Material material)
 	{
-		setString(key, material.toString());
+		set(key, material.toString());
 		return this;
 	}
 	
@@ -625,10 +625,10 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	public SpigotJSONConfig setPotionEffect(String key, PotionEffect effect)
 	{
 		SpigotJSONConfig potionJson = new SpigotJSONConfig();
-		potionJson.setString("effect", effect.getType().toString());
-		potionJson.setInt("amplifier", effect.getAmplifier());
-		potionJson.setInt("duration", effect.getDuration());
-		potionJson.setBoolean("ambient", effect.isAmbient());
+		potionJson.set("effect", effect.getType().toString());
+		potionJson.set("amplifier", effect.getAmplifier());
+		potionJson.set("duration", effect.getDuration());
+		potionJson.set("ambient", effect.isAmbient());
 		return this;
 	}
 	
@@ -653,10 +653,10 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 		for (PotionEffect effect : effects)
 		{
 			SpigotJSONConfig potionJson = new SpigotJSONConfig();
-			potionJson.setString("effect", effect.getType().toString());
-			potionJson.setInt("amplifier", effect.getAmplifier());
-			potionJson.setInt("duration", effect.getDuration());
-			potionJson.setBoolean("ambient", effect.isAmbient());
+			potionJson.set("effect", effect.getType().toString());
+			potionJson.set("amplifier", effect.getAmplifier());
+			potionJson.set("duration", effect.getDuration());
+			potionJson.set("ambient", effect.isAmbient());
 			potionsJson.add(potionJson);
 		}
 		

@@ -18,8 +18,7 @@ public abstract class IBCommandCallable implements CommandCallable
 	}
 	
 	@Override
-	public boolean call(CommandSource source, String arguments,
-			List<String> parents) throws CommandException
+	public boolean call(CommandSource source, String arguments, List<String> parents) throws CommandException
 	{
 		// TODO Auto-generated method stub
 		return false;

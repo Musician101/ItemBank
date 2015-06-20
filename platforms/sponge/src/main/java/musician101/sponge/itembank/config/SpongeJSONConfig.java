@@ -84,9 +84,9 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 	public SpongeJSONConfig setColor(String key, Color color)
 	{
 		SpongeJSONConfig colorJson = new SpongeJSONConfig();
-		colorJson.setInt("BLUE", color.getBlue());
-		colorJson.setInt("GREEN", color.getGreen());
-		colorJson.setInt("RED", color.getRed());
+		colorJson.set("BLUE", color.getBlue());
+		colorJson.set("GREEN", color.getGreen());
+		colorJson.set("RED", color.getRed());
 		setSpongeJSONConfig(key, colorJson);
 		return this;
 	}
@@ -121,9 +121,9 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		for (Color color : colors)
 		{
 			SpongeJSONConfig colorJson = new SpongeJSONConfig();
-			colorJson.setInt("BLUE", color.getBlue());
-			colorJson.setInt("GREEN", color.getGreen());
-			colorJson.setInt("RED", color.getRed());
+			colorJson.set("BLUE", color.getBlue());
+			colorJson.set("GREEN", color.getGreen());
+			colorJson.set("RED", color.getRed());
 			colorsJson.add(colorJson);
 		}
 		
@@ -146,7 +146,7 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 	{
 		SpongeJSONConfig enchantsJson = new SpongeJSONConfig();
 		for (Enchantment enchant : enchants.keySet())
-			enchantsJson.setInt(enchant.getName(), enchants.get(enchant));
+			enchantsJson.set(enchant.getName(), enchants.get(enchant));
 		
 		setSpongeJSONConfig(key, enchantsJson);
 		return this;
@@ -181,9 +181,9 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 	public SpongeJSONConfig setFireworkEffect(String key, FireworkEffect effect)
 	{
 		SpongeJSONConfig fwJson = new SpongeJSONConfig();
-		fwJson.setBoolean("flicker", effect.flickers());
-		fwJson.setBoolean("trail", effect.hasTrail());
-		fwJson.setString("shape", effect.getShape().getName());
+		fwJson.set("flicker", effect.flickers());
+		fwJson.set("trail", effect.hasTrail());
+		fwJson.set("shape", effect.getShape().getName());
 		fwJson.setColorList("colors", effect.getColors());
 		fwJson.setColorList("fade-colors", effect.getFadeColors());
 		setSpongeJSONConfig(key, fwJson);
@@ -226,9 +226,9 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		for (FireworkEffect effect : effects)
 		{
 			SpongeJSONConfig fwJson = new SpongeJSONConfig();
-			fwJson.setBoolean("flicker", effect.flickers());
-			fwJson.setBoolean("trail", effect.hasTrail());
-			fwJson.setString("shape", effect.getShape().getName());
+			fwJson.set("flicker", effect.flickers());
+			fwJson.set("trail", effect.hasTrail());
+			fwJson.set("shape", effect.getShape().getName());
 			fwJson.setColorList("colors", effect.getColors());
 			fwJson.setColorList("fade-colors", effect.getFadeColors());
 			setSpongeJSONConfig(key, fwJson);
@@ -254,10 +254,10 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 	public SpongeJSONConfig setPotionEffect(String key, PotionEffect effect)
 	{
 		SpongeJSONConfig potionJson = new SpongeJSONConfig();
-		potionJson.setString("effect", effect.getType().getName());
-		potionJson.setInt("amplifier", effect.getAmplifier());
-		potionJson.setInt("duration", effect.getDuration());
-		potionJson.setBoolean("is_ambient", effect.isAmbient());
+		potionJson.set("effect", effect.getType().getName());
+		potionJson.set("amplifier", effect.getAmplifier());
+		potionJson.set("duration", effect.getDuration());
+		potionJson.set("is_ambient", effect.isAmbient());
 		return this;
 	}
 	
@@ -286,10 +286,10 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		for (PotionEffect effect : effects)
 		{
 			SpongeJSONConfig potionJson = new SpongeJSONConfig();
-			potionJson.setString("effect", effect.getType().toString());
-			potionJson.setInt("amplifier", effect.getAmplifier());
-			potionJson.setInt("duration", effect.getDuration());
-			potionJson.setBoolean("is_ambient", effect.isAmbient());
+			potionJson.set("effect", effect.getType().toString());
+			potionJson.set("amplifier", effect.getAmplifier());
+			potionJson.set("duration", effect.getDuration());
+			potionJson.set("is_ambient", effect.isAmbient());
 			potionsJson.add(potionJson);
 		}
 		
