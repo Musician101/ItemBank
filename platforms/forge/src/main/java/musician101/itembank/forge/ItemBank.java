@@ -35,11 +35,6 @@ public class ItemBank
 		logger.info("Pre-Init complete");
 		
 		//versionCheck();
-		
-		//getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
-		
-		//getCommand(Commands.ACCOUNT_CMD).setExecutor(new AccountCommandExecutor(this));
-		//getCommand(Commands.ITEMBANK_CMD).setExecutor(new IBCommandExecutor(this));
 	}
 	
 	
