@@ -6,7 +6,6 @@ import java.io.IOException;
 import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.lib.Messages;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
@@ -20,14 +19,16 @@ import com.mojang.authlib.GameProfile;
 public class BankInventory extends InventoryBasic
 {
 	GameProfile bankOwner;
-	InventoryPlayer playerInventory;
+	int dimension;
 	int page;
+	InventoryPlayer playerInventory;
 	
-	public BankInventory(EntityPlayerMP player, GameProfile bankOwner, int page) throws IOException
+	public BankInventory(EntityPlayer player, GameProfile bankOwner, int dimension, int page) throws IOException
 	{
 		super(bankOwner.getName() + " - Page " + page, true, 54);
 		this.bankOwner = bankOwner;
 		this.playerInventory = player.inventory;
+		this.dimension = dimension;
 		this.page = page;
 		readFromNBT(CompressedStreamTools.read(new File(ConfigHandler.bankDirectory + "/" + bankOwner.getId().toString() + ".dat")));
 	}
@@ -73,24 +74,38 @@ public class BankInventory extends InventoryBasic
 	
 	private void readFromNBT(NBTTagCompound nbtTagCompound)
 	{
-		if (nbtTagCompound != null && nbtTagCompound.hasKey("" + page))
+		if (nbtTagCompound != null && nbtTagCompound.hasKey("" + dimension))
 		{
-			NBTTagList items = nbtTagCompound.getTagList("" + page, NBT.TAG_LIST);
-			for (int i = 0; i < items.tagCount(); i++)
+			NBTTagCompound world = nbtTagCompound.getCompoundTag("" + dimension);
+			if (world != null && world.hasKey("" + page))
 			{
-				NBTTagCompound item = items.getCompoundTagAt(i);
-				byte slot = item.getByte("Slot");
-				if (slot >= 0 && slot < getSizeInventory())
-					setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(item));
+				NBTTagList items = nbtTagCompound.getTagList("" + page, NBT.TAG_LIST);
+				for (int i = 0; i < items.tagCount(); i++)
+				{
+					NBTTagCompound item = items.getCompoundTagAt(i);
+					byte slot = item.getByte("Slot");
+					if (slot >= 0 && slot < getSizeInventory())
+						setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(item));
+				}
 			}
 		}
 	}
 	
 	private void writeToNBT(NBTTagCompound nbtTagCompound)
 	{
-		NBTTagList items = new NBTTagList();
+		NBTTagCompound world = new NBTTagCompound();
+		if (nbtTagCompound == null)
+			nbtTagCompound = new NBTTagCompound();
+		
+		if (nbtTagCompound.hasKey("" + dimension))
+			world = nbtTagCompound.getCompoundTag("" + dimension);
+		
+		NBTTagList itemPage = new NBTTagList();
 		for (int slot = 0; slot < getSizeInventory(); slot++)
 			if (getStackInSlot(slot) != null)
-				items.appendTag(getStackInSlot(slot).writeToNBT(new NBTTagCompound()));
+				itemPage.appendTag(getStackInSlot(slot).writeToNBT(new NBTTagCompound()));
+		
+		world.setTag("" + page, itemPage);
+		nbtTagCompound.setTag("" + dimension, world);
 	}
 }
