@@ -3,6 +3,7 @@ package musician101.itembank.forge.command.itembank;
 import java.io.File;
 import java.io.IOException;
 
+import musician101.itembank.forge.ItemBank;
 import musician101.itembank.forge.command.AbstractForgeCommand;
 import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.lib.Messages;
@@ -21,12 +22,12 @@ public class PurgeCommand extends AbstractForgeCommand
 	@Override
 	public void processCommand(ICommandSender sender, String[] args)
 	{
-		if (!canCommandSenderUseCommand(sender))
+		if (!ItemBank.permissions.hasPermission(sender, "itembank.purge"))
 		{
 			sender.addChatMessage(Messages.NO_PERMISSION);
 			return;
 		}
-		//TODO LEFT OFF HERE
+		
 		if (args.length > 1)
 		{
 			/*if (plugin.getPluginConfig().useMySQL())
