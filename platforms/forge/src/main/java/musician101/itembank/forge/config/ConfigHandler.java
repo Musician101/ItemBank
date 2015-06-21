@@ -35,11 +35,11 @@ public class ConfigHandler
 			bankDirectory = new File(configDir, "banks");
 			bankDirectory.mkdirs();
 			config = new Configuration(new File(configDir, ModInfo.ID + ".cfg"));
-			loadConfiguration(new File(configDir, "itemList.json"));
+			loadItemList(new File(configDir, "itemList.json"));
 		}
 	}
 	
-	private static void loadConfiguration(File itemListFile)
+	private static void loadItemList(File itemListFile)
 	{
 		if (!itemListFile.exists())
 		{

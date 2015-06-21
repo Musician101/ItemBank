@@ -2,6 +2,7 @@ package musician101.itembank.forge.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,5 +60,30 @@ public class Permissions
 					return true;
 		
 		return false;
+	}
+	
+	public void addPermissions(UUID uuid, String... permissions)
+	{
+		List<String> perms = permissionMap.get(uuid);
+		if (perms == null)
+			perms = new ArrayList<String>();
+		
+		for (String permission : permissions)
+			if (!perms.contains(permission))
+				perms.add(permission.toLowerCase());
+		
+		permissionMap.put(uuid, perms);
+	}
+	
+	public void removePermissions(UUID uuid, String[] permissions)
+	{
+		List<String> perms = permissionMap.get(uuid);
+		if (perms == null)
+			return;
+		
+		for (String permission : permissions)
+			perms.remove(permission);
+		
+		permissionMap.put(uuid, perms);
 	}
 }

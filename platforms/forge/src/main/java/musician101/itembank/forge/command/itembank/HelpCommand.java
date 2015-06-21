@@ -10,8 +10,7 @@ public class HelpCommand extends AbstractForgeCommand
 	public HelpCommand()
 	{
 		this.name = "help";
-		this.usage = "itembank help";
-		this.isPlayerOnly = false;
+		this.usage = "/itembank help";
 	}
 	
 	@Override
@@ -27,6 +26,7 @@ public class HelpCommand extends AbstractForgeCommand
 			{
 				IBUtils.addChatMessages(sender, Messages.PURGE_HELP_MSG);
 			}
+			//TODO need help information for Permission commands
 			/*else if (args.get(1).equalsIgnoreCase("uuid"))
 			{
 				IBUtils.addChatMessages(sender, Messages.UUID_HELP_MSG);

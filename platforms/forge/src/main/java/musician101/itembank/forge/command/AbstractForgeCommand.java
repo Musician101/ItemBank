@@ -1,11 +1,14 @@
 package musician101.itembank.forge.command;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 
 public abstract class AbstractForgeCommand extends CommandBase
 {
-	protected boolean isPlayerOnly;
 	protected String name;
 	protected String usage;
 	
@@ -21,8 +24,11 @@ public abstract class AbstractForgeCommand extends CommandBase
 		return usage;
 	}
 	
-	public boolean isPlayerOnly()
+	protected String[] moveArguments(String[] args)
 	{
-		return isPlayerOnly;
+		List<String> list = new ArrayList<String>();
+		Collections.addAll(list, args);
+		list.remove(0);
+		return (String[]) list.toArray();
 	}
 }

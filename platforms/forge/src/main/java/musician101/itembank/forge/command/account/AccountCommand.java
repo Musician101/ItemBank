@@ -8,6 +8,7 @@ import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.inventory.BankInventory;
 import musician101.itembank.forge.lib.Messages;
 import musician101.itembank.forge.util.IBUtils;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -17,8 +18,14 @@ import com.mojang.authlib.GameProfile;
 
 public class AccountCommand extends AbstractForgeCommand
 {
+	public AccountCommand()
+	{
+		this.name = "Account";
+		this.usage = "/account [player:name | page:number | world:id]";
+	}
+	
 	@Override
-	public void processCommand(ICommandSender sender, String[] args)
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException
 	{	
 		if (!(sender instanceof EntityPlayer))
 		{

@@ -15,8 +15,7 @@ public class PurgeCommand extends AbstractForgeCommand
 	public PurgeCommand()
 	{
 		name = "purge";
-		usage = "/itembank purge <player>";
-		isPlayerOnly = false;
+		usage = "/itembank purge [player]";
 	}
 	
 	@Override
