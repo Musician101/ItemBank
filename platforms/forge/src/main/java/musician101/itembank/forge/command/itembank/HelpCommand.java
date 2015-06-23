@@ -10,7 +10,7 @@ public class HelpCommand extends AbstractForgeCommand
 	public HelpCommand()
 	{
 		this.name = "help";
-		this.usage = "/itembank help";
+		this.usage = Messages.HELP_USAGE;
 	}
 	
 	@Override
@@ -20,19 +20,22 @@ public class HelpCommand extends AbstractForgeCommand
 		{
 			if (args[1].equalsIgnoreCase("account"))
 			{
-				IBUtils.addChatMessages(sender, Messages.ACCOUNT_HELP_MSG);
+				sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.ACCOUNT_USAGE));
+				sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.ACCOUNT_DESC));
+			}
+			else if (args[1].equalsIgnoreCase("permission"))
+			{
+				sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.PERMISSION_USAGE));
+				sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.PERMISSION_DESC));
 			}
 			else if (args[1].equalsIgnoreCase("purge"))
 			{
-				IBUtils.addChatMessages(sender, Messages.PURGE_HELP_MSG);
+				sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.PURGE_USAGE));
+				sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.PURGE_DESC));
 			}
-			//TODO need help information for Permission commands
-			/*else if (args.get(1).equalsIgnoreCase("uuid"))
-			{
-				IBUtils.addChatMessages(sender, Messages.UUID_HELP_MSG);
-			}*/
 		}
 		
-		sender.addChatMessage(Messages.PREFIX.appendSibling(Messages.HELP_MSG.get(3)));
+		sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.HELP_USAGE));
+		sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.HELP_DESC));
 	}
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.lib.Messages;
+import musician101.itembank.forge.util.IBUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.InventoryBasic;
@@ -45,7 +46,7 @@ public class BankInventory extends InventoryBasic
 		}
 		catch (IOException e)
 		{
-			player.addChatMessage(Messages.IO_EX);
+			player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.IO_EX));
 			return;
 		}
 	}
@@ -63,13 +64,13 @@ public class BankInventory extends InventoryBasic
 		}
 		catch (IOException e)
 		{
-			player.addChatMessage(Messages.IO_EX);
+			player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.IO_EX));
 			player.inventory = playerInventory;
 			player.inventoryContainer.detectAndSendChanges();
 			return;
 		}
 		
-		player.addChatMessage(Messages.ACCOUNT_UPDATED);
+		player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.ACCOUNT_UPDATED));
 	}
 	
 	private void readFromNBT(NBTTagCompound nbtTagCompound)

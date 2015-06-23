@@ -41,24 +41,6 @@ public class Constants
 		public static final String USER = MYSQL + "user";
 	}
 	
-	/** Language Config */
-	public static class Language
-	{
-		public static final String CMD = ".command";
-		public static final String ACCOUNT = CMD + "." + Commands.ACCOUNT_CMD;
-		public static final String ECONOMY = ACCOUNT + ".economy";
-		public static final String INVENTORY = ACCOUNT + ".inventory";
-		public static final String STACK = INVENTORY + ".stack";
-		public static final String HELP = CMD + "." + Commands.HELP_CMD;
-		public static final String DEFAULT = HELP + ".default";
-		public static final String USAGE = HELP + ".usage";
-		public static final String PURGE = CMD + "." + Commands.PURGE_CMD;
-		public static final String SUCCESS = PURGE + ".success";
-		public static final String RELOAD = CMD + ".reload";
-		public static final String UPDATER = ".updater";
-		public static final String VAULT = ".vault";
-	}
-	
 	/** Permissions */
 	public static class Permissions
 	{

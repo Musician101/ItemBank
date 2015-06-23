@@ -1,7 +1,6 @@
 package musician101.itembank.forge.command.itembank;
 
 import java.io.File;
-import java.io.IOException;
 
 import musician101.itembank.forge.ItemBank;
 import musician101.itembank.forge.command.AbstractForgeCommand;
@@ -15,7 +14,7 @@ public class PurgeCommand extends AbstractForgeCommand
 	public PurgeCommand()
 	{
 		name = "purge";
-		usage = "/itembank purge [player]";
+		usage = Messages.PURGE_USAGE;
 	}
 	
 	@Override
@@ -23,7 +22,7 @@ public class PurgeCommand extends AbstractForgeCommand
 	{
 		if (!ItemBank.permissions.hasPermission(sender, "itembank.purge"))
 		{
-			sender.addChatMessage(Messages.NO_PERMISSION);
+			sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.NO_PERMISSION));
 			return;
 		}
 		
@@ -52,22 +51,12 @@ public class PurgeCommand extends AbstractForgeCommand
 			File file = new File(ConfigHandler.bankDirectory, args[1] + "." + ConfigHandler.format);
 			if (!file.exists())
 			{
-				sender.addChatMessage(Messages.PURGE_NO_FILE);
+				sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.FILE_DNE));
 				return;
 			}
 			
 			file.delete();
-			try
-			{
-				IBUtils.createPlayerFile(file);
-			}
-			catch (IOException e)
-			{
-				sender.addChatMessage(Messages.IO_EX);
-				return;
-			}
-			
-			sender.addChatMessage(Messages.PURGE_SINGLE);
+			sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.PURGE_SINGLE));
 			return;
 		}
 		
@@ -96,16 +85,6 @@ public class PurgeCommand extends AbstractForgeCommand
 		for (File file : ConfigHandler.bankDirectory.listFiles())
 			file.delete();
 		
-		try
-		{
-			IBUtils.createPlayerFiles();
-		}
-		catch (IOException e)
-		{
-			sender.addChatMessage(Messages.IO_EX);
-			return;
-		}
-		
-		sender.addChatMessage(Messages.PURGE_MULTIPLE);
+		sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.PURGE_MULTIPLE));
 	}
 }

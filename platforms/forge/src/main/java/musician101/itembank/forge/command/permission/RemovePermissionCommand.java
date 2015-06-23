@@ -5,8 +5,11 @@ import java.util.UUID;
 import musician101.itembank.forge.ItemBank;
 import musician101.itembank.forge.command.AbstractForgeCommand;
 import musician101.itembank.forge.lib.Messages;
+import musician101.itembank.forge.util.IBUtils;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.PlayerNotFoundException;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class RemovePermissionCommand extends AbstractForgeCommand
@@ -22,18 +25,18 @@ public class RemovePermissionCommand extends AbstractForgeCommand
 	{
 		if (!ItemBank.permissions.hasPermission(sender, "itembank.permission.add"))
 		{
-			sender.addChatMessage(Messages.NO_PERMISSION);
+			sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.NO_PERMISSION));
 			return;
 		}
+		
+		if (args.length == 0)
+			throw new WrongUsageException(Messages.PERMISSION_ADD_USAGE, new Object[0]);
 		
 		UUID uuid = EntityPlayer.getOfflineUUID(args[0]);
 		if (uuid == null)
-		{
-			sender.addChatMessage(Messages.PLAYER_DNE);
-			return;
-		}
+			throw new PlayerNotFoundException();
 		
 		ItemBank.permissions.removePermissions(uuid, args[1].split(","));
-		sender.addChatMessage(Messages.PREFIX.appendText("Permissions removed."));
+		sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.PERMISSION_REMOVE_SUCCESS));
 	}
 }

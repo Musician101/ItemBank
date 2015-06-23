@@ -12,7 +12,7 @@ public class IBCommand extends AbstractForgeCommand
 	public IBCommand()
 	{
 		this.name = "itembank";
-		this.usage = "/itembank";
+		this.usage = Messages.ITEMBANK_USAGE;
 	}
 	
 	@Override
@@ -20,7 +20,12 @@ public class IBCommand extends AbstractForgeCommand
 	{
 		if (args.length > 0)
 		{
-			if (args[0].equalsIgnoreCase("permission"))
+			if (args[0].equalsIgnoreCase("help"))
+			{
+				new HelpCommand().processCommand(sender, moveArguments(args));
+				return;
+			}
+			else if (args[0].equalsIgnoreCase("permission"))
 			{
 				new PermissionCommand().processCommand(sender, moveArguments(args));
 				return;
@@ -32,6 +37,7 @@ public class IBCommand extends AbstractForgeCommand
 			}
 		}
 		
-		IBUtils.addChatMessages(sender, Messages.HELP_MSG);
+		sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.ITEMBANK_USAGE));
+		sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.ITEMBANK_DESC));
 	}
 }

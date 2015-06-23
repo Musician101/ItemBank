@@ -4,13 +4,14 @@ import musician101.itembank.forge.command.AbstractForgeCommand;
 import musician101.itembank.forge.lib.Messages;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 
 public class PermissionCommand extends AbstractForgeCommand
 {
 	public PermissionCommand()
 	{
 		this.name = "permission";
-		this.usage = "/itembank permission";
+		this.usage = Messages.PERMISSION_USAGE;
 	}
 	
 	@Override
@@ -30,6 +31,6 @@ public class PermissionCommand extends AbstractForgeCommand
 			}
 		}
 		
-		sender.addChatMessage(Messages.PREFIX.appendText("No help text provided."));
+		throw new WrongUsageException(usage, new Object[0]);
 	}
 }
