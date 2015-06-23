@@ -5,7 +5,7 @@ import java.io.File;
 import musician101.itembank.forge.command.account.AccountCommand;
 import musician101.itembank.forge.command.itembank.IBCommand;
 import musician101.itembank.forge.config.ConfigHandler;
-import musician101.itembank.forge.reference.Constants.ModInfo;
+import musician101.itembank.forge.reference.ModInfo;
 import musician101.itembank.forge.util.Permissions;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
