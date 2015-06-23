@@ -35,11 +35,11 @@ public class ConfigHandler
 			bankDirectory = new File(configDir, "banks");
 			bankDirectory.mkdirs();
 			config = new Configuration(new File(configDir, ModInfo.ID + ".cfg"));
-			loadItemList(new File(configDir, "itemList.json"));
+			loadConfig(new File(configDir, "itemList.json"));
 		}
 	}
 	
-	private static void loadItemList(File itemListFile)
+	private static void loadConfig(File itemListFile)
 	{
 		if (!itemListFile.exists())
 		{
@@ -114,6 +114,7 @@ public class ConfigHandler
 	@EventHandler
 	public void onConfigurationChagnedEvent(OnConfigChangedEvent event)
 	{
-		//TODO need to finish this
+		if (event.modID.equalsIgnoreCase(ModInfo.ID))
+			loadConfig(bankDirectory.getParentFile());
 	}
 }
