@@ -5,7 +5,7 @@ import java.io.File;
 import musician101.itembank.forge.ItemBank;
 import musician101.itembank.forge.command.AbstractForgeCommand;
 import musician101.itembank.forge.config.ConfigHandler;
-import musician101.itembank.forge.lib.Messages;
+import musician101.itembank.forge.reference.Messages;
 import musician101.itembank.forge.util.IBUtils;
 import net.minecraft.command.ICommandSender;
 

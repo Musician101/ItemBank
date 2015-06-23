@@ -1,7 +1,7 @@
 package musician101.itembank.forge.command.permission;
 
 import musician101.itembank.forge.command.AbstractForgeCommand;
-import musician101.itembank.forge.lib.Messages;
+import musician101.itembank.forge.reference.Messages;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;

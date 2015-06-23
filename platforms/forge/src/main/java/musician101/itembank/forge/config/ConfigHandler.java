@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import musician101.itembank.forge.ItemBank;
-import musician101.itembank.forge.lib.Constants.ModInfo;
+import musician101.itembank.forge.reference.Constants.ModInfo;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;

@@ -1,7 +1,7 @@
 package musician101.itembank.forge.command.itembank;
 
 import musician101.itembank.forge.command.AbstractForgeCommand;
-import musician101.itembank.forge.lib.Messages;
+import musician101.itembank.forge.reference.Messages;
 import musician101.itembank.forge.util.IBUtils;
 import net.minecraft.command.ICommandSender;
 

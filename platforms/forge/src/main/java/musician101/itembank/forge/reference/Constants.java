@@ -1,4 +1,4 @@
-package musician101.itembank.forge.lib;
+package musician101.itembank.forge.reference;
 
 public class Constants
 {

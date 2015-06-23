@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import musician101.itembank.forge.config.ConfigHandler;
-import musician101.itembank.forge.lib.Messages;
+import musician101.itembank.forge.reference.Messages;
 import musician101.itembank.forge.util.IBUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
