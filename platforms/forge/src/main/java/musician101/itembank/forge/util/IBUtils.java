@@ -3,13 +3,10 @@ package musician101.itembank.forge.util;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-
-import com.mojang.authlib.GameProfile;
 
 public class IBUtils
 {
@@ -85,15 +82,5 @@ public class IBUtils
 		}
 		
 		return translation;
-	}
-	
-	//TODO might not be needed
-	public static boolean isPlayerOpped(GameProfile profile)
-	{
-		for (String name : MinecraftServer.getServer().getConfigurationManager().getOppedPlayerNames())
-			if (name.equals(profile.getName()))
-				return true;
-		
-		return false;
 	}
 }

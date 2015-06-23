@@ -1,5 +1,6 @@
 package musician101.itembank.forge.inventory;
 
+import musician101.itembank.forge.ItemBank;
 import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.util.IBUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -70,7 +71,7 @@ public class BankContainer extends Container
 	public boolean canInteractWith(EntityPlayer playerIn)
 	{
 		if (bankOwner.getId() != playerIn.getUniqueID())
-			return IBUtils.isPlayerOpped(playerIn.getGameProfile()); 
+			return ItemBank.permissions.hasPermission(playerIn, "itembank.account.admin"); 
 			
 		return true;
 	}
