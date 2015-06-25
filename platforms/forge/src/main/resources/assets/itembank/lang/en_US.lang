@@ -14,11 +14,8 @@ commands.itembank.help.description=Shows help information.
 commands.itembank.help.usage=/itembank help [command]
 
 commands.itembank.permission.description=Add or remove permissions from a player.
-commands.itembank.permission.usage=/itembank permission <add|remove> <player> <permissions>
-commands.itembank.permission.add.success=Permissions added.
-commands.itembank.permission.add.usage=/itembank permission add <player> <permissions>
-commands.itembank.permission.remove.success=Permissions removed.
-commands.itembank.permission.remove.usage=/itembank permission remove <player> <permissions>
+commands.itembank.permission.usage=/itembank permission <player> <permission> <value>
+commands.itembank.permission.success=Permissions updated.
 
 commands.itembank.purge.description=Delete all or a specified player's account.
 commands.itembank.purge.multiple=All accounts have been reset.

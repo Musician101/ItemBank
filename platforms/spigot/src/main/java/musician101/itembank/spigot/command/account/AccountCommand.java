@@ -25,6 +25,7 @@ public class AccountCommand extends AbstractSpigotCommand
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args)
 	{
+		//TODO need to check if this has basic permission checks
 		if (!(sender instanceof Player))
 		{
 			sender.sendMessage(Messages.PLAYER_CMD);

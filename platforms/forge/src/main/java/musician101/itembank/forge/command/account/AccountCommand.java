@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import musician101.itembank.forge.ItemBank;
 import musician101.itembank.forge.command.AbstractForgeCommand;
-import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.inventory.BankInventory;
 import musician101.itembank.forge.reference.Messages;
 import musician101.itembank.forge.util.IBUtils;
+import musician101.itembank.forge.util.permission.PermissionHolder;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.PlayerNotFoundException;
@@ -27,16 +27,17 @@ public class AccountCommand extends AbstractForgeCommand
 	
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException
-	{	
+	{
 		if (!(sender instanceof EntityPlayer))
 		{
 			sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.PLAYER_COMMAND));
 			return;
 		}
-		//TODO rewrite perms
+		
 		EntityPlayer player = (EntityPlayer) sender;
 		GameProfile owner = player.getGameProfile();
 		int page = 1;
+		PermissionHolder perms = ItemBank.permissions.getPlayerPermissions(player);
 		World world = player.worldObj;
 		if (args.length > 0)
 		{
@@ -46,7 +47,8 @@ public class AccountCommand extends AbstractForgeCommand
 				{
 					String key = arg.split(":")[0];
 					String value = arg.split(":")[1];
-					if (key.equalsIgnoreCase("player") && ItemBank.permissions.hasPermission(player, "itembank.player", "itembank.account.admin"))
+					//TODO need to check if the player argument is used they can open any page (if player doesn't own the bank then it acts as it normally would)
+					if (key.equalsIgnoreCase("player") && perms.canAccessOtherPlayerBanks())
 					{
 						owner = new GameProfile(EntityPlayer.getOfflineUUID(value), value);
 						if (!owner.isComplete())
@@ -62,21 +64,28 @@ public class AccountCommand extends AbstractForgeCommand
 							return;
 						}
 						
-						if (!ItemBank.permissions.hasPermission(player, "itembank.page.all", "itembank.account.admin") && page > ConfigHandler.pageLimit)
+						if (!perms.canUsePage(page))
 						{
 							player.addChatMessage(IBUtils.getTranslatedChatComponent((Messages.ACCOUNT_ILLEGAL_PAGE)));
 							return;
 						}
 					}
 					
-					if (key.equalsIgnoreCase("world") && ItemBank.permissions.hasPermission(player, "itembank.world.all", "itembank.world." + Integer.valueOf(value), "itembank.account.admin"))
+					if (key.equalsIgnoreCase("world"))
 					{
-						world = DimensionManager.getWorld(parseInt(value));
+						int worldId = parseInt(value);
+						world = DimensionManager.getWorld(worldId);
 						if (world == null)
 						{
 							player.addChatMessage(IBUtils.getTranslatedChatComponent((Messages.WORLD_DNE)));
 							return;
 						}
+						
+						 if (!perms.canAccessWorld(worldId))
+						 {
+							 player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.NO_PERMISSION));
+							 return;
+						 }
 					}
 				}
 			}

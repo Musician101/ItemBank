@@ -26,15 +26,8 @@ public class Messages
 	
 	private static final String PERMISSION = COMMANDS + "permission.";
 	public static final String PERMISSION_DESC = PERMISSION + "description";
+	public static final String PERMISSION_SUCCESS = PERMISSION + "success";
 	public static final String PERMISSION_USAGE = PERMISSION + "usage";
-	
-	private static final String PERMISSION_ADD = PERMISSION + "add.";
-	public static final String PERMISSION_ADD_SUCCESS = PERMISSION_ADD + "success";
-	public static final String PERMISSION_ADD_USAGE = PERMISSION_ADD + "usage";
-	
-	private static final String PERMISSION_REMOVE = PERMISSION + "remove.";
-	public static final String PERMISSION_REMOVE_SUCCESS = PERMISSION_REMOVE + "success";
-	public static final String PERMISSION_REMOVE_USAGE = PERMISSION_REMOVE + "usage";
 	
 	private static final String PURGE = COMMANDS + "purge.";
 	public static final String PURGE_DESC = PURGE + "description";

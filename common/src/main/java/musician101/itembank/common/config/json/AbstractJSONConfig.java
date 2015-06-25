@@ -65,14 +65,22 @@ public class AbstractJSONConfig extends JSONObject
 		return (get(key) != null ? getString(key) : defaultValue);
 	}
 	
-	public List<String> getStringList(String key)
+	public <K> List<K> getList(String key)
 	{
-		List<String> strings = new ArrayList<String>();
+		List<K> strings = new ArrayList<K>();
 		JSONArray jsonArray = (JSONArray) get(key);
 		for (Object object : jsonArray)
-			strings.add(object.toString());
+			strings.add((K) object);
 		
 		return strings;
+	}
+	
+	public <K> List<K> getList(String key, List<K> defaultValue)
+	{
+		if (isSet(key))
+			return defaultValue;
+		
+		return getList(key);
 	}
 	
 	public void set(String key, Object value)

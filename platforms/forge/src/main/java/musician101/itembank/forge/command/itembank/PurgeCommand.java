@@ -8,6 +8,7 @@ import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.reference.Messages;
 import musician101.itembank.forge.util.IBUtils;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class PurgeCommand extends AbstractForgeCommand
 {
@@ -20,7 +21,7 @@ public class PurgeCommand extends AbstractForgeCommand
 	@Override
 	public void processCommand(ICommandSender sender, String[] args)
 	{
-		if (!ItemBank.permissions.hasPermission(sender, "itembank.purge"))
+		if (sender instanceof EntityPlayer && !ItemBank.permissions.getPlayerPermissions((EntityPlayer) sender).canPurgeAccounts())
 		{
 			sender.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.NO_PERMISSION));
 			return;

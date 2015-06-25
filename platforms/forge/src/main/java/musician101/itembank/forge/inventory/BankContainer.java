@@ -71,7 +71,7 @@ public class BankContainer extends Container
 	public boolean canInteractWith(EntityPlayer playerIn)
 	{
 		if (bankOwner.getId() != playerIn.getUniqueID())
-			return ItemBank.permissions.hasPermission(playerIn, "itembank.account.admin"); 
+			return ItemBank.permissions.getPlayerPermissions(playerIn).canAccessOtherPlayerBanks(); 
 			
 		return true;
 	}

@@ -494,7 +494,7 @@ public class AccountUtil
 							if (meta.containsKey("can_destroy"))
 							{
 								BreakableData data = isb.build().getData(CatalogItemData.BREAKABLE_DATA).get();
-								for (String blockType : meta.getStringList("can_destroy"))
+								for (String blockType : meta.getList("can_destroy"))
 									for (Set<ItemType> it : ItemBank.getGame().getRegistry().getGameDictionary().getAllItems().values())
 										for (ItemType item_type : it)
 											if (item_type.getId().equalsIgnoreCase(blockType))
@@ -506,7 +506,7 @@ public class AccountUtil
 							if (meta.containsKey("can_place_on"))
 							{
 								PlaceableData data = isb.build().getData(CatalogItemData.PLACEABLE_DATA).get();
-								for (String blockType : meta.getStringList("can_place_on"))
+								for (String blockType : meta.getList("can_place_on"))
 									for (Set<ItemType> it : ItemBank.getGame().getRegistry().getGameDictionary().getAllItems().values())
 										for (ItemType item_type : it)
 											if (item_type.getId().equalsIgnoreCase(blockType))
@@ -590,7 +590,7 @@ public class AccountUtil
 							if (meta.containsKey("lore"))
 							{
 								LoreData data = isb.build().getData(CatalogItemData.LORE_DATA).get();
-								for (String line : meta.getStringList("lore"))
+								for (String line : meta.getList("lore"))
 									data.add(IBUtils.stringToText(line));
 								
 								isb.itemData(data);
@@ -606,7 +606,7 @@ public class AccountUtil
 							if (meta.containsKey("pages"))
 							{
 								PagedData data = isb.build().getData(CatalogItemData.PAGED_DATA).get();
-								for (String page : meta.getStringList("pages"))
+								for (String page : meta.getList("pages"))
 									data.add(IBUtils.stringToText(page));
 								
 								isb.itemData(data);
