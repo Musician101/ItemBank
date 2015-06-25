@@ -70,9 +70,6 @@ public class BankContainer extends Container
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn)
 	{
-		if (bankOwner.getId() != playerIn.getUniqueID())
-			return ItemBank.permissions.getPlayerPermissions(playerIn).canAccessOtherPlayerBanks(); 
-			
-		return true;
+		return bank.hasPermission(ItemBank.permissions.getPlayerPermissions(playerIn));
 	}
 }

@@ -6,6 +6,7 @@ commands.itembank.account.description=Open an account page based on the paramete
 commands.itembank.account.illegal-item=Some items could not be stored and were returned to you.
 commands.itembank.account.illegal-page=You do not have permission to use this page.
 commands.itembank.account.invalid-page=Error: Page number must be greater than 0.
+commands.itembank.account.no-permission=You do not haver permission to view this account.
 commands.itembank.account.page=Page
 commands.itembank.account.updated=Account updated.
 commands.itembank.account.usage=/account [player:name] [page:number] [world:id]

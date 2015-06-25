@@ -16,6 +16,7 @@ public class Messages
 	public static final String ACCOUNT_ILLEGAL_ITEM = ACCOUNT + "illegal-item";
 	public static final String ACCOUNT_ILLEGAL_PAGE = ACCOUNT + "illegal-page";
 	public static final String ACCOUNT_INVALID_PAGE = ACCOUNT + "invalid-page";
+	public static final String ACCOUNT_NO_PERMISSION = ACCOUNT + "no-permission";
 	public static final String ACCOUNT_PAGE = ACCOUNT + "page";
 	public static final String ACCOUNT_UPDATED = ACCOUNT + "updated";
 	public static final String ACCOUNT_USAGE = ACCOUNT + "usage";

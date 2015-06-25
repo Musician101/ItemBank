@@ -39,6 +39,12 @@ public class AccountCommand extends AbstractForgeCommand
 		int page = 1;
 		PermissionHolder perms = ItemBank.permissions.getPlayerPermissions(player);
 		World world = player.worldObj;
+		if (!perms.canAccessAccount())
+		{
+			player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.NO_PERMISSION));
+			return;
+		}
+		
 		if (args.length > 0)
 		{
 			for (String arg : args)
@@ -47,7 +53,6 @@ public class AccountCommand extends AbstractForgeCommand
 				{
 					String key = arg.split(":")[0];
 					String value = arg.split(":")[1];
-					//TODO need to check if the player argument is used they can open any page (if player doesn't own the bank then it acts as it normally would)
 					if (key.equalsIgnoreCase("player") && perms.canAccessOtherPlayerBanks())
 					{
 						owner = new GameProfile(EntityPlayer.getOfflineUUID(value), value);
@@ -63,12 +68,6 @@ public class AccountCommand extends AbstractForgeCommand
 							player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.ACCOUNT_INVALID_PAGE));
 							return;
 						}
-						
-						if (!perms.canUsePage(page))
-						{
-							player.addChatMessage(IBUtils.getTranslatedChatComponent((Messages.ACCOUNT_ILLEGAL_PAGE)));
-							return;
-						}
 					}
 					
 					if (key.equalsIgnoreCase("world"))
@@ -80,24 +79,25 @@ public class AccountCommand extends AbstractForgeCommand
 							player.addChatMessage(IBUtils.getTranslatedChatComponent((Messages.WORLD_DNE)));
 							return;
 						}
-						
-						 if (!perms.canAccessWorld(worldId))
-						 {
-							 player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.NO_PERMISSION));
-							 return;
-						 }
 					}
 				}
 			}
 		}
 		
+		BankInventory bank;
 		try
 		{
-			new BankInventory(player, owner, world.provider.getDimensionId(), page).openInventory(player);
+			bank = new BankInventory(player, owner, world.provider.getDimensionId(), page);
 		}
 		catch (IOException e)
 		{
 			player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.IO_EX));
+			return;
 		}
+		
+		if (bank.hasPermission(perms))
+			bank.openInventory(player);
+		
+		player.addChatMessage(IBUtils.getTranslatedChatComponent(Messages.ACCOUNT_NO_PERMISSION));
 	}
 }

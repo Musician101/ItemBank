@@ -6,6 +6,7 @@ import java.io.IOException;
 import musician101.itembank.forge.config.ConfigHandler;
 import musician101.itembank.forge.reference.Messages;
 import musician101.itembank.forge.util.IBUtils;
+import musician101.itembank.forge.util.permission.PermissionHolder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.InventoryBasic;
@@ -32,6 +33,14 @@ public class BankInventory extends InventoryBasic
 		this.dimension = dimension;
 		this.page = page;
 		readFromNBT(CompressedStreamTools.read(new File(ConfigHandler.bankDirectory + "/" + bankOwner.getId().toString() + ".dat")));
+	}
+	
+	public boolean hasPermission(PermissionHolder perms)
+	{
+		if (perms.getUUID() != bankOwner.getId())
+			return perms.canAccessOtherPlayerBanks();
+		
+		return perms.canUsePage(page);
 	}
 	
 	@Override
