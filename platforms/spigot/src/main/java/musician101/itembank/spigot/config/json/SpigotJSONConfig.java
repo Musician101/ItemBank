@@ -544,7 +544,11 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 		}
 		
 		if (metaJson.containsKey("lore"))
-			im.setLore(metaJson.getList("lore"));
+		{
+			List<String> lore = metaJson.getList("lore");
+			im.setLore(lore);
+		}
+		
 		return this;
 	}
 	
