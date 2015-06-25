@@ -40,7 +40,7 @@ public class BankInventory extends InventoryBasic
 		if (perms.getUUID() != bankOwner.getId())
 			return perms.canAccessOtherPlayerBanks();
 		
-		return perms.canUsePage(page);
+		return perms.canUsePage(page) && perms.canAccessWorld(dimension);
 	}
 	
 	@Override
