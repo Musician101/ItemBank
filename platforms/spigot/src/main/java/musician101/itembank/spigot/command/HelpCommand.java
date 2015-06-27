@@ -2,7 +2,6 @@ package musician101.itembank.spigot.command;
 
 import java.util.Arrays;
 
-import musician101.itembank.common.command.AbstractCommand;
 import musician101.itembank.spigot.ItemBank;
 import musician101.itembank.spigot.lib.Messages;
 
@@ -23,7 +22,7 @@ public class HelpCommand extends AbstractSpigotCommand
 	{
 		sender.sendMessage(Messages.HEADER);
 		sender.sendMessage(mainCommand.getUsage());
-		for (AbstractCommand command : mainCommand.getSubCommands())
+		for (AbstractSpigotCommand command : mainCommand.getSubCommands())
 			sender.sendMessage(command.getCommandHelpInfo());
 		
 		return true;
