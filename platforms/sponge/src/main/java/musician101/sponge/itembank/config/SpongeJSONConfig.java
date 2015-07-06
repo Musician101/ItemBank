@@ -1,10 +1,13 @@
 package musician101.sponge.itembank.config;
 
+import static org.spongepowered.api.data.DataQuery.of;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,10 +18,15 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.spongepowered.api.CatalogTypes;
+import org.spongepowered.api.attribute.Attribute;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataQuery;
+import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.FireworkEffect;
 import org.spongepowered.api.item.FireworkEffectBuilder;
 import org.spongepowered.api.item.FireworkShape;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.potion.PotionEffect;
 import org.spongepowered.api.potion.PotionEffectBuilder;
 import org.spongepowered.api.potion.PotionEffectType;
@@ -26,6 +34,7 @@ import org.spongepowered.api.potion.PotionEffectType;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+//TODO check all list methods for incorrect set()
 @SuppressWarnings("serial")
 public class SpongeJSONConfig extends AbstractJSONConfig
 {
@@ -39,13 +48,6 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		return (SpongeJSONConfig) get(key);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public SpongeJSONConfig setSpongeJSONConfig(String key, SpongeJSONConfig config)
-	{
-		put(key, config);
-		return this;
-	}
-	
 	public List<SpongeJSONConfig> getSpongeJSONConfigList(String key)
 	{
 		List<SpongeJSONConfig> jsons = Lists.newArrayList();
@@ -53,13 +55,6 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 			jsons.add((SpongeJSONConfig) object);
 		
 		return jsons;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public SpongeJSONConfig setSpongeJSONConfigList(String key, List<SpongeJSONConfig> configs)
-	{
-		put(key, configs);
-		return this;
 	}
 	
 	public Color getColor(String key)
@@ -81,14 +76,13 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		return new Color(red, green, blue);
 	}
 	
-	public SpongeJSONConfig setColor(String key, Color color)
+	public void setColor(String key, Color color)
 	{
 		SpongeJSONConfig colorJson = new SpongeJSONConfig();
 		colorJson.set("BLUE", color.getBlue());
 		colorJson.set("GREEN", color.getGreen());
 		colorJson.set("RED", color.getRed());
-		setSpongeJSONConfig(key, colorJson);
-		return this;
+		set(key, colorJson);
 	}
 	
 	public List<Color> getColorList(String key)
@@ -115,7 +109,7 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		return colors;
 	}
 	
-	public SpongeJSONConfig setColorList(String key, List<Color> colors)
+	public void setColorList(String key, List<Color> colors)
 	{
 		List<SpongeJSONConfig> colorsJson = Lists.newArrayList();
 		for (Color color : colors)
@@ -127,8 +121,7 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 			colorsJson.add(colorJson);
 		}
 		
-		setSpongeJSONConfigList(key, colorsJson);
-		return this;
+		set(key, colorsJson);
 	}
 	
 	public Map<Enchantment, Integer> getEnchants(String key)
@@ -142,14 +135,13 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		return enchants;
 	}
 	
-	public SpongeJSONConfig setEnchants(String key, Map<Enchantment, Integer> enchants)
+	public void setEnchants(String key, Map<Enchantment, Integer> enchants)
 	{
 		SpongeJSONConfig enchantsJson = new SpongeJSONConfig();
 		for (Enchantment enchant : enchants.keySet())
 			enchantsJson.set(enchant.getName(), enchants.get(enchant));
 		
-		setSpongeJSONConfig(key, enchantsJson);
-		return this;
+		set(key, enchantsJson);
 	}
 	
 	public FireworkEffect getFireworkEffect(String key)
@@ -178,7 +170,7 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		return fw.build();
 	}
 	
-	public SpongeJSONConfig setFireworkEffect(String key, FireworkEffect effect)
+	public void setFireworkEffect(String key, FireworkEffect effect)
 	{
 		SpongeJSONConfig fwJson = new SpongeJSONConfig();
 		fwJson.set("flicker", effect.flickers());
@@ -186,8 +178,7 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		fwJson.set("shape", effect.getShape().getName());
 		fwJson.setColorList("colors", effect.getColors());
 		fwJson.setColorList("fade-colors", effect.getFadeColors());
-		setSpongeJSONConfig(key, fwJson);
-		return this;
+		set(key, fwJson);
 	}
 	
 	public List<FireworkEffect> getFireworkEffectList(String key)
@@ -221,7 +212,7 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		return effects;
 	}
 	
-	public SpongeJSONConfig setFireworkEffectList(String key, List<FireworkEffect> effects)
+	public void setFireworkEffectList(String key, List<FireworkEffect> effects)
 	{
 		for (FireworkEffect effect : effects)
 		{
@@ -231,10 +222,106 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 			fwJson.set("shape", effect.getShape().getName());
 			fwJson.setColorList("colors", effect.getColors());
 			fwJson.setColorList("fade-colors", effect.getFadeColors());
-			setSpongeJSONConfig(key, fwJson);
+			set(key, fwJson);
+		}
+	}
+	
+	public List<ItemStack> getItemStackList(String key)
+	{
+		return null;
+	}
+	
+	public void setItemStackList(String key, List<ItemStack> items)
+	{
+		List<SpongeJSONConfig> list = new ArrayList<SpongeJSONConfig>();
+		for (ItemStack item : items)
+		{
+			DataContainer container = item.toContainer();
+			SpongeJSONConfig json = new SpongeJSONConfig();
+			json.set("ItemType", container.getString(of("ItemType")).get());
+			json.set("Quantity", container.getString(of("Quantity")).get());
+			
+			DataView dataView = container.getView(of("Data")).get();
+			SpongeJSONConfig datas = new SpongeJSONConfig();
+			for (DataQuery dq : dataView.getKeys(true))
+			{
+				SpongeJSONConfig data = new SpongeJSONConfig();
+				DataView view = null;
+				if (dq.toString().endsWith("AttributeData"))
+				{
+					view = dataView.getView(dq).get();
+					for (Object o : view.getList(of("Attributes")).get())
+					{
+						//TODO come back to this when Attributes are implemented fully into SpongeCommon
+						Attribute a = (Attribute) o;
+						a.getId();
+					}
+				}
+				else if (dq.toString().endsWith("ColoredData"))
+				{
+					view = dataView.getView(dq).get();
+					SpongeJSONConfig color = new SpongeJSONConfig();
+					color.setColor("Color", new Color(view.getInt(of("Color")).get()));
+					data.set("ColorData", color);
+				}
+				else if (dq.toString().endsWith("CommandData"))
+				{
+					view = dataView.getView(dq).get();
+					SpongeJSONConfig command = new SpongeJSONConfig();
+					command.set("Command", view.getString(of("Command")).get());
+					command.set("SuccessCount", view.getInt(of("SuccessCount")).get());
+					command.set("TracksOutput", view.getBoolean(of("TracksOutput")).get());
+					command.set("LastOutput", view.getString(of("LastOutput")).get());
+					data.set("CommandData", command);
+				}
+				else if (dq.toString().endsWith("DisplayNameData"))
+				{
+					view = dataView.getView(dq).get();
+					SpongeJSONConfig displayName = new SpongeJSONConfig();
+					displayName.set("DisplayName", view.getString(of("DisplayName")).get());
+					displayName.set("Visible", view.getInt(of("Visible")).get());
+					data.set("DisplayNameData", displayName);
+				}
+				else if (dq.toString().endsWith("DyeableData"))
+				{
+					view = dataView.getView(dq).get();
+					SpongeJSONConfig dye = new SpongeJSONConfig();
+					dye.set("DyeColor", view.getString(of("DyeColor")).get());
+					data.set("DyeableData", dye);
+				}
+				else if (dq.toString().endsWith("DyeableData"))
+				{
+					view = dataView.getView(dq).get();
+					SpongeJSONConfig dye = new SpongeJSONConfig();
+					dye.set("DyeColor", view.getString(of("DyeColor")).get());
+					data.set("DyeableData", dye);
+				}
+				else if (dq.toString().endsWith("FireworkData"))
+				{
+					view = dataView.getView(dq).get();
+					SpongeJSONConfig fireworks = new SpongeJSONConfig();
+					fireworks.set("FlightModifier", view.getInt(of("FlightModifier")).get());
+					data.set("FireworkData", fireworks);
+					List<SpongeJSONConfig> effects = Lists.newArrayList();
+					for (Object o : view.getList(of("FireworkEffects")).get())
+					{
+						SpongeJSONConfig effectJson = new SpongeJSONConfig();
+						FireworkEffect effect = (FireworkEffect) o;
+						effectJson.set("Flickers", effect.flickers());
+						effectJson.set("Trail", effect.hasTrail());
+						effectJson.set("Shape", effect.getShape());
+						effectJson.setColorList("Colors", effect.getColors());
+						effectJson.setColorList("FadeColors", effect.getFadeColors());
+					}
+					
+					data.set("Effects", effects);
+				}//TODO left off here
+			}
+			
+			json.set("Data", datas);
 		}
 		
-		return this;
+		set(key, list);
 	}
 	
 	public PotionEffect getPotionEffect(String key)
@@ -251,14 +338,13 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		return potion.build();
 	}
 	
-	public SpongeJSONConfig setPotionEffect(String key, PotionEffect effect)
+	public void setPotionEffect(String key, PotionEffect effect)
 	{
 		SpongeJSONConfig potionJson = new SpongeJSONConfig();
 		potionJson.set("effect", effect.getType().getName());
 		potionJson.set("amplifier", effect.getAmplifier());
 		potionJson.set("duration", effect.getDuration());
 		potionJson.set("is_ambient", effect.isAmbient());
-		return this;
 	}
 	
 	public List<PotionEffect> getPotionEffectList(String key)
@@ -280,7 +366,7 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 		return effects;
 	}
 	
-	public SpongeJSONConfig setPotionEffectList(String key, List<PotionEffect> effects)
+	public void setPotionEffectList(String key, List<PotionEffect> effects)
 	{
 		List<SpongeJSONConfig> potionsJson = Lists.newArrayList();
 		for (PotionEffect effect : effects)
@@ -293,10 +379,9 @@ public class SpongeJSONConfig extends AbstractJSONConfig
 			potionsJson.add(potionJson);
 		}
 		
-		setSpongeJSONConfigList(key, potionsJson);
-		return this;
+		set(key, potionsJson);
 	}
-	
+		
 	public static SpongeJSONConfig loadSpongeJSONConfig(File file) throws FileNotFoundException, IOException, ParseException
 	{
 		return (SpongeJSONConfig) new JSONParser().parse(new FileReader(file));
