@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>com.github.SpongePowered</groupId>
 			<artifactId>SpongeAPI</artifactId>
-			<version>b82209b</version>
+			<version>42178f2</version>
 		</dependency>
 	</dependencies>
 	

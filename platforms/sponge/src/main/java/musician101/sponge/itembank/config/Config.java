@@ -87,7 +87,7 @@ public class Config extends AbstractConfig
 	
 	public Config()
 	{
-		Logger log = ItemBank.getLogger();
+		Logger log = ItemBank.logger;
 		configFile = new File("config.conf");
 		if (!configFile.exists())
 		{
@@ -153,18 +153,18 @@ public class Config extends AbstractConfig
 		setMultiWorldStorageEnabled(config.getNode("multiworld").getBoolean(false));
 		setPageLimit(config.getNode("pagelimit").getInt(0));
 		ConfigurationNode mysql = config.getNode("mysql");
-		if (mysql == null)
+		if (mysql.isVirtual())
 			useMySQL = false;
 		else
 			useMySQL = mysql.getNode("enable").getBoolean(false);
 		
 		if (useMySQL)
-			ItemBank.setMySQLHandler(new MySQLHandler(mysql.getNode("database").getString("database"), mysql.getNode("host").getString("127.0.0.1"), mysql.getNode("password").getString("password"), mysql.getNode("port").getString("3306"), mysql.getNode("user").getString("user")));
+			ItemBank.mysql = new MySQLHandler(mysql.getNode("database").getString("database"), mysql.getNode("host").getString("127.0.0.1"), mysql.getNode("password").getString("password"), mysql.getNode("port").getString("3306"), mysql.getNode("user").getString("user"));
 		
 		if (config.getNode("itemlist") != null)
 			itemList(config.getNode("itemlist").getChildrenList());
 		else
-			itemlist.add(ItemBank.getGame().getRegistry().getItemBuilder().itemType(ItemTypes.BEDROCK).quantity(0).build());
+			itemlist.add(ItemBank.game.getRegistry().getItemBuilder().itemType(ItemTypes.BEDROCK).quantity(0).build());
 		
 		if (config.getNode("lang") != null)
 			Messages.init(config.getNode("lang").getString("en"), new File(configFolder, "lang.conf"));
@@ -178,7 +178,7 @@ public class Config extends AbstractConfig
 		{
 			if (itemNode.getNode("id") != null)
 			{
-				for (Set<ItemType> itemSet : ItemBank.getGame().getRegistry().getGameDictionary().getAllItems().values())
+				for (Set<ItemType> itemSet : ItemBank.game.getRegistry().getGameDictionary().getAllItems().values())
 				{
 					for (ItemType item : itemSet)
 					{
@@ -188,7 +188,7 @@ public class Config extends AbstractConfig
 							{
 								for (ConfigurationNode variation : itemNode.getNode("variations").getChildrenList())
 								{
-									ItemStack tempItem = ItemBank.getGame().getRegistry().getItemBuilder().itemType(item).build();
+									ItemStack tempItem = ItemBank.game.getRegistry().getItemBuilder().itemType(item).build();
 									if (tempItem.getData(CatalogBlockData.STONE_DATA).isPresent())
 										handleStone(item, variation);
 									else if (tempItem.getData(CatalogBlockData.DIRT_DATA).isPresent())
@@ -240,11 +240,11 @@ public class Config extends AbstractConfig
 	
 	private void handleStone(ItemType item, ConfigurationNode variation)
 	{
-		for (StoneType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.STONE_TYPE))
+		for (StoneType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.STONE_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -258,11 +258,11 @@ public class Config extends AbstractConfig
 	
 	private void handleDirt(ItemType item, ConfigurationNode variation)
 	{
-		for (DirtType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.DIRT_TYPE))
+		for (DirtType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.DIRT_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -276,11 +276,11 @@ public class Config extends AbstractConfig
 	
 	private void handleTrees(ItemType item, ConfigurationNode variation)
 	{
-		for (TreeType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.TREE_TYPE))
+		for (TreeType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.TREE_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -294,11 +294,11 @@ public class Config extends AbstractConfig
 	
 	private void handleSand(ItemType item, ConfigurationNode variation)
 	{
-		for (SandType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.SAND_TYPE))
+		for (SandType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.SAND_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -312,11 +312,11 @@ public class Config extends AbstractConfig
 	
 	private void handleSandstone(ItemType item, ConfigurationNode variation)
 	{
-		for (SandstoneType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.SANDSTONE_TYPE))
+		for (SandstoneType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.SANDSTONE_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -330,11 +330,11 @@ public class Config extends AbstractConfig
 	
 	private void handleDyeables(ItemType item, ConfigurationNode variation)
 	{
-		for (DyeColor type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.DYE_COLOR))
+		for (DyeColor type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.DYE_COLOR))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -348,11 +348,11 @@ public class Config extends AbstractConfig
 	
 	private void handleSlabs(ItemType item, ConfigurationNode variation)
 	{
-		for (SlabType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.SLAB_TYPE))
+		for (SlabType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.SLAB_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -366,11 +366,11 @@ public class Config extends AbstractConfig
 	
 	private void handleDisguisedBlocks(ItemType item, ConfigurationNode variation)
 	{
-		for (DisguisedBlockType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.DISGUSED_BLOCK_TYPE))
+		for (DisguisedBlockType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.DISGUSED_BLOCK_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -384,11 +384,11 @@ public class Config extends AbstractConfig
 	
 	private void handleStoneBrick(ItemType item, ConfigurationNode variation)
 	{
-		for (BrickType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.BRICK_TYPE))
+		for (BrickType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.BRICK_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -402,11 +402,11 @@ public class Config extends AbstractConfig
 	
 	private void handleWalls(ItemType item, ConfigurationNode variation)
 	{
-		for (WallType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.WALL_TYPE))
+		for (WallType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.WALL_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -420,11 +420,11 @@ public class Config extends AbstractConfig
 	
 	private void handleQuartz(ItemType item, ConfigurationNode variation)
 	{
-		for (QuartzType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.QUARTZ_TYPE))
+		for (QuartzType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.QUARTZ_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -438,11 +438,11 @@ public class Config extends AbstractConfig
 	
 	private void handlePrismarine(ItemType item, ConfigurationNode variation)
 	{
-		for (PrismarineType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.PRISMARINE_TYPE))
+		for (PrismarineType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.PRISMARINE_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -456,11 +456,11 @@ public class Config extends AbstractConfig
 	
 	private void handleDoublePlant(ItemType item, ConfigurationNode variation)
 	{
-		for (DoubleSizePlantType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.DOUBLE_SIZE_PLANT_TYPE))
+		for (DoubleSizePlantType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.DOUBLE_SIZE_PLANT_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -474,11 +474,11 @@ public class Config extends AbstractConfig
 	
 	private void handleCoal(ItemType item, ConfigurationNode variation)
 	{
-		for (CoalType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.COAL_TYPE))
+		for (CoalType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.COAL_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -492,11 +492,11 @@ public class Config extends AbstractConfig
 	
 	private void handleGoldenApple(ItemType item, ConfigurationNode variation)
 	{
-		for (GoldenApple type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.GOLDEN_APPLE))
+		for (GoldenApple type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.GOLDEN_APPLE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -510,11 +510,11 @@ public class Config extends AbstractConfig
 	
 	private void handleFish(ItemType item, ConfigurationNode variation)
 	{
-		for (Fish type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.FISH))
+		for (Fish type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.FISH))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -528,11 +528,11 @@ public class Config extends AbstractConfig
 	
 	private void handleCookedFish(ItemType item, ConfigurationNode variation)
 	{
-		for (CookedFish type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.COOKED_FISH))
+		for (CookedFish type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.COOKED_FISH))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -546,11 +546,11 @@ public class Config extends AbstractConfig
 	
 	private void handleSpawnEgg(ItemType item, ConfigurationNode variation)
 	{
-		for (EntityType type : ItemBank.getGame().getRegistry().getAllOf(CatalogTypes.ENTITY_TYPE))
+		for (EntityType type : ItemBank.game.getRegistry().getAllOf(CatalogTypes.ENTITY_TYPE))
 		{
 			if (variation.getNode("name") != null && variation.getNode("name").getString().equalsIgnoreCase(type.getName()))
 			{
-				ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+				ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 				builder.itemType(item);
 				builder.quantity(variation.getNode("amount").getInt(0));
 				ItemStack itemStack = builder.build();
@@ -564,7 +564,7 @@ public class Config extends AbstractConfig
 	
 	private void handleOther(ItemType item, ConfigurationNode variation)
 	{
-		ItemStackBuilder builder = ItemBank.getGame().getRegistry().getItemBuilder();
+		ItemStackBuilder builder = ItemBank.game.getRegistry().getItemBuilder();
 		builder.itemType(item);
 		builder.quantity(variation.getNode("amount").getInt(0));
 		itemlist.add(builder.build());

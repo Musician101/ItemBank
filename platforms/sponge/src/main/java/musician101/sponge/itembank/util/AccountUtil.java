@@ -30,6 +30,7 @@ import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.translation.Translatable;
+import org.spongepowered.api.world.World;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
@@ -37,29 +38,29 @@ import com.google.common.reflect.TypeToken;
 
 public class AccountUtil
 {
-	public static Inventory getAccount(String worldName, UUID uuid, int page) throws ClassNotFoundException, FileNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
+	public static Inventory getAccount(World world, UUID uuid, int page) throws ClassNotFoundException, FileNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
 	{
 		CustomInventoryBuilder invBuilder = Inventories.customInventoryBuilder();
 		invBuilder.size(54);
 		invBuilder.name((Translatable) Texts.builder(IBUtils.getNameOf(uuid) + " - " + Messages.ACCOUNT_PAGE + page).build());
 		
 		OrderedInventory inv = invBuilder.build();
-		if (ItemBank.getMySQLHandler() != null)
+		if (ItemBank.mysql != null)
 		{
-			ItemBank.getMySQLHandler().querySQL("CREATE TABLE IF NOT EXISTS ib_" + uuid.toString().replace("-", "_") + "(World TEXT, Page int, Slot int, Item TEXT);");
+			ItemBank.mysql.querySQL("CREATE TABLE IF NOT EXISTS ib_" + uuid.toString().replace("-", "_") + "(World TEXT, Page int, Slot int, Item TEXT);");
 			for (int slot = 0; slot < inv.size(); slot++)
-				inv.set(new SlotIndex(slot), getItem(ItemBank.getMySQLHandler().querySQL("SELECT * FROM ib_" + uuid + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
+				inv.set(new SlotIndex(slot), getItem(ItemBank.mysql.querySQL("SELECT * FROM ib_" + uuid + " WHERE World = \"" + world + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
 			
 			return inv;
 		}
 		
-		File file = ItemBank.getConfig().getPlayerFile(uuid);
+		File file = ItemBank.config.getPlayerFile(uuid);
 		if (!file.exists())
 			IBUtils.createPlayerFile(file);
 		
 		ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(file).build();
 		ConfigurationNode account = loader.load();
-		ConfigurationNode pageNode = account.getNode(worldName, page + "");
+		ConfigurationNode pageNode = account.getNode(world.getName(), page + "");
 		if (pageNode.isVirtual())
 			return inv;
 		
@@ -72,12 +73,12 @@ public class AccountUtil
 	
 	private static ItemStack getItem(ConfigurationNode item)
 	{
-		ItemStack is = ItemBank.getGame().getRegistry().getItemBuilder().build();
+		ItemStack is = ItemBank.game.getRegistry().getItemBuilder().build();
 		is.setRawData((DataContainer) ConfigurateTranslator.instance().translateFrom(item));
 		return is;
 	}
 	
-	private static ItemStack getItem(ResultSet rs) throws ObjectMappingException, ParseException, SQLException
+	private static ItemStack getItem(ResultSet rs) throws ObjectMappingException, SQLException
 	{
 		while (rs.next())
 		{
@@ -92,9 +93,9 @@ public class AccountUtil
 	
 	public static void saveAccount(String worldName, UUID uuid, OrderedInventory inventory, int page) throws ClassNotFoundException, FileNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
 	{
-		if (ItemBank.getMySQLHandler() != null)
+		if (ItemBank.mysql != null)
 		{
-			MySQLHandler sql = ItemBank.getMySQLHandler();
+			MySQLHandler sql = ItemBank.mysql;
 			sql.querySQL("CREATE TABLE IF NOT EXISTS ib_" + uuid.toString().replace("-", "_") + "(World TEXT, Page int, Slot int, Item TEXT);");
 			for (int slot = 0; slot < inventory.size(); slot++)
 			{
@@ -107,7 +108,7 @@ public class AccountUtil
 			return;
 		}
 		
-		File file = ItemBank.getConfig().getPlayerFile(uuid);
+		File file = ItemBank.config.getPlayerFile(uuid);
 		if (!file.exists())
 			IBUtils.createPlayerFile(file);
 		

@@ -5,17 +5,16 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import musician101.sponge.itembank.ItemBank;
-import musician101.sponge.itembank.lib.Reference.Constants;
 import musician101.sponge.itembank.lib.Reference.Messages;
 import musician101.sponge.itembank.util.IBUtils;
 
 import org.json.simple.parser.ParseException;
 import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.inventory.InventoryClickEvent;
 import org.spongepowered.api.event.inventory.InventoryCloseEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.util.event.Subscribe;
 
 public class InventoryListener
 {

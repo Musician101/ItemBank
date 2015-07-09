@@ -8,20 +8,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import musician101.sponge.itembank.ItemBank;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.spongepowered.api.data.DataManipulator;
-import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -29,7 +25,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.World;
 
 public class IBUtils
 {
@@ -37,14 +32,6 @@ public class IBUtils
 	{
 		if (!file.exists())
 			file.createNewFile();
-	}
-	
-	public static void createPlayerFiles() throws IOException
-	{
-		Collection<Player> players = ItemBank.getGame().getServer().getOnlinePlayers();
-		if (players.size() > 0)
-			for (Player player : players)
-				createPlayerFile(ItemBank.getConfig().getPlayerFile(player.getUniqueId()));
 	}
 	
 	public static int getAmount(Inventory inv, ItemType type, DataManipulator<?> data)
@@ -72,14 +59,6 @@ public class IBUtils
 		}
 		
 		return true;
-	}
-	
-	public static String getWorldName(Player player)
-	{
-		if (ItemBank.getConfig().isMultiWorldStorageEnabled())
-			return ((List<World>) ItemBank.getGame().getServer().getWorlds()).get(0).getName();
-		
-		return player.getWorld().getName();
 	}
 	
 	public static Text stringToText(String string)
