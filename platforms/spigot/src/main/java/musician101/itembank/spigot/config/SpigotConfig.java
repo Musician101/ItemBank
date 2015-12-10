@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import musician101.itembank.common.config.AbstractConfig;
 import musician101.itembank.common.database.MySQLHandler;
-import musician101.itembank.spigot.ItemBank;
+import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.lib.Messages;
 
 import org.bukkit.Material;
@@ -19,16 +19,16 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-public class PluginConfig extends AbstractConfig
+public class SpigotConfig extends AbstractConfig
 {
 	boolean enableVault;
 	boolean useMYSQL;
 	double transactionCost;
-	ItemBank plugin;
+	SpigotItemBank plugin;
 	File playerData;
 	List<ItemStack> itemList = new ArrayList<ItemStack>();
 	
-	public PluginConfig(ItemBank plugin)
+	public SpigotConfig(SpigotItemBank plugin)
 	{
 		super();
 		this.plugin = plugin;

@@ -2,7 +2,7 @@ package musician101.itembank.spigot.command.itembank;
 
 import java.util.Arrays;
 
-import musician101.itembank.spigot.ItemBank;
+import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.command.AbstractSpigotCommand;
 import musician101.itembank.spigot.lib.Messages;
 
@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 
 public class ReloadCommand extends AbstractSpigotCommand
 {
-	public ReloadCommand(ItemBank plugin)
+	public ReloadCommand(SpigotItemBank plugin)
 	{
 		super(plugin, "reload", "Reload the plugin's config file.", Arrays.asList("/itembank", "reload"), "itembank.reload", false, null);
 	}

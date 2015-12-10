@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import musician101.itembank.common.command.AbstractCommand;
-import musician101.itembank.spigot.ItemBank;
+import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.lib.Messages;
 
 import org.bukkit.ChatColor;
@@ -14,11 +14,11 @@ import org.bukkit.entity.Player;
 
 public abstract class AbstractSpigotCommand extends AbstractCommand
 {
-	protected ItemBank plugin;
+	protected SpigotItemBank plugin;
 	List<AbstractSpigotCommand> subCommands;
 	String permission;
 	
-	public AbstractSpigotCommand(ItemBank plugin, String name, String desc, List<String> usage, String perm, boolean isPlayerOnly, List<AbstractSpigotCommand> subCommands)
+	public AbstractSpigotCommand(SpigotItemBank plugin, String name, String desc, List<String> usage, String perm, boolean isPlayerOnly, List<AbstractSpigotCommand> subCommands)
 	{
 		super(name, desc, parseUsage(usage), isPlayerOnly);
 		this.plugin = plugin;

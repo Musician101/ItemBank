@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import musician101.itembank.spigot.ItemBank;
+import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.config.json.SpigotJSONConfig;
 import musician101.itembank.spigot.config.yaml.CustomYamlConfig;
 import musician101.itembank.spigot.lib.Messages;
@@ -67,7 +67,7 @@ public class IBUtils
 		}
 	}
 	
-	public static void createPlayerFiles(ItemBank plugin) throws IOException
+	public static void createPlayerFiles(SpigotItemBank plugin) throws IOException
 	{
 		Collection<? extends Player> players = plugin.getServer().getOnlinePlayers();
 		if (players.size() > 0)
@@ -86,7 +86,7 @@ public class IBUtils
 	}
 	
 	/* player.getUniqueId() and uuid are not always the same. */
-	public static boolean openInv(ItemBank plugin, Player player, String worldName, UUID uuid, int page)
+	public static boolean openInv(SpigotItemBank plugin, Player player, String worldName, UUID uuid, int page)
 	{
 		Inventory inv = null;
 		try
@@ -131,7 +131,7 @@ public class IBUtils
 		return true;
 	}
 	
-	public static Inventory getAccount(ItemBank plugin, String worldName, UUID uuid, int page) throws ClassNotFoundException, FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
+	public static Inventory getAccount(SpigotItemBank plugin, String worldName, UUID uuid, int page) throws ClassNotFoundException, FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
 		final Inventory inv = Bukkit.createInventory(Bukkit.getPlayer(uuid), 54, Bukkit.getOfflinePlayer(uuid).getName() + " - Page " + page);
 		if (plugin.getPluginConfig().useMySQL())
@@ -194,7 +194,7 @@ public class IBUtils
 		return inv;
 	}
 	
-	public static void saveAccount(ItemBank plugin, String worldName, UUID uuid, Inventory inventory, int page) throws ClassNotFoundException, FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
+	public static void saveAccount(SpigotItemBank plugin, String worldName, UUID uuid, Inventory inventory, int page) throws ClassNotFoundException, FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
 		if (plugin.getPluginConfig().useMySQL())
 		{
@@ -306,7 +306,7 @@ public class IBUtils
 		return null;
 	}
 
-	public static String getWorldName(ItemBank plugin, Player player)
+	public static String getWorldName(SpigotItemBank plugin, Player player)
 	{
 		if (plugin.getPluginConfig().isMultiWorldStorageEnabled())
 			return Bukkit.getWorlds().get(0).getName();

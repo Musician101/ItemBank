@@ -8,7 +8,7 @@ import musician101.itembank.common.database.MySQLHandler;
 import musician101.itembank.spigot.command.AbstractSpigotCommand;
 import musician101.itembank.spigot.command.account.AccountCommand;
 import musician101.itembank.spigot.command.itembank.IBCommand;
-import musician101.itembank.spigot.config.PluginConfig;
+import musician101.itembank.spigot.config.SpigotConfig;
 import musician101.itembank.spigot.lib.Messages;
 import musician101.itembank.spigot.util.Updater;
 import musician101.itembank.spigot.util.Updater.UpdateResult;
@@ -20,12 +20,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ItemBank extends JavaPlugin
+public class SpigotItemBank extends JavaPlugin
 { 
 	Economy econ;
 	List<AbstractSpigotCommand> commands;
 	MySQLHandler mysql;
-	PluginConfig config;
+	SpigotConfig config;
 	
 	private boolean setupEconomy()
 	{
@@ -59,7 +59,7 @@ public class ItemBank extends JavaPlugin
 	@Override
 	public void onEnable()
 	{
-		config = new PluginConfig(this);
+		config = new SpigotConfig(this);
 		versionCheck();
 		setupEconomy();
 		
@@ -92,7 +92,7 @@ public class ItemBank extends JavaPlugin
 		return false;
 	}
 	
-	public PluginConfig getPluginConfig()
+	public SpigotConfig getPluginConfig()
 	{
 		return config;
 	}

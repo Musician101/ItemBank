@@ -2,7 +2,7 @@ package musician101.itembank.spigot.command.itembank;
 
 import java.util.Arrays;
 
-import musician101.itembank.spigot.ItemBank;
+import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.command.AbstractSpigotCommand;
 import musician101.itembank.spigot.lib.Messages;
 import musician101.itembank.spigot.util.IBUtils;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 public class UUIDCommand extends AbstractSpigotCommand
 {
-	public UUIDCommand(ItemBank plugin)
+	public UUIDCommand(SpigotItemBank plugin)
 	{
 		super(plugin, "uuid", "Get a player's UUID.", Arrays.asList("/itembank", "uuid", "<player>"), "itembank.uuid", true, null);
 	}

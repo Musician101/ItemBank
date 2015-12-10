@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import musician101.itembank.spigot.ItemBank;
+import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.util.IBUtils;
 
 import org.bukkit.ChatColor;
@@ -14,7 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class Messages
 {
-	public static void init(ItemBank plugin, String lang, File file) throws IOException, InvalidConfigurationException
+	public static void init(SpigotItemBank plugin, String lang, File file) throws IOException, InvalidConfigurationException
 	{
 		FileConfiguration langConfig = IBUtils.getYamlConfig(file, true);
 		ConfigurationSection langCS = null;

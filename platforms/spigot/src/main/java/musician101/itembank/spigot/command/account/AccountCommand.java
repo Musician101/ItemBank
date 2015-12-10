@@ -3,7 +3,7 @@ package musician101.itembank.spigot.command.account;
 import java.util.Arrays;
 import java.util.UUID;
 
-import musician101.itembank.spigot.ItemBank;
+import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.command.AbstractSpigotCommand;
 import musician101.itembank.spigot.command.HelpCommand;
 import musician101.itembank.spigot.lib.Messages;
@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 
 public class AccountCommand extends AbstractSpigotCommand
 {
-	public AccountCommand(ItemBank plugin)
+	public AccountCommand(SpigotItemBank plugin)
 	{
 		super(plugin, "account", Messages.ACCOUNT_DESC, Arrays.asList("/account"), "itembank.account", true, null);
 	}

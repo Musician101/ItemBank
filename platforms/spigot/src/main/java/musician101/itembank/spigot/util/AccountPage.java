@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import musician101.itembank.spigot.ItemBank;
-import musician101.itembank.spigot.config.PluginConfig;
+import musician101.itembank.spigot.SpigotItemBank;
+import musician101.itembank.spigot.config.SpigotConfig;
 import musician101.itembank.spigot.lib.Messages;
 
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -21,13 +21,13 @@ import org.json.simple.parser.ParseException;
 
 public class AccountPage implements Listener
 {
-	ItemBank plugin;
+	SpigotItemBank plugin;
 	int page;
 	String worldName;
 	Player viewer;
 	UUID owner;
 	
-	public AccountPage(ItemBank plugin, Player viewer, UUID owner, String worldName, int page)
+	public AccountPage(SpigotItemBank plugin, Player viewer, UUID owner, String worldName, int page)
 	{
 		this.plugin = plugin;
 		this.viewer = viewer;
@@ -45,7 +45,7 @@ public class AccountPage implements Listener
 			return;
 		
 		Inventory inv = event.getView().getTopInventory();
-		PluginConfig config = plugin.getPluginConfig();
+		SpigotConfig config = plugin.getPluginConfig();
 		int pageLimit = config.getPageLimit();
 		if (((pageLimit > 0 && pageLimit < page) || page == 0) && !player.hasPermission("itembank.account.admin"))
 		{
