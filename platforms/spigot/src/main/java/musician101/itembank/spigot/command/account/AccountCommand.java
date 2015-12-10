@@ -1,14 +1,15 @@
 package musician101.itembank.spigot.command.account;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
-
+import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
+import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
+import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
+import musician101.common.java.minecraft.spigot.command.SpigotHelpCommand;
 import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.command.AbstractSpigotCommand;
-import musician101.itembank.spigot.command.HelpCommand;
 import musician101.itembank.spigot.lib.Messages;
 import musician101.itembank.spigot.util.IBUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -17,9 +18,12 @@ import org.bukkit.entity.Player;
 
 public class AccountCommand extends AbstractSpigotCommand
 {
+	SpigotItemBank plugin;
+
 	public AccountCommand(SpigotItemBank plugin)
 	{
-		super(plugin, "account", Messages.ACCOUNT_DESC, Arrays.asList("/account"), "itembank.account", true, null);
+		super("account", Messages.ACCOUNT_DESC, Arrays.asList(new SpigotCommandArgument("/account"), new SpigotCommandArgument("page:<page>", Syntax.OPTIONAL), new SpigotCommandArgument("player:<player>", Syntax.OPTIONAL), new SpigotCommandArgument("world:<world>")), 0, "itembank.account", true, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+        this.plugin = plugin;
 	}
 	
 	@Override
@@ -29,13 +33,14 @@ public class AccountCommand extends AbstractSpigotCommand
 		if (!(sender instanceof Player))
 		{
 			sender.sendMessage(Messages.PLAYER_CMD);
-			return new HelpCommand(plugin, this).onCommand(sender, moveArguments(args));
+			return new SpigotHelpCommand(this).onCommand(sender, moveArguments(args));
 		}
 		
 		int page = 1;
 		Player player = (Player) sender;
 		UUID uuid = player.getUniqueId();
 		World world = player.getWorld();
+        //TODO need to get InventoryManager of some sort
 		if (args.length > 0)
 		{
 			if (args[0].equalsIgnoreCase("help"))

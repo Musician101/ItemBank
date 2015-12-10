@@ -2,9 +2,8 @@ package musician101.itembank.spigot.command.itembank;
 
 import java.util.Arrays;
 
+import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.command.AbstractSpigotCommand;
-import musician101.itembank.spigot.command.HelpCommand;
 import musician101.itembank.spigot.lib.Messages;
 
 import org.bukkit.command.CommandSender;

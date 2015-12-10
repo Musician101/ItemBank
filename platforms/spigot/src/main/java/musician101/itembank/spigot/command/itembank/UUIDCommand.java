@@ -3,7 +3,6 @@ package musician101.itembank.spigot.command.itembank;
 import java.util.Arrays;
 
 import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.command.AbstractSpigotCommand;
 import musician101.itembank.spigot.lib.Messages;
 import musician101.itembank.spigot.util.IBUtils;
 
