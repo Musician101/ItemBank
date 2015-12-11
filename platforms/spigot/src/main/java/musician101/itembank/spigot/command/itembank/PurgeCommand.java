@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.UUID;
 
+import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
+import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
+import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
 import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.lib.Messages;
 import musician101.itembank.spigot.util.IBUtils;
@@ -16,9 +19,12 @@ import org.json.simple.parser.ParseException;
 
 public class PurgeCommand extends AbstractSpigotCommand
 {
+	SpigotItemBank plugin;
+
 	public PurgeCommand(SpigotItemBank plugin)
 	{
-		super(plugin, "purge", "Delete all or a specified player's account.", Arrays.asList("/itembank", "purge", "[player]"), "itembank.purge", false, null);
+		super("purge", "Delete all or a specified player's account.", Arrays.asList(new SpigotCommandArgument("/itembank"), new SpigotCommandArgument("purge"), new SpigotCommandArgument("player", Syntax.OPTIONAL)), 0, "itembank.purge", false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+        this.plugin = plugin;
 	}
 	
 	@Override

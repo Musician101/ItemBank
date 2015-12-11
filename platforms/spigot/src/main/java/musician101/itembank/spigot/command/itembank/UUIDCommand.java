@@ -1,19 +1,19 @@
 package musician101.itembank.spigot.command.itembank;
 
 import java.util.Arrays;
-
-import musician101.itembank.spigot.SpigotItemBank;
+import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
+import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
+import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
 import musician101.itembank.spigot.lib.Messages;
 import musician101.itembank.spigot.util.IBUtils;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class UUIDCommand extends AbstractSpigotCommand
 {
-	public UUIDCommand(SpigotItemBank plugin)
+	public UUIDCommand()
 	{
-		super(plugin, "uuid", "Get a player's UUID.", Arrays.asList("/itembank", "uuid", "<player>"), "itembank.uuid", true, null);
+		super("uuid", "Get a player's UUID.", Arrays.asList(new SpigotCommandArgument("/itembank"), new SpigotCommandArgument("uuid"), new SpigotCommandArgument("player", Syntax.REQUIRED)), 1, "itembank.uuid", true, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
 	}
 	
 	@Override
