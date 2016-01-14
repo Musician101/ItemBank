@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
-import musician101.itembank.common.database.MySQLHandler;
+import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.spigot.command.account.AccountCommand;
 import musician101.itembank.spigot.command.itembank.IBCommand;
 import musician101.itembank.spigot.config.SpigotConfig;

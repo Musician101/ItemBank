@@ -110,12 +110,15 @@ public class IBUtils
 		
 		return uuidMap;
 	}
-	
+
+	//TODO move to comon library
+	@Deprecated
 	public static UUID getUUIDOf(String name) throws InterruptedException, IOException, ParseException
 	{
 		return getUUIDs(Arrays.asList(name)).get(name.toLowerCase());
 	}
-	
+
+	//TODO move to comon library
 	public static Map<UUID, String> getNames(List<UUID> uuids) throws IOException, MalformedURLException, ParseException
 	{
 		String PROFILE_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";

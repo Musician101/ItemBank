@@ -26,8 +26,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -67,28 +67,17 @@
 			<artifactId>common</artifactId>
 			<version>3.0</version>
 		</dependency>
-		<!--dependency>
+		<dependency>
 			<groupId>org.spongepowered</groupId>
 			<artifactId>spongeapi</artifactId>
-			<version>2.0</version>
-		</dependency>
-		<Temporary repo until Sponge fixes theres -->
-		<dependency>
-			<groupId>com.github.SpongePowered</groupId>
-			<artifactId>SpongeAPI</artifactId>
-			<version>42178f2</version>
+			<version>2.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	
 	<repositories>
-		<!--repository>
+		<repository>
 			<id>spongeapi-repo</id>
 			<url>http://repo.spongepowered.org/maven/</url>
-		</repository>
-		Temporary repo until Sponge fixes theres -->
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
 </project>

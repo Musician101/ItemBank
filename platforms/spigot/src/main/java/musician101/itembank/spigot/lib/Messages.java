@@ -17,7 +17,7 @@ public class Messages
 	public static void init(SpigotItemBank plugin, String lang, File file) throws IOException, InvalidConfigurationException
 	{
 		FileConfiguration langConfig = IBUtils.getYamlConfig(file, true);
-		ConfigurationSection langCS = null;
+		ConfigurationSection langCS;
 		Logger log = plugin.getLogger();
 		if (!langConfig.isSet(lang))
 		{

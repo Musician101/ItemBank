@@ -1,4 +1,4 @@
-package musician101.itembank.common.config;
+package musician101.itembank.common;
 
 import java.io.File;
 import java.util.UUID;
@@ -8,6 +8,7 @@ public abstract class AbstractConfig
 	boolean checkForUpdate = true;
 	boolean isMultiWorldStorageEnabled = false;
 	boolean isWhitelist = false;
+	boolean useMYSQL = false;
 	int pageLimit = 0;
 	String format = "json";
 	
@@ -42,7 +43,17 @@ public abstract class AbstractConfig
 	{
 		this.isWhitelist = isWhitelist;
 	}
-	
+
+    public boolean useMYSQL()
+    {
+        return useMYSQL;
+    }
+
+    public void setUseMySQL(boolean useMYSQL)
+    {
+        this.useMYSQL = useMYSQL;
+    }
+
 	public int getPageLimit()
 	{
 		return pageLimit;

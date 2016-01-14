@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import musician101.itembank.common.config.AbstractConfig;
-import musician101.itembank.common.database.MySQLHandler;
+import musician101.itembank.common.AbstractConfig;
+import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.lib.Messages;
 

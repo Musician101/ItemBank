@@ -4,8 +4,11 @@ import java.util.Arrays;
 import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
-import musician101.itembank.spigot.lib.Messages;
+import musician101.itembank.common.Reference.Commands;
+import musician101.itembank.common.Reference.Messages;
+import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.spigot.util.IBUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,23 +16,20 @@ public class UUIDCommand extends AbstractSpigotCommand
 {
 	public UUIDCommand()
 	{
-		super("uuid", "Get a player's UUID.", Arrays.asList(new SpigotCommandArgument("/itembank"), new SpigotCommandArgument("uuid"), new SpigotCommandArgument("player", Syntax.REQUIRED)), 1, "itembank.uuid", true, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+		super(Commands.UUID_NAME, Commands.UUID_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.UUID_NAME), new SpigotCommandArgument(Commands.PLAYER, Syntax.REQUIRED)), 0, Permissions.UUID, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args)
-	{		
+	{
+        if (!canSenderUseCommand(sender))
+            return false;
+
 		if (args.length > 0)
 		{
-			if (!sender.hasPermission(getPermission()))
-			{
-				sender.sendMessage(Messages.NO_PERMISSION);
-				return false;
-			}
-			
 			try
 			{
-				sender.sendMessage(Messages.PREFIX + args[0] + "'s UUID: " + IBUtils.getUUIDOf(args[0]));
+				sender.sendMessage(Messages.uuid(args[0], IBUtils.getUUIDOf(args[0])));
 				return true;
 			}
 			catch (Exception e)
@@ -38,11 +38,15 @@ public class UUIDCommand extends AbstractSpigotCommand
 				return false;
 			}
 		}
-		
-		if (!canSenderUseCommand(sender))
-			return false;
-		
-		sender.sendMessage(Messages.PREFIX + sender.getName() + "'s UUID: " + ((Player) sender).getUniqueId().toString());
+
+        if (!(sender instanceof Player))
+        {
+            sender.sendMessage(ChatColor.RED + Messages.PLAYER_CMD);
+            return false;
+        }
+
+		Player player = (Player) sender;
+		sender.sendMessage(Messages.uuid(player.getName(), player.getUniqueId()));
 		return true;
 	}
 }

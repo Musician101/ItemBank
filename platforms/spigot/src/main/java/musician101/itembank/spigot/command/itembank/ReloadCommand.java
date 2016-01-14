@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
+import musician101.itembank.common.Reference.Commands;
+import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.lib.Messages;
 
@@ -15,7 +17,7 @@ public class ReloadCommand extends AbstractSpigotCommand
 
 	public ReloadCommand(SpigotItemBank plugin)
 	{
-		super("reload", "Reload the plugin's config file.", Arrays.asList(new SpigotCommandArgument("/itembank"), new SpigotCommandArgument("reload")), 0, "itembank.reload", false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+		super(Commands.RELOAD_NAME, Commands.RELOAD_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.RELOAD_NAME)), 0, Permissions.RELOAD, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
         this.plugin = plugin;
 	}
 	

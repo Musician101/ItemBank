@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 
-import musician101.itembank.common.database.MySQLHandler;
+import musician101.itembank.common.MySQLHandler;
 import musician101.sponge.itembank.ItemBank;
 import musician101.sponge.itembank.lib.Reference.Messages;
 import ninja.leaping.configurate.ConfigurationNode;

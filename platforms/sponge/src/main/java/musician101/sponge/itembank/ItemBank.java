@@ -1,6 +1,6 @@
 package musician101.sponge.itembank;
 
-import musician101.itembank.common.database.MySQLHandler;
+import musician101.itembank.common.MySQLHandler;
 import musician101.sponge.itembank.command.account.AccountExecutor;
 import musician101.sponge.itembank.command.itembank.IBExecutor;
 import musician101.sponge.itembank.command.itembank.PurgeExecutor;
@@ -12,32 +12,32 @@ import musician101.sponge.itembank.listeners.InventoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.state.PreInitializationEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.args.GenericArguments;
-import org.spongepowered.api.util.command.args.parsing.InputTokenizers;
-import org.spongepowered.api.util.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.args.parsing.InputTokenizers;
+import org.spongepowered.api.command.spec.CommandSpec;
 
 @Plugin(id = "itembank", name = "ItemBank", version = "3.0")
 public class ItemBank
 {
 	public static Config config;
-	public static Game game;
 	public static Logger logger;
 	public static MySQLHandler mysql;
 	
-	@Subscribe
-	public void preInit(PreInitializationEvent event)
+	@Listener
+	public void preInit(GameStartedServerEvent event)
 	{
 		config = new Config();
 		game = event.getGame();
 		logger = LoggerFactory.getLogger(Reference.NAME);
-		
+
+		//TODO rewrite to use Sponge's new Event Listener API
 		game.getEventManager().register(this, new InventoryListener());
 		
-		game.getCommandDispatcher().register(this, CommandSpec.builder()
+		game.getCommandManager().register(this, CommandSpec.builder()
 				.arguments(GenericArguments.optional(GenericArguments.string(Texts.of("page")),
 						GenericArguments.optional(GenericArguments.string(Texts.of("player")),
 						GenericArguments.optional(GenericArguments.string(Texts.of("world"))))))

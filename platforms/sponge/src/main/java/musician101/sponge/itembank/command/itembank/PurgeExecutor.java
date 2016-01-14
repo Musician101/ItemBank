@@ -3,43 +3,44 @@ package musician101.sponge.itembank.command.itembank;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.UUID;
-
+import javax.annotation.Nonnull;
+import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
+import musician101.common.java.minecraft.sponge.TextUtils;
+import musician101.common.java.minecraft.sponge.command.AbstractSpongeCommand;
+import musician101.common.java.minecraft.sponge.command.SpongeCommandArgument;
+import musician101.itembank.common.Reference;
+import musician101.itembank.common.Reference.Commands;
+import musician101.itembank.common.Reference.Messages;
+import musician101.itembank.common.Reference.Permissions;
 import musician101.sponge.itembank.ItemBank;
-import musician101.sponge.itembank.lib.Reference.Messages;
 import musician101.sponge.itembank.util.IBUtils;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
-
-import com.google.common.base.Optional;
-
-public class PurgeExecutor implements CommandExecutor
+public class PurgeExecutor extends AbstractSpongeCommand
 {
+    public PurgeExecutor()
+    {
+        super(Commands.PURGE_NAME, Commands.PURGE_DESC, Arrays.asList(new SpongeCommandArgument("/" + Reference.ID), new SpongeCommandArgument(Commands.PURGE_NAME), new SpongeCommandArgument(Commands.PLAYER, Syntax.OPTIONAL, Syntax.REPLACE)), 0, Permissions.PURGE, false, TextUtils.redText(Messages.NO_PERMISSION), TextUtils.redText(Messages.PLAYER_CMD));
+    }
 
+    @Nonnull
 	@Override
-	public CommandResult execute(CommandSource source, CommandContext args) throws CommandException
+	public CommandResult process(@Nonnull CommandSource source, @Nonnull String arguments)
 	{
-		if (!source.hasPermission("itembank.purge"))
+		String[] args = splitArgs(arguments);
+		if (args.length > 0)
 		{
-			source.sendMessage(Messages.NO_PERMISSION);
-			return CommandResult.empty();
-		}
-		
-		Optional<Object> opt = args.getOne("player");
-		if (opt.isPresent())
-		{
-			UUID uuid = null;
+			UUID uuid;
 			try
 			{
-				uuid = IBUtils.getUUIDOf(opt.get().toString());
+				uuid = IBUtils.getUUIDOf(args[0]);
 			}
 			catch (Exception e)
 			{
-				source.sendMessage(Messages.UNKNOWN_EX);
+				source.sendMessage(TextUtils.redText(Messages.UNKNOWN_EX));
 				return CommandResult.empty();
 			}
 			
@@ -51,23 +52,28 @@ public class PurgeExecutor implements CommandExecutor
 				}
 				catch (ClassNotFoundException | SQLException e)
 				{
-					source.sendMessage(Messages.SQL_EX);
+					source.sendMessage(TextUtils.redText(Messages.SQL_EX));
 					return CommandResult.empty();
 				}
 				
-				source.sendMessage(Messages.PURGE_SINGLE);
+				source.sendMessage(TextUtils.redText(Messages.PURGE_SINGLE));
 				return CommandResult.success();
 			}
 			
 			File file = ItemBank.config.getPlayerFile(uuid);
 			if (!file.exists())
 			{
-				source.sendMessage(Messages.PURGE_NO_FILE);
+				source.sendMessage(TextUtils.redText(Messages.PURGE_NO_FILE));
 				return CommandResult.empty();
 			}
-			
-			file.delete();
-			source.sendMessage(Messages.PURGE_SINGLE);
+
+			if (!file.delete())
+            {
+                source.sendMessage(TextUtils.redText(Messages.purgeFileFail(file)));
+                return CommandResult.empty();
+            }
+
+			source.sendMessage(TextUtils.redText(Messages.PURGE_SINGLE));
 			return CommandResult.success();
 		}
 		
@@ -82,18 +88,20 @@ public class PurgeExecutor implements CommandExecutor
 			}
 			catch (SQLException | ClassNotFoundException e)
 			{
-				source.sendMessage(Messages.SQL_EX);
+				source.sendMessage(TextUtils.redText(Messages.SQL_EX));
 				return CommandResult.empty();
 			}
-			
-			source.sendMessage(Messages.PURGE_MULTIPLE);
-			return CommandResult.success();
 		}
+		else
+        {
+            File[] files = ItemBank.config.getPlayerData().listFiles();
+            if (files != null)
+                for (File file : files)
+                    if (!file.delete())
+                        source.sendMessage(TextUtils.redText(Messages.purgeFileFail(file)));
+        }
 		
-		for (File file : ItemBank.config.getPlayerData().listFiles())
-			file.delete();
-		
-		source.sendMessage(Messages.PURGE_MULTIPLE);
+		source.sendMessage(TextUtils.redText(Messages.PURGE_MULTIPLE));
 		return CommandResult.empty();
 	}
 }

@@ -341,12 +341,16 @@ public class IBUtils
 		
 		return config;
 	}
-	
+
+    //TODO need to be moved to common library
+    @Deprecated
 	public static UUID getUUIDOf(String name) throws InterruptedException, IOException, ParseException
 	{
 		return getUUIDs(Arrays.asList(name)).get(name.toLowerCase());
 	}
-	
+
+    //TODO need to be moved to common library
+    @Deprecated
 	public static Map<String, UUID> getUUIDs(List<String> names) throws InterruptedException, IOException, ParseException
 	{
 		Map<String, UUID> uuidMap = new HashMap<String, UUID>();

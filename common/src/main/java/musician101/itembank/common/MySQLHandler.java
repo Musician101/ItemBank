@@ -1,4 +1,4 @@
-package musician101.itembank.common.database;
+package musician101.itembank.common;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
