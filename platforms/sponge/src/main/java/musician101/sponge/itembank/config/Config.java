@@ -16,6 +16,7 @@ import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Configs;
 import musician101.itembank.common.Reference.Messages;
 import musician101.sponge.itembank.ItemBank;
+import musician101.sponge.itembank.util.IBUtils;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -196,5 +197,16 @@ public class Config extends AbstractConfig
                 itemList.add(builder.build());
             }
         }
+    }
+
+	public ItemStack getItem(ItemStack itemStack1)
+    {
+        for (ItemStack itemStack2 : itemList)
+        {
+            if (itemStack1.getItem() == itemStack2.getItem() && IBUtils.isSameVariant(itemStack1, itemStack2))
+                return itemStack2;
+        }
+
+        return null;
     }
 }

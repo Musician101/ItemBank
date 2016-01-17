@@ -1,7 +1,5 @@
 package musician101.sponge.itembank.command.itembank;
 
-import java.util.Arrays;
-import javax.annotation.Nonnull;
 import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.sponge.TextUtils;
 import musician101.common.java.minecraft.sponge.command.AbstractSpongeCommand;
@@ -9,10 +7,13 @@ import musician101.common.java.minecraft.sponge.command.SpongeCommandArgument;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.sponge.itembank.util.IBUtils;
+import musician101.itembank.common.UUIDUtils;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+
+import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 public class UUIDCommand extends AbstractSpongeCommand
 {
@@ -33,7 +34,7 @@ public class UUIDCommand extends AbstractSpongeCommand
         {
             try
             {
-                source.sendMessage(TextUtils.greenText(Messages.uuid(args[0], IBUtils.getUUIDOf(args[0]))));
+                source.sendMessage(TextUtils.greenText(Messages.uuid(args[0], UUIDUtils.getUUIDOf(args[0]))));
                 return CommandResult.success();
             }
             catch (Exception e)

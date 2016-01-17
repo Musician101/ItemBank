@@ -14,11 +14,13 @@ import musician101.common.java.minecraft.sponge.command.SpongeCommandArgument;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
+import musician101.itembank.common.UUIDUtils;
 import musician101.sponge.itembank.ItemBank;
 import musician101.sponge.itembank.util.AccountUtil;
 import musician101.sponge.itembank.util.IBUtils;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.json.simple.parser.ParseException;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -92,7 +94,7 @@ public class AccountExecutor extends AbstractSpongeCommand
                 String playerString = arg.split(":")[1];
                 try
                 {
-                    uuid = IBUtils.getUUIDOf(playerString);
+                    uuid = UUIDUtils.getUUIDOf(playerString);
                 }
                 catch (Exception e)
                 {
@@ -110,7 +112,7 @@ public class AccountExecutor extends AbstractSpongeCommand
             if (arg.startsWith("world:"))
             {
                 String worldString = arg.split(":")[1];
-                Optional<World> wo = ItemBank.game.getServer().getWorld(worldString);
+                Optional<World> wo = Sponge.getServer().getWorld(worldString);
                 if (!wo.isPresent())
                 {
                     player.sendMessage(TextUtils.redText(Messages.ACCOUNT_WORLD_DNE));

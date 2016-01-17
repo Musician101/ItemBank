@@ -1,172 +1,222 @@
 package musician101.sponge.itembank.listeners;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-
+import com.flowpowered.math.vector.Vector3i;
+import musician101.common.java.minecraft.sponge.TextUtils;
+import musician101.itembank.common.Reference;
+import musician101.itembank.common.Reference.Messages;
+import musician101.itembank.common.Reference.Permissions;
 import musician101.sponge.itembank.ItemBank;
-import musician101.sponge.itembank.lib.Reference.Messages;
+import musician101.sponge.itembank.config.Config;
+import musician101.sponge.itembank.util.AccountUtil;
 import musician101.sponge.itembank.util.IBUtils;
-
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.json.simple.parser.ParseException;
-import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.inventory.InventoryClickEvent;
-import org.spongepowered.api.event.inventory.InventoryCloseEvent;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.Item;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.Slot;
+import org.spongepowered.api.item.inventory.property.SlotIndex;
+import org.spongepowered.api.item.inventory.type.OrderedInventory;
+import org.spongepowered.api.world.World;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Optional;
+import java.util.UUID;
+
+//TODO change to be similar to Spigot AccountPage
+@Deprecated
 public class InventoryListener
 {
+    int page;
+    UUID viewer;
+    String worldName;
+    UUID owner;
+
+    public InventoryListener(UUID viewer, UUID owner, World world, int page)
+    {
+        this.viewer = viewer;
+        this.owner = owner;
+        this.worldName = world.getName();
+        this.page = page;
+    }
+
 	// player.getUniqueId() and UUID are not always the same.
-	public void saveAccount(Player player, String worldName, String uuid, Inventory topInv, Inventory playerInv, int page)
+	private void saveAccount(Player player, String worldName, UUID uuid, OrderedInventory topInv, OrderedInventory playerInv, int page)
 	{
-		//TODO need a method to transfer inventory contents from one inventory to another
-		Inventory account = null;
+		OrderedInventory account;
 		try
 		{
-			account = IBUtils.getAccount(worldName, uuid, page);
-		}
-		catch (FileNotFoundException e)
-		{
-			player.sendMessage(Messages.NO_FILE_EX);
-			player.getInventory().setContents(playerInv.getContents());
-			return;
+			account = AccountUtil.getAccount(Sponge.getServer().getWorld(worldName).get(), uuid, page);
 		}
 		catch (IOException e)
 		{
-			player.sendMessage(Messages.IO_EX);
-			player.getInventory().setContents(playerInv.getContents());
+			player.sendMessage(TextUtils.redText(Messages.IO_EX));
+            transferInv((OrderedInventory) player.getInventory(), playerInv);
 			return;
 		}
-		catch (ParseException e)
+		catch (ClassNotFoundException | ObjectMappingException | ParseException | SQLException e)
 		{
-			player.sendMessage(Messages.YAML_PARSE_EX);
-			player.getInventory().setContents(playerInv.getContents());
+			player.sendMessage(TextUtils.redText(Messages.PARSE_EX));
+            transferInv((OrderedInventory) player.getInventory(), playerInv);
 			return;
 		}
-		
-		account.setContents(topInv.getContents());
+
+		transferInv(account, topInv);
 		try
 		{
-			IBUtils.saveAccount(worldName, uuid, account, page);
-		}
-		catch (FileNotFoundException e)
-		{
-			player.sendMessage(Messages.NO_FILE_EX);
-			player.getInventory().setContents(playerInv.getContents());
-			return;
+			AccountUtil.saveAccount(worldName, uuid, account, page);
 		}
 		catch (IOException e)
 		{
-			player.sendMessage(Messages.IO_EX);
-			player.getInventory().setContents(playerInv.getContents());
+			player.sendMessage(TextUtils.redText(Messages.IO_EX));
+            transferInv((OrderedInventory) player.getInventory(), playerInv);
 			return;
 		}
-		catch (ParseException e)
+		catch (ClassNotFoundException | ObjectMappingException | ParseException | SQLException e)
 		{
-			player.sendMessage(Messages.YAML_PARSE_EX);
-			player.getInventory().setContents(playerInv.getContents());
-			return;
-		}
-		catch (SQLException e)
-		{
-			player.sendMessage(Messages.SQL_EX);
-			player.getInventory().setContents(playerInv.getContents());
+			player.sendMessage(TextUtils.redText(Messages.PARSE_EX));
+            transferInv((OrderedInventory) player.getInventory(), playerInv);
 			return;
 		}
 		
-		player.sendMessage(Messages.ACCOUNT_UPDATED);
+		player.sendMessage(TextUtils.greenText(Messages.ACCOUNT_UPDATED));
 	}
+
+    private void transferInv(OrderedInventory transferTo, OrderedInventory transferFrom)
+    {
+        for (int x = 0; x < transferFrom.size(); x++)
+        {
+            Optional<ItemStack> itemStack = transferFrom.getSlot(new SlotIndex(x)).get().peek();
+            if (itemStack.isPresent())
+                transferTo.set(new SlotIndex(x), itemStack.get());
+        }
+    }
 	
-	@Subscribe
-	public void onItemClick(InventoryClickEvent event)
+	@Listener
+	public void onInventoryClose(InteractInventoryEvent.Close event)
 	{
 		//TODO missing methods
-		if (event.getRawSlot() == event.getSlot()) return;
-		Inventory account = event.getView().getTopInventory();
-		Inventory clickedInv = event.getInventory();
-		Player player = (Player) event.getWhoClicked();
-		ItemStack item = event.getCurrentItem();
-		String name = player.getName() + " - " + Messages.ACCOUNT_PAGE;
-		if (player.hasPermission(Constants.EXEMPT_PERM))
-			return;
-		
-		if (!account.getName().contains(name) && !clickedInv.getName().contains(name))
-			return;
-		
-		int page = Integer.valueOf(account.getName().substring(account.getName().indexOf("-")).replaceAll("\\D+", ""));
-		if (ItemBank.getConfig().pageLimit > 0 && ItemBank.getConfig().pageLimit < page)
-		{
-			event.setCancelled(true);
-			player.sendMessage(Messages.ACCOUNT_ILLEGAL_PAGE);
-			player.closeInventory();
-			return;
-		}
-		
-		if (item == null)
-			return;
-		
-		String itemlistPath = item.getItem().toString().toLowerCase() + "." + item.getDamage();
-		int amountInAccount = IBUtils.getAmount(account, item.getItem(), item.getDamage());
-		int newAmount = amountInAccount + item.getQuantity();
-		if (ItemBank.getConfig().itemlist.containsKey(itemlistPath) && !ItemBank.getConfig().isWhitelist)
-		{
-			int maxAmount = ItemBank.getConfig().itemlist.get(itemlistPath);
-			if (maxAmount == 0)
-			{
-				event.setCancelled(true);
-				player.sendMessage(Messages.ACCOUNT_ILLEGAL_ITEM);
-				player.closeInventory();
-			}
-			else if (maxAmount == amountInAccount)
-			{
-				event.setCancelled(true);
-				player.sendMessage(Messages.ACCOUNT_ILLEGAL_AMOUNT);
-				player.closeInventory();
-			}
-			else if (maxAmount < newAmount)
-			{
-				event.setCancelled(true);
-				player.sendMessage(new String[]{Messages.ACCOUNT_ILLEGAL_STACK_EXPLAIN,
-						Messages.PREFIX + Messages.ACCOUNT_ILLEGAL_STACK_MAXIMUM + ": " + maxAmount + ", " + Messages.ACCOUNT_ILLEGAL_AMOUNT + ": " + amountInAccount});
-				player.closeInventory();
-			}
-		}
-		else if (!ItemBank.getConfig().itemlist.containsKey(itemlistPath) && ItemBank.getConfig().isWhitelist)
-		{
-			event.setCancelled(true);
-			player.sendMessage(Messages.ACCOUNT_ILLEGAL_ITEM);
-			player.closeInventory();
-		}
+        Optional<Player> playerOptional = event.getCause().first(Player.class);
+        if (!playerOptional.isPresent())
+            return;
+
+		Player player = playerOptional.get();
+        if (player.getUniqueId() != viewer)
+            return;
+
+        Config config = ItemBank.config;
+        OrderedInventory inv = (OrderedInventory) event.getTargetInventory();
+        int pageLimit = config.getPageLimit();
+        if (((pageLimit > 0 && pageLimit < page) || page == 0) && !player.hasPermission(Permissions.ADMIN))
+        {
+            for (Inventory slot : inv)
+            {
+                Optional<ItemStack> itemStackOptional = slot.peek();
+                if (itemStackOptional.isPresent())
+                    dropItemOnPlayer(player, itemStackOptional.get());
+            }
+
+            player.sendMessage(TextUtils.redText(Messages.ACCOUNT_ILLEGAL_PAGE));
+            return;
+        }
+
+        boolean hasIllegalItems = false;
+        boolean hasIllegalAmount = false;
+        for (int x = 0; x < inv.size(); x++)
+        {
+            Optional<Slot> slotOptional = inv.getSlot(new SlotIndex(x));
+            if (slotOptional.isPresent())
+            {
+                Optional<ItemStack> itemStackOptional = slotOptional.get().peek();
+                if (itemStackOptional.isPresent())
+                {
+                    ItemStack itemStack = itemStackOptional.get();
+                    int itemAmount = IBUtils.getAmount(inv, itemStack);
+                    if (config.getItem(itemStack) != null && !config.isWhitelist())
+                    {
+                        int maxAmount = config.getItem(itemStack).getQuantity();
+                        if (maxAmount == 0)
+                        {
+                            dropItemOnPlayer(player, itemStack);
+                            hasIllegalItems = true;
+                        }
+                        else if (maxAmount < itemAmount)
+                        {
+                            int amount = itemAmount;
+                            while (maxAmount < amount)
+                            {
+                                int maxStackSize = itemStack.getMaxStackQuantity();
+                                if (maxStackSize < amount)
+                                {
+                                    dropItemOnPlayer(player, itemStack);
+                                    inv.getSlot(new SlotIndex(x)).get().clear();
+                                    amount -= maxStackSize;
+                                }
+                                else
+                                {
+                                    ItemStack removeItem = itemStack.copy();
+                                    removeItem.setQuantity(amount - maxAmount);
+                                    if (!inv.getSlot(new SlotIndex(x)).isPresent())
+                                    {
+                                        int slot = 0;
+                                        for (int y = 0; y < inv.size(); y++)
+                                        {
+                                            Optional<ItemStack> itemOptional = inv.getSlot(new SlotIndex(y)).get().peek();
+                                            if (itemOptional.isPresent())
+                                                if (IBUtils.isSameVariant(itemOptional.get(), itemStack))
+                                                    slot = y;
+                                        }
+
+                                        ItemStack is = inv.getSlot(new SlotIndex(slot)).get().peek().get();
+                                        is.setQuantity(itemStack.getQuantity() - removeItem.getQuantity());
+                                        inv.set(new SlotIndex(x), is);
+                                    }
+                                    else
+                                        inv.getSlot(new SlotIndex(x)).get().peek().get().setQuantity(itemStack.getQuantity() - removeItem.getQuantity());
+
+                                    dropItemOnPlayer(player, removeItem);
+                                    amount -= removeItem.getQuantity();
+                                }
+                            }
+
+                            hasIllegalAmount = true;
+                        }
+                    }
+                    else if (config.getItem(itemStack) == null && config.isWhitelist())
+                    {
+                        dropItemOnPlayer(player, itemStack);
+                        inv.getSlot(new SlotIndex(x)).get().clear();
+                        hasIllegalItems = true;
+                    }
+
+                    if (hasIllegalItems)
+                        player.sendMessage(TextUtils.redText(Messages.ACCOUNT_ILLEGAL_ITEM));
+
+                    if (hasIllegalAmount)
+                        player.sendMessage(TextUtils.redText(Messages.ACCOUNT_ILLEGAL_AMOUNT));
+
+                    saveAccount(player, worldName, owner, inv, (OrderedInventory) player.getInventory(), page);
+                }
+            }
+        }
 	}
-	
-	@Subscribe
-	public void onInventoryClose(InventoryCloseEvent event)
-	{
-		//TODO missing methods
-		Inventory inv = event.getView().getTopInventory();
-		Player player = (Player) event.getPlayer();
-		int page = 1;
-		if (!inv.getName().contains(player.getName() + " - " + Messages.ACCOUNT_PAGE))
-		{
-			if (!player.hasPermission(Constants.EXEMPT_PERM))
-				return;
-			
-			//To prevent spamming of the console should an player with Exempt permission node open ANY inventory.
-			try
-			{	
-				page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-				saveAccount(player, IBUtils.getWorlds().get(0).getName(), player.getUniqueId().toString(), inv, player.getInventory(), page);
-				return;
-			}
-			catch (NumberFormatException | StringIndexOutOfBoundsException e)
-			{
-				return;
-			}
-		}
-		
-		page = Integer.valueOf(inv.getName().substring(inv.getName().indexOf("-")).replaceAll("\\D+", ""));
-		saveAccount(player, IBUtils.getWorldName(player), player.getUniqueId().toString(), inv, player.getInventory(), page);
-	}
+
+    private void dropItemOnPlayer(Player player, ItemStack itemStack)
+    {
+        World world = player.getWorld();
+        Vector3i vector3i = player.getLocation().getBlockPosition();
+        Item item = (Item) world.createEntity(EntityTypes.ITEM, vector3i).get();
+        item.getItemData().set(Keys.REPRESENTED_ITEM, itemStack.createSnapshot());
+        world.spawnEntity(item, Cause.of(Sponge.getPluginManager().getPlugin(Reference.ID), SpawnCause.builder().type(SpawnTypes.CUSTOM)));
+    }
 }

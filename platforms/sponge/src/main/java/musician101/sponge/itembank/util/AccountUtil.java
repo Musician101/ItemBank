@@ -1,16 +1,11 @@
 package musician101.sponge.itembank.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.UUID;
-
+import com.google.common.collect.Maps;
+import com.google.common.reflect.TypeToken;
 import musician101.itembank.common.MySQLHandler;
+import musician101.itembank.common.Reference.Messages;
+import musician101.itembank.common.Reference.MySQL;
 import musician101.sponge.itembank.ItemBank;
-import musician101.sponge.itembank.lib.Reference.Messages;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -18,33 +13,59 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
-
 import org.json.simple.parser.ParseException;
-import org.spongepowered.api.data.ConfigurateTranslator;
 import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.item.inventory.Inventories;
-import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.data.translator.ConfigurateTranslator;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.custom.CustomInventoryBuilder;
+import org.spongepowered.api.item.inventory.custom.CustomInventory;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.translation.Translatable;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.translation.Translation;
+import org.spongepowered.api.text.translation.locale.Locales;
 import org.spongepowered.api.world.World;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
+import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class AccountUtil
 {
-	public static Inventory getAccount(World world, UUID uuid, int page) throws ClassNotFoundException, FileNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
+	public static OrderedInventory getAccount(World world, UUID uuid, int page) throws ClassNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
 	{
-		CustomInventoryBuilder invBuilder = Inventories.customInventoryBuilder();
-		invBuilder.size(54);
-		invBuilder.name((Translatable) Texts.builder(IBUtils.getNameOf(uuid) + " - " + Messages.ACCOUNT_PAGE + page).build());
-		
-		OrderedInventory inv = invBuilder.build();
+		CustomInventory.Builder builder = CustomInventory.builder();
+		builder.size(54);
+		builder.name(Text.builder(Text.of(Messages.page(uuid, page)), new Translation()
+        {
+            @Nonnull
+            @Override
+            public String getId()
+            {
+                return Locales.EN_US.toLanguageTag();
+            }
+
+            @Nonnull
+            @Override
+            public String get(@Nonnull Locale locale)
+            {
+                return locale.toLanguageTag();
+            }
+
+            @Nonnull
+            @Override
+            public String get(@Nonnull Locale locale, @Nonnull Object... args)
+            {
+                return locale.toLanguageTag();
+            }
+        }).build().getTranslation());
+		OrderedInventory inv = builder.build();
 		if (ItemBank.mysql != null)
 		{
 			ItemBank.mysql.querySQL("CREATE TABLE IF NOT EXISTS ib_" + uuid.toString().replace("-", "_") + "(World TEXT, Page int, Slot int, Item TEXT);");
@@ -73,33 +94,28 @@ public class AccountUtil
 	
 	private static ItemStack getItem(ConfigurationNode item)
 	{
-		ItemStack is = ItemBank.game.getRegistry().getItemBuilder().build();
+		ItemStack is = ItemStack.of(ItemTypes.ITEM_FRAME, 1);
 		is.setRawData((DataContainer) ConfigurateTranslator.instance().translateFrom(item));
 		return is;
 	}
 	
 	private static ItemStack getItem(ResultSet rs) throws ObjectMappingException, SQLException
 	{
-		while (rs.next())
-		{
-			ConfigurationNode node = SimpleConfigurationNode.root();
-			TypeToken<String> type = TypeToken.of(String.class);
-			TypeSerializers.getSerializer(type).serialize(type, rs.getString("Item"), node);
-			return getItem(node);
-		}
-		
-		return null;
+        ConfigurationNode node = SimpleConfigurationNode.root();
+        TypeToken<String> type = TypeToken.of(String.class);
+        TypeSerializers.getDefaultSerializers().get(type).serialize(type, rs.getString("Item"), node);
+        return getItem(node);
 	}
 	
-	public static void saveAccount(String worldName, UUID uuid, OrderedInventory inventory, int page) throws ClassNotFoundException, FileNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
+	public static void saveAccount(String worldName, UUID uuid, OrderedInventory inventory, int page) throws ClassNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
 	{
 		if (ItemBank.mysql != null)
 		{
 			MySQLHandler sql = ItemBank.mysql;
-			sql.querySQL("CREATE TABLE IF NOT EXISTS ib_" + uuid.toString().replace("-", "_") + "(World TEXT, Page int, Slot int, Item TEXT);");
+			sql.querySQL(MySQL.getTable(uuid));
 			for (int slot = 0; slot < inventory.size(); slot++)
 			{
-				sql.querySQL("DELETE FROM ib_" + uuid + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";");
+				sql.querySQL(MySQL.deleteItem(uuid, worldName, page, slot));
 				Optional<ItemStack> opt = inventory.getSlot(new SlotIndex(slot)).get().peek();
 				if (opt.isPresent())
 					sql.updateSQL("INSERT INTO ib_" + uuid + "(World, Page, Slot, Item) VALUES (\"" + worldName + "\", " + page + ", " + slot + ", \"" + itemToString(opt.get()) + ");");
@@ -136,7 +152,7 @@ public class AccountUtil
 	// Alternative would be just create a file, write the string to it, load the info from there and then delete the file when done
 	private static String itemToString(ItemStack item) throws ObjectMappingException
 	{
-		Class<String> string = String.class;
-		return TypeSerializers.getSerializer(TypeToken.of(string)).deserialize(TypeToken.of(string), itemToConfigurationNode(item)).toString();
+		TypeToken<String> string = TypeToken.of(String.class);
+		return TypeSerializers.getDefaultSerializers().get(string).deserialize(string, itemToConfigurationNode(item));
 	}
 }

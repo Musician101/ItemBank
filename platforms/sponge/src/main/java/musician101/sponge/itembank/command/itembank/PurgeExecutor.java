@@ -1,11 +1,5 @@
 package musician101.sponge.itembank.command.itembank;
 
-import java.io.File;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.UUID;
-import javax.annotation.Nonnull;
 import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.sponge.TextUtils;
 import musician101.common.java.minecraft.sponge.command.AbstractSpongeCommand;
@@ -14,10 +8,17 @@ import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
+import musician101.itembank.common.UUIDUtils;
 import musician101.sponge.itembank.ItemBank;
-import musician101.sponge.itembank.util.IBUtils;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+
+import javax.annotation.Nonnull;
+import java.io.File;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.UUID;
 
 public class PurgeExecutor extends AbstractSpongeCommand
 {
@@ -36,7 +37,7 @@ public class PurgeExecutor extends AbstractSpongeCommand
 			UUID uuid;
 			try
 			{
-				uuid = IBUtils.getUUIDOf(args[0]);
+				uuid = UUIDUtils.getUUIDOf(args[0]);
 			}
 			catch (Exception e)
 			{
