@@ -38,7 +38,7 @@ public class Messages
 		NEW_PLAYER_FILE = langConfig.getString(lang + ".newplayerfile", NEW_PLAYER_FILE_DEFAULT);
 	}
 	
-	private static void initCommandTranslations(Logger log, ConfigurationSection langCS) throws InvalidConfigurationException
+	private static void initCommandTranslations(Logger log, ConfigurationSection langCS)
 	{
 		ConfigurationSection commandCS = getConfigurationSection(log, langCS, "command");
 		initAccountCommandTranslations(log, commandCS);
@@ -47,7 +47,7 @@ public class Messages
 		initUUIDCommandTranslations(log, commandCS);
 	}
 	
-	private static void initAccountCommandTranslations(Logger log, ConfigurationSection commandCS) throws InvalidConfigurationException
+	private static void initAccountCommandTranslations(Logger log, ConfigurationSection commandCS)
 	{
 		ConfigurationSection accountCS = getConfigurationSection(log, commandCS, "account");
 		ACCOUNT_DESC = accountCS.getString("description", ACCOUNT_DESC_DEFAULT);
@@ -66,7 +66,7 @@ public class Messages
 		ACCOUNT_ILLEGAL_PAGE = PREFIX + inventoryCS.getString("page", ACCOUNT_ILLEGAL_PAGE_DEFAULT);
 	}
 	
-	private static void initPurgeCommandTranslations(Logger log, ConfigurationSection commandCS) throws InvalidConfigurationException
+	private static void initPurgeCommandTranslations(Logger log, ConfigurationSection commandCS)
 	{
 		ConfigurationSection purgeCS = getConfigurationSection(log, commandCS, "purge");
 		PURGE_DESC = purgeCS.getString("description", PURGE_DESC_DEFAULT);
@@ -77,20 +77,20 @@ public class Messages
 		PURGE_MULTIPLE = PREFIX + successCS.getString("multiple", PURGE_MULTIPLE_DEFAULT);
 	}
 
-	private static void initReloadCommandTranslations(Logger log, ConfigurationSection commandCS) throws InvalidConfigurationException
+	private static void initReloadCommandTranslations(Logger log, ConfigurationSection commandCS)
 	{
 		ConfigurationSection reloadCS = getConfigurationSection(log, commandCS, "reload");
 		RELOAD_DESC = reloadCS.getString("description", RELOAD_DESC_DEFAULT);
 		RELOAD_SUCCESS = PREFIX + reloadCS.getString("success", RELOAD_SUCCESS_DEFAULT);
 	}
 
-	private static void initUUIDCommandTranslations(Logger log, ConfigurationSection commandCS) throws InvalidConfigurationException
+	private static void initUUIDCommandTranslations(Logger log, ConfigurationSection commandCS)
 	{
 		ConfigurationSection uuidCS = getConfigurationSection(log, commandCS, "uuid");
 		UUID_DESC = uuidCS.getString("description", UUID_DESC_DEFAULT);
 	}
 	
-	private static void initErrorTranslations(Logger log, ConfigurationSection langCS) throws InvalidConfigurationException
+	private static void initErrorTranslations(Logger log, ConfigurationSection langCS)
 	{
 		ConfigurationSection errorCS = getConfigurationSection(log, langCS, "error");
 		IO_EX = PREFIX + errorCS.getString("ioex", IO_EX_DEFAULT);
@@ -103,7 +103,7 @@ public class Messages
 		YAML_PARSE_EX = PREFIX + errorCS.getString("yamlparseex", YAML_PARSE_EX_DEFAULT);
 	}
 	
-	private static void initUpdaterTranslations(Logger log, ConfigurationSection langCS) throws InvalidConfigurationException
+	private static void initUpdaterTranslations(Logger log, ConfigurationSection langCS)
 	{
 		ConfigurationSection updaterCS = getConfigurationSection(log, langCS, "updater");
 		UPDATER_CURRENT = updaterCS.getString("current", UPDATER_CURRENT_DEFAULT);
@@ -111,7 +111,7 @@ public class Messages
 		UPDATER_NEW = updaterCS.getString("new", UPDATER_NEW_DEFAULT);
 	}
 	
-	private static void initVaultTranslations(Logger log, ConfigurationSection langCS) throws InvalidConfigurationException
+	private static void initVaultTranslations(Logger log, ConfigurationSection langCS)
 	{
 		ConfigurationSection vaultCS = getConfigurationSection(log, langCS, "vault");
 		VAULT_BOTH_ENABLED = vaultCS.getString("bothenabled", VAULT_BOTH_ENABLED_DEFAULT);

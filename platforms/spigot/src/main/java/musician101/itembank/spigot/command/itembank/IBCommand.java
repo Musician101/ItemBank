@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 
 public class IBCommand extends AbstractSpigotCommand
 {
-	SpigotItemBank plugin;
+	private final SpigotItemBank plugin;
 
 	public IBCommand(SpigotItemBank plugin)
 	{

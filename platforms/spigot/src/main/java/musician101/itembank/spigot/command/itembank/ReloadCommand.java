@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 
 public class ReloadCommand extends AbstractSpigotCommand
 {
-	SpigotItemBank plugin;
+	private final SpigotItemBank plugin;
 
 	public ReloadCommand(SpigotItemBank plugin)
 	{

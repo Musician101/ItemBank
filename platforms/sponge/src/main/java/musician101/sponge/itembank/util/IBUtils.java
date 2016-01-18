@@ -1,10 +1,7 @@
 package musician101.sponge.itembank.util;
 
-import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
-import org.spongepowered.api.data.manipulator.DataManipulator;
-import org.spongepowered.api.data.manipulator.mutable.VariantData;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 

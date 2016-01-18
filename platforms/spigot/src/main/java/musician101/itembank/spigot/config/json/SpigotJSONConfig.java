@@ -21,9 +21,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +50,8 @@ public class SpigotJSONConfig extends JSONConfig
 	public List<SpigotJSONConfig> getSpigotJSONConfigList(String key)
 	{
 		List<SpigotJSONConfig> jsons = Lists.newArrayList();
-		for (Object object : (JSONArray) get(key))
-			jsons.add((SpigotJSONConfig) object);
+        for (Object object : getList(key))
+            jsons.add((SpigotJSONConfig) object);
 		
 		return jsons;
 	}
@@ -167,12 +167,10 @@ public class SpigotJSONConfig extends JSONConfig
 			fw.with(Type.valueOf(fwJson.getString("type")));
 		
 		if (fwJson.containsKey("colors"))
-			for (Color color : getColorList("colors"))
-				fw.withColor(color);
+            getColorList("colors").forEach(fw::withColor);
 		
 		if (fwJson.containsKey("fade-colors"))
-			for (Color color : getColorList("fade-colors"))
-				fw.withFade(color);
+            getColorList("fade-colors").forEach(fw::withFade);
 		
 		return fw.build();
 	}
@@ -205,12 +203,10 @@ public class SpigotJSONConfig extends JSONConfig
 				fw.with(Type.valueOf(fwJson.getString("type")));
 			
 			if (fwJson.containsKey("colors"))
-				for (Color color : getColorList("colors"))
-					fw.withColor(color);
+                getColorList("colors").forEach(fw::withColor);
 			
 			if (fwJson.containsKey("fade-colors"))
-				for (Color color : getColorList("fade-colors"))
-					fw.withFade(color);
+                getColorList("fade-colors").forEach(fw::withFade);
 			
 			effects.add(fw.build());
 		}
@@ -240,7 +236,7 @@ public class SpigotJSONConfig extends JSONConfig
 			return null;
 		
 		SpigotJSONConfig invJson = getSpigotJSONConfig(key);
-		Inventory inv = null;
+		Inventory inv;
 		InventoryType invType = InventoryType.valueOf(invJson.getString("type"));
 		if (invType == InventoryType.CHEST)
 			inv = Bukkit.createInventory(null, invJson.getInteger("slots"), invJson.getString("title"));
@@ -280,7 +276,7 @@ public class SpigotJSONConfig extends JSONConfig
 	public SpigotJSONConfig setItemMeta(String key, ItemMeta meta, Material material)
 	{
 		SpigotJSONConfig metaJson = new SpigotJSONConfig();
-		String type = "";
+		String type;
 		if (material == Material.ENCHANTED_BOOK)
 		{
 			setEnchantmentStorageMeta((EnchantmentStorageMeta) meta, metaJson);
@@ -364,7 +360,7 @@ public class SpigotJSONConfig extends JSONConfig
 		{
 			Map<Enchantment, Integer> enchants = getEnchants("stored-enchants");
 			for (Enchantment enchant : enchants.keySet())
-				meta.addStoredEnchant(enchant, enchants.get(enchant.getName()), false);
+				meta.addStoredEnchant(enchant, enchants.get(enchant), false);
 		}
 		
 		getGeneralItemMeta(meta, metaJson);
@@ -401,8 +397,7 @@ public class SpigotJSONConfig extends JSONConfig
 	{
 		FireworkMeta meta = (FireworkMeta) newItemMeta();
 		if (metaJson.containsKey("effects"))
-			for (FireworkEffect fw : getFireworkEffectList("effects"))
-				meta.addEffect(fw);
+            getFireworkEffectList("effects").forEach(meta::addEffect);
 		
 		getGeneralItemMeta(meta, metaJson);
 		return meta;
@@ -530,12 +525,15 @@ public class SpigotJSONConfig extends JSONConfig
 		{
 			Map<Enchantment, Integer> enchants = getEnchants("enchants");
 			for (Enchantment enchant : enchants.keySet())
-				im.addEnchant(enchant, enchants.get(enchant.getName()), false);
+				im.addEnchant(enchant, enchants.get(enchant), false);
 		}
 		
 		if (metaJson.containsKey("lore"))
 		{
-			List<String> lore = metaJson.getList("lore");
+			List<String> lore = new ArrayList<>();
+			for (Object object : metaJson.getList("lore"))
+                lore.add(object.toString());
+
 			im.setLore(lore);
 		}
 		
@@ -623,6 +621,7 @@ public class SpigotJSONConfig extends JSONConfig
 		potionJson.set("amplifier", effect.getAmplifier());
 		potionJson.set("duration", effect.getDuration());
 		potionJson.set("ambient", effect.isAmbient());
+        setSpigotJSONConfig(key, potionJson);
 		return this;
 	}
 	
@@ -658,7 +657,7 @@ public class SpigotJSONConfig extends JSONConfig
 		return this;
 	}
 	
-	public static SpigotJSONConfig loadSpigotJSONConfig(File file) throws FileNotFoundException, IOException, ParseException
+	public static SpigotJSONConfig loadSpigotJSONConfig(File file) throws IOException, ParseException
 	{
 		return (SpigotJSONConfig) new JSONParser().parse(new FileReader(file));
 	}

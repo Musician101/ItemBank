@@ -37,10 +37,10 @@ import java.util.UUID;
 @Deprecated
 public class InventoryListener
 {
-    int page;
-    UUID viewer;
-    String worldName;
-    UUID owner;
+    private final int page;
+    private final UUID viewer;
+    private final String worldName;
+    private final UUID owner;
 
     public InventoryListener(UUID viewer, UUID owner, World world, int page)
     {
@@ -82,7 +82,7 @@ public class InventoryListener
             transferInv((OrderedInventory) player.getInventory(), playerInv);
 			return;
 		}
-		catch (ClassNotFoundException | ObjectMappingException | ParseException | SQLException e)
+		catch (ClassNotFoundException | ObjectMappingException | SQLException e)
 		{
 			player.sendMessage(TextUtils.redText(Messages.PARSE_EX));
             transferInv((OrderedInventory) player.getInventory(), playerInv);

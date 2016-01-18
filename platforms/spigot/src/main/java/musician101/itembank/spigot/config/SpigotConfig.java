@@ -1,17 +1,9 @@
 package musician101.itembank.spigot.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
-
 import musician101.itembank.common.AbstractConfig;
 import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.lib.Messages;
-
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -19,14 +11,21 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 public class SpigotConfig extends AbstractConfig
 {
-	boolean enableVault;
-	boolean useMYSQL;
-	double transactionCost;
-	SpigotItemBank plugin;
-	File playerData;
-	List<ItemStack> itemList = new ArrayList<ItemStack>();
+	private boolean enableVault;
+	private boolean useMYSQL;
+	private double transactionCost;
+	private final SpigotItemBank plugin;
+	private final File playerData;
+	private final List<ItemStack> itemList = new ArrayList<>();
 	
 	public SpigotConfig(SpigotItemBank plugin)
 	{
@@ -54,13 +53,10 @@ public class SpigotConfig extends AbstractConfig
 		setCheckForUpdate(config.getBoolean("updateCheck", true));
 		
 		if (config.isSet("itemlist"))
-			for (Entry<String, Object> material : config.getConfigurationSection("itemlist").getValues(true).entrySet())
-				if (!(material.getValue() instanceof MemorySection))
-					if (material.getKey().contains("."))
-						itemList.add(new ItemStack(Material.getMaterial(material.getKey().split("\\.")[0].toUpperCase()), (Integer) material.getValue(), Short.valueOf(material.getKey().split("\\.")[1])));
+			itemList.addAll(config.getConfigurationSection("itemlist").getValues(true).entrySet().stream().filter(material -> !(material.getValue() instanceof MemorySection)).filter(material -> material.getKey().contains(".")).map(material -> new ItemStack(Material.getMaterial(material.getKey().split("\\.")[0].toUpperCase()), (Integer) material.getValue(), Short.valueOf(material.getKey().split("\\.")[1]))).collect(Collectors.toList()));
 		
 		String mysql = "mysql";
-		ConfigurationSection mysqlCS = null;
+		ConfigurationSection mysqlCS;
 		if (!config.isSet(mysql))
 		{
 			mysqlCS = config.createSection(mysql);

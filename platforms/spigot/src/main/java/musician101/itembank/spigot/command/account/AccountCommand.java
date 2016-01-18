@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 
 public class AccountCommand extends AbstractSpigotCommand
 {
-	SpigotItemBank plugin;
+	private final SpigotItemBank plugin;
 
 	public AccountCommand(SpigotItemBank plugin)
 	{
@@ -68,7 +68,6 @@ public class AccountCommand extends AbstractSpigotCommand
 						}
 						else if (argSplit[0].equalsIgnoreCase("player") && player.hasPermission("itembank.account.admin"))
 						{
-							uuid = null;
 							try
 							{
 								uuid = IBUtils.getUUIDOf(argSplit[1]);

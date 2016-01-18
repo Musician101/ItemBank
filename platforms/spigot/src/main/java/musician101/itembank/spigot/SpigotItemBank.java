@@ -22,10 +22,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SpigotItemBank extends JavaPlugin
 { 
-	Economy econ;
-	List<AbstractSpigotCommand> commands;
-	MySQLHandler mysql;
-	SpigotConfig config;
+	private Economy econ;
+	private List<AbstractSpigotCommand> commands;
+	private MySQLHandler mysql;
+	private SpigotConfig config;
 	
 	private boolean setupEconomy()
 	{

@@ -107,7 +107,7 @@ public class AccountUtil
         return getItem(node);
 	}
 	
-	public static void saveAccount(String worldName, UUID uuid, OrderedInventory inventory, int page) throws ClassNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
+	public static void saveAccount(String worldName, UUID uuid, OrderedInventory inventory, int page) throws ClassNotFoundException, IOException, ObjectMappingException, SQLException
 	{
 		if (SpongeItemBank.mysql != null)
 		{

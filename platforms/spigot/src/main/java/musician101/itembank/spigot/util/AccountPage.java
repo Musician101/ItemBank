@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import musician101.itembank.common.AbstractAccountPage;
 import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.config.SpigotConfig;
 import musician101.itembank.spigot.lib.Messages;
 
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,25 +21,19 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.json.simple.parser.ParseException;
 
-public class AccountPage implements Listener
+public class AccountPage extends AbstractAccountPage<InventoryCloseEvent, Inventory, Player, World> implements Listener
 {
-	SpigotItemBank plugin;
-	int page;
-	String worldName;
-	Player viewer;
-	UUID owner;
-	
-	public AccountPage(SpigotItemBank plugin, Player viewer, UUID owner, String worldName, int page)
+	private final SpigotItemBank plugin;
+
+	public AccountPage(SpigotItemBank plugin, Player viewer, UUID owner, World world, int page)
 	{
+        super(viewer, owner, world, page);
 		this.plugin = plugin;
-		this.viewer = viewer;
-		this.owner = owner;
-		this.worldName = worldName;
-		this.page = page;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
-	
+
 	@EventHandler
+    @Override
 	public void onInventoryClose(InventoryCloseEvent event)
 	{
 		Player player = (Player) event.getPlayer();
@@ -132,12 +128,13 @@ public class AccountPage implements Listener
 	}
 	
 	// player.getUniqueId() and UUID are not always the same.
-	private void saveAccount(Player player, String worldName, UUID uuid, Inventory topInv, Inventory playerInv, int page)
+    @Override
+	protected void saveAccount(Player player, World world, UUID uuid, Inventory topInv, Inventory playerInv, int page)
 	{
-		Inventory account = null;
+		Inventory account;
 		try
 		{
-			account = IBUtils.getAccount(plugin, worldName, uuid, page);
+			account = IBUtils.getAccount(plugin, world, uuid, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -167,7 +164,7 @@ public class AccountPage implements Listener
 		account.setContents(topInv.getContents());
 		try
 		{
-			IBUtils.saveAccount(plugin, worldName, uuid, account, page);
+			IBUtils.saveAccount(plugin, world, uuid, account, page);
 		}
 		catch (FileNotFoundException e)
 		{

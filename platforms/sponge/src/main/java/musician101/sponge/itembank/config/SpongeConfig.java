@@ -38,14 +38,14 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 public class SpongeConfig extends AbstractConfig
 {
-	ConfigurationLoader<CommentedConfigurationNode> configLoader;
-	ConfigurationNode config;
-	File configFile;
-	File configFolder;
+	private ConfigurationLoader<CommentedConfigurationNode> configLoader;
+	private ConfigurationNode config;
+	private final File configFile;
+	private File configFolder;
     //TODO need to create abstract account page
     @Deprecated
-	File playerData;
-	List<ItemStack> itemList = new ArrayList<>();
+    private File playerData;
+	private final List<ItemStack> itemList = new ArrayList<>();
 	
 	public SpongeConfig()
 	{
@@ -59,7 +59,13 @@ public class SpongeConfig extends AbstractConfig
 			{
 				configFile.createNewFile();
 				URL url = SpongeItemBank.class.getClass().getClassLoader().getResource("config.conf");
-				URLConnection connection = url.openConnection();
+                if (url == null)
+                {
+                    log.error(Messages.fileCreateFail(configFile));
+                    return;
+                }
+
+                URLConnection connection = url.openConnection();
 				connection.setUseCaches(false);
 				InputStream input = connection.getInputStream();
 				OutputStream output = new FileOutputStream(configFile);

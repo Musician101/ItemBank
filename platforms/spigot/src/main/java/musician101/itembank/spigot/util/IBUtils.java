@@ -1,9 +1,26 @@
 package musician101.itembank.spigot.util;
 
-import java.io.BufferedReader;
+import au.com.bytecode.opencsv.CSVReader;
+import musician101.itembank.spigot.SpigotItemBank;
+import musician101.itembank.spigot.config.json.SpigotJSONConfig;
+import musician101.itembank.spigot.lib.Messages;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -17,33 +34,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.config.json.SpigotJSONConfig;
-import musician101.itembank.spigot.config.yaml.CustomYamlConfig;
-import musician101.itembank.spigot.lib.Messages;
-
-import org.apache.commons.lang.text.StrBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 public class IBUtils
 {
@@ -84,14 +79,16 @@ public class IBUtils
 		
 		return amount;
 	}
-	
+
+    //TODO rework in progress
 	/* player.getUniqueId() and uuid are not always the same. */
-	public static boolean openInv(SpigotItemBank plugin, Player player, String worldName, UUID uuid, int page)
+    @Deprecated
+	public static boolean openInv(SpigotItemBank plugin, Player player, World world, UUID uuid, int page)
 	{
-		Inventory inv = null;
+		Inventory inv;
 		try
 		{
-			inv = IBUtils.getAccount(plugin, worldName, uuid, page);
+			inv = IBUtils.getAccount(plugin, world, uuid, page);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -113,40 +110,45 @@ public class IBUtils
 			player.sendMessage(Messages.SQL_EX);
 			return false;
 		}
-		
-		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(((Player) player).getUniqueId());
-		if (offlinePlayer.getUniqueId().toString().equals(uuid) && plugin.getEconomy() != null && plugin.getPluginConfig().enableVault())
+
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player.getUniqueId());
+		if (offlinePlayer.getUniqueId() == uuid && plugin.getEconomy() != null && plugin.getPluginConfig().enableVault())
 		{
 			if (plugin.getEconomy() != null && !plugin.getEconomy().withdrawPlayer(offlinePlayer, plugin.getPluginConfig().getTransactionCost()).transactionSuccess())
 			{
 				player.sendMessage(Messages.ACCOUNT_ECON_FAIL);
 				return false;
 			}
-			
+
 			player.sendMessage(Messages.ACCOUNT_ECON_SUCCESS.replace("$", "$" + plugin.getPluginConfig().getTransactionCost()));
 		}
-		
-		new AccountPage(plugin, player, uuid, worldName, page);
+
+		new AccountPage(plugin, player, uuid, world, page);
 		player.openInventory(inv);
 		return true;
 	}
-	
-	public static Inventory getAccount(SpigotItemBank plugin, String worldName, UUID uuid, int page) throws ClassNotFoundException, FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
+
+    //TODO rework in progress
+    @Deprecated
+	public static Inventory getAccount(SpigotItemBank plugin, World world, UUID uuid, int page) throws ClassNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
+        //TODO rework in progress
+        @Deprecated
+		String worldName = world.getName();
 		final Inventory inv = Bukkit.createInventory(Bukkit.getPlayer(uuid), 54, Bukkit.getOfflinePlayer(uuid).getName() + " - Page " + page);
 		if (plugin.getPluginConfig().useMySQL())
 		{
 			plugin.getMySQLHandler().querySQL("CREATE TABLE IF NOT EXISTS ib_" + uuid.toString().replace("-", "_") + "(World varchar(255), Page int, Slot int, Material varchar(255), Damage int, Amount int, ItemMeta varchar(300));");
 			for (int slot = 0; slot < inv.getSize(); slot++)
 				inv.setItem(slot, getItem(plugin.getMySQLHandler().querySQL("SELECT * FROM ib_" + uuid + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
-			
+
 			return inv;
 		}
-		
+
 		File file = plugin.getPluginConfig().getPlayerFile(uuid);
-		if (inv != null)
+		if (file.exists())
 			createPlayerFile(file);
-		
+
 		if (file.getName().endsWith(".csv"))
 		{
 			for (String[] s : new CSVReader(new FileReader(file), '|').readAll())
@@ -164,37 +166,37 @@ public class IBUtils
 					}
 				}
 			}
-			
+
 			return inv;
 		}
 		else if (file.getName().endsWith("json"))
 		{
 			SpigotJSONConfig account = SpigotJSONConfig.loadSpigotJSONConfig(file);
-			
+
 			if (!account.containsKey(worldName))
 				return inv;
-			
+
 			SpigotJSONConfig world = account.getSpigotJSONConfig(worldName);
 			if (!world.containsKey(page + ""))
 				return inv;
-			
+
 			SpigotJSONConfig pg = world.getSpigotJSONConfig(page + "");
 			for (int slot = 0; slot < inv.getSize(); slot++)
 				if (pg.containsKey(slot + ""))
 					inv.setItem(slot, pg.getItemStack(slot + ""));
-			
+
 			return inv;
 		}
-		
+
 		YamlConfiguration account = new YamlConfiguration();
 		account.load(file);
 		for (int slot = 0; slot < inv.getSize(); slot++)
 			inv.setItem(slot, account.getItemStack(worldName + "." + page + "." + slot));
-		
+
 		return inv;
 	}
-	
-	public static void saveAccount(SpigotItemBank plugin, String worldName, UUID uuid, Inventory inventory, int page) throws ClassNotFoundException, FileNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
+
+	public static void saveAccount(SpigotItemBank plugin, String worldName, UUID uuid, Inventory inventory, int page) throws ClassNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
 	{
 		if (plugin.getPluginConfig().useMySQL())
 		{
@@ -213,7 +215,7 @@ public class IBUtils
 		File file = plugin.getPluginConfig().getPlayerFile(uuid);
 		if (file.getName().endsWith("csv"))
 		{
-			List<String> account = new ArrayList<String>();
+			List<String> account = new ArrayList<>();
 			for (String[] s : new CSVReader(new FileReader(file), '|').readAll())
 			{
 				if (!s[0].startsWith("#"))
@@ -222,7 +224,7 @@ public class IBUtils
 						if (Integer.valueOf(s[1]) != page)
 							for (int slot = 0; slot < inventory.getSize(); slot++)
 								if (Integer.valueOf(s[2]) != slot)
-									account.add(s.toString());
+									account.add(Arrays.toString(s));
 				}
 				else
 					account.add(Arrays.toString(s).replace("[", "").replace("]", ""));
@@ -283,8 +285,7 @@ public class IBUtils
 	
 	public static void sendMessages(CommandSender sender, List<String> messages)
 	{
-		for (String message : messages)
-			sender.sendMessage(message);
+		messages.forEach(sender::sendMessage);
 	}
 	
 	private static String metaToJson(ItemStack is)
@@ -296,14 +297,9 @@ public class IBUtils
 	
 	private static ItemStack getItem(ResultSet rs) throws ParseException, SQLException
 	{
-		while (rs.next())
-		{
-			ItemStack item = new ItemStack(Material.getMaterial(rs.getString("Material")), rs.getInt("Amount"), (short) rs.getInt("Damage"));
-			item.setItemMeta(SpigotJSONConfig.loadSpigotJSONConfig(rs.getString("ItemMeta")).toItemMeta());
-			return item;
-		}
-		
-		return null;
+		ItemStack item = new ItemStack(Material.getMaterial(rs.getString("Material")), rs.getInt("Amount"), (short) rs.getInt("Damage"));
+		item.setItemMeta(SpigotJSONConfig.loadSpigotJSONConfig(rs.getString("ItemMeta")).toItemMeta());
+		return item;
 	}
 
 	public static String getWorldName(SpigotItemBank plugin, Player player)
@@ -313,47 +309,19 @@ public class IBUtils
 		
 		return player.getWorld().getName();
 	}
-	
-	public static FileConfiguration getYamlConfig(File file, boolean forceEncode) throws IOException, InvalidConfigurationException
-	{
-		CustomYamlConfig config = new CustomYamlConfig();
-		InputStreamReader reader = null;
-		BufferedReader br = null;
-		try
-		{
-			reader = forceEncode ? new InputStreamReader(new FileInputStream(file), "UTF-8") : new InputStreamReader(new FileInputStream(file));
-			br = new BufferedReader(reader);
-			StrBuilder builder = new StrBuilder();
-			String line = null;
-			while ((line = br.readLine()) != null)
-				builder.appendln(line);
-			
-			config.loadFromString(builder.toString());
-		}
-		finally
-		{
-			if (br != null)
-				br.close();
-			
-			if (reader != null)
-				reader.close();
-		}
-		
-		return config;
-	}
 
     //TODO need to be moved to common library
     @Deprecated
 	public static UUID getUUIDOf(String name) throws InterruptedException, IOException, ParseException
 	{
-		return getUUIDs(Arrays.asList(name)).get(name.toLowerCase());
+		return getUUIDs(Collections.singletonList(name)).get(name.toLowerCase());
 	}
 
     //TODO need to be moved to common library
     @Deprecated
 	public static Map<String, UUID> getUUIDs(List<String> names) throws InterruptedException, IOException, ParseException
 	{
-		Map<String, UUID> uuidMap = new HashMap<String, UUID>();
+		Map<String, UUID> uuidMap = new HashMap<>();
 		int requests = (int) Math.ceil(names.size() / 100);
 		for (int i = 0; i < requests; i++)
 		{

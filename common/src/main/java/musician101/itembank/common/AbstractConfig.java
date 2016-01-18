@@ -5,14 +5,14 @@ import java.util.UUID;
 
 public abstract class AbstractConfig
 {
-	boolean checkForUpdate = true;
-	boolean isMultiWorldStorageEnabled = false;
-	boolean isWhitelist = false;
-	boolean useMYSQL = false;
-	int pageLimit = 0;
-	String format = "json";
+	private boolean checkForUpdate = true;
+	private boolean isMultiWorldStorageEnabled = false;
+	private boolean isWhitelist = false;
+	private boolean useMYSQL = false;
+	private int pageLimit = 0;
+	private String format = "json";
 	
-	public AbstractConfig() {}
+	protected AbstractConfig() {}
 	
 	public boolean checkForUpdate()
 	{

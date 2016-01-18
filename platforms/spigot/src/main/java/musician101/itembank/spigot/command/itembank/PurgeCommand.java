@@ -19,7 +19,7 @@ import org.json.simple.parser.ParseException;
 
 public class PurgeCommand extends AbstractSpigotCommand
 {
-	SpigotItemBank plugin;
+	private final SpigotItemBank plugin;
 
 	public PurgeCommand(SpigotItemBank plugin)
 	{
@@ -105,8 +105,9 @@ public class PurgeCommand extends AbstractSpigotCommand
 			sender.sendMessage(Messages.PURGE_MULTIPLE);
 			return true;
 		}
-		
-		for (File file : plugin.getPluginConfig().getPlayerData().listFiles())
+
+        //noinspection ConstantConditions
+        for (File file : plugin.getPluginConfig().getPlayerData().listFiles())
 			file.delete();
 		
 		try

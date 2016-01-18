@@ -8,13 +8,12 @@ import java.sql.Statement;
 
 public class MySQLHandler
 {
-	Connection connection;
-	
-	String database;
-	String hostname;
-	String password;
-	String port;
-	String user;
+	private Connection connection;
+	private final String database;
+	private final String hostname;
+	private final String password;
+	private final String port;
+	private final String user;
 	
 	public MySQLHandler(String database, String hostname, String password, String port, String user)
 	{
@@ -26,14 +25,14 @@ public class MySQLHandler
 		this.user = user;
 	}
 	
-	public Connection openConnection() throws ClassNotFoundException, SQLException
+	private Connection openConnection() throws ClassNotFoundException, SQLException
 	{
 		Class.forName("com.mysql.jdbc.Drive");
 		connection = DriverManager.getConnection("jdbc:mysql://" + hostname + ":" + port + "/" + database, user, password);
 		return connection;
 	}
 	
-	public boolean checkConnection()
+	private boolean checkConnection()
 	{
 		return connection != null;
 	}
@@ -51,7 +50,7 @@ public class MySQLHandler
 	
 	public ResultSet querySQL(String query) throws ClassNotFoundException, SQLException
 	{
-		Connection c = null;
+		Connection c;
 		if (checkConnection())
 			c = getConnection();
 		else
@@ -65,7 +64,7 @@ public class MySQLHandler
 	
 	public void updateSQL(String update) throws ClassNotFoundException, SQLException
 	{
-		Connection c = null;
+		Connection c;
 		if (checkConnection())
 			c = getConnection();
 		else
