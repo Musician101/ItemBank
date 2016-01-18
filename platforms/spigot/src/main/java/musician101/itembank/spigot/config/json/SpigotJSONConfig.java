@@ -1,14 +1,8 @@
 package musician101.itembank.spigot.config.json;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import musician101.itembank.common.config.json.AbstractJSONConfig;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import musician101.common.java.config.JSONConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -19,26 +13,22 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.FireworkEffectMeta;
-import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.MapMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
-public class SpigotJSONConfig extends AbstractJSONConfig
+public class SpigotJSONConfig extends JSONConfig
 {
 	public SpigotJSONConfig()
 	{
@@ -81,13 +71,13 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 		int red = 0;
 		
 		if (colorJson.containsKey("BLUE"))
-			blue = colorJson.getInt("BLUE");
+			blue = colorJson.getInteger("BLUE");
 		
 		if (colorJson.containsKey("GREEN"))
-			green = colorJson.getInt("GREEN");
+			green = colorJson.getInteger("GREEN");
 		
 		if (colorJson.containsKey("RED"))
-			red = colorJson.getInt("RED");
+			red = colorJson.getInteger("RED");
 		
 		return Color.fromRGB(red, green, blue);
 	}
@@ -112,13 +102,13 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 			int red = 0;
 			
 			if (colorJson.containsKey("BLUE"))
-				blue = colorJson.getInt("BLUE");
+				blue = colorJson.getInteger("BLUE");
 			
 			if (colorJson.containsKey("GREEN"))
-				green = colorJson.getInt("GREEN");
+				green = colorJson.getInteger("GREEN");
 			
 			if (colorJson.containsKey("RED"))
-				red = colorJson.getInt("RED");
+				red = colorJson.getInteger("RED");
 			
 			colors.add(Color.fromRGB(red, green, blue));
 		}
@@ -148,7 +138,7 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 		Map<Enchantment, Integer> enchants = Maps.newHashMap();
 		for (Enchantment enchant : Enchantment.values())
 			if (enchantsJson.containsKey(enchant.toString()))
-				enchants.put(enchant, enchantsJson.getInt(enchant.toString()));
+				enchants.put(enchant, enchantsJson.getInteger(enchant.toString()));
 		
 		return enchants;
 	}
@@ -253,7 +243,7 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 		Inventory inv = null;
 		InventoryType invType = InventoryType.valueOf(invJson.getString("type"));
 		if (invType == InventoryType.CHEST)
-			inv = Bukkit.createInventory(null, invJson.getInt("slots"), invJson.getString("title"));
+			inv = Bukkit.createInventory(null, invJson.getInteger("slots"), invJson.getString("title"));
 		else
 			inv = Bukkit.createInventory(null, invType, invJson.getString("title"));
 		
@@ -585,7 +575,7 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	public ItemStack getItemStack(String key)
 	{
 		SpigotJSONConfig itemJson = getSpigotJSONConfig(key);
-		ItemStack item = new ItemStack(itemJson.getMaterial("material"), itemJson.getInt("amount"), itemJson.getShort("durability"));
+		ItemStack item = new ItemStack(itemJson.getMaterial("material"), itemJson.getInteger("amount"), itemJson.getShort("durability"));
 		if (itemJson.containsKey("meta"))
 			item.setItemMeta(itemJson.getItemMeta("meta"));
 		
@@ -620,8 +610,8 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 	{
 		SpigotJSONConfig potionJson = getSpigotJSONConfig(key);
 		boolean ambient = potionJson.getBoolean("ambient");
-		int amplifier = potionJson.getInt("amplifier");
-		int duration = potionJson.getInt("duration");
+		int amplifier = potionJson.getInteger("amplifier");
+		int duration = potionJson.getInteger("duration");
 		PotionEffectType type = PotionEffectType.getByName(potionJson.getString("effect"));
 		return new PotionEffect(type, duration, amplifier, ambient);
 	}
@@ -642,8 +632,8 @@ public class SpigotJSONConfig extends AbstractJSONConfig
 		for (SpigotJSONConfig potionJson : getSpigotJSONConfigList(key))
 		{
 			boolean ambient = potionJson.getBoolean("ambient");
-			int amplifier = potionJson.getInt("amplifier");
-			int duration = potionJson.getInt("duration");
+			int amplifier = potionJson.getInteger("amplifier");
+			int duration = potionJson.getInteger("duration");
 			PotionEffectType type = PotionEffectType.getByName(potionJson.getString("effect"));
 			effects.add(new PotionEffect(type, duration, amplifier, ambient));
 		}
