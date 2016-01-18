@@ -10,16 +10,16 @@ import musician101.common.java.minecraft.sponge.command.SpongeHelpCommand;
 import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
-import musician101.sponge.itembank.command.account.AccountExecutor;
+import musician101.sponge.itembank.command.account.AccountCommand;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 
-public class IBExecutor extends AbstractSpongeCommand
+public class IBCommand extends AbstractSpongeCommand
 {
-    public IBExecutor()
+    public IBCommand()
     {
-        super(Reference.NAME.toLowerCase(), Reference.DESCRIPTION, Collections.singletonList(new SpongeCommandArgument(Commands.IB_CMD)), 0, "", true, TextUtils.redText(Messages.NO_PERMISSION), TextUtils.redText(Messages.PLAYER_CMD), Arrays.asList(new PurgeExecutor(), new ReloadCommand(), new UUIDCommand()));
+        super(Reference.NAME.toLowerCase(), Reference.DESCRIPTION, Collections.singletonList(new SpongeCommandArgument(Commands.IB_CMD)), 0, "", true, TextUtils.redText(Messages.NO_PERMISSION), TextUtils.redText(Messages.PLAYER_CMD), Arrays.asList(new PurgeCommand(), new ReloadCommand(), new UUIDCommand()));
     }
 
     @Nonnull
@@ -38,7 +38,7 @@ public class IBExecutor extends AbstractSpongeCommand
         }
 
 		source.sendMessage(new SpongeHelpCommand(this, source).getUsage(source));
-        source.sendMessage(new SpongeHelpCommand(new AccountExecutor(), source).getUsage(source));
+        source.sendMessage(new SpongeHelpCommand(new AccountCommand(), source).getUsage(source));
 		return CommandResult.success();
 	}
 }

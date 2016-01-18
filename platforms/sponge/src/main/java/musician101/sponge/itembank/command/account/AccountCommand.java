@@ -15,7 +15,7 @@ import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.common.UUIDUtils;
-import musician101.sponge.itembank.ItemBank;
+import musician101.sponge.itembank.SpongeItemBank;
 import musician101.sponge.itembank.util.AccountUtil;
 import musician101.sponge.itembank.util.IBUtils;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -27,9 +27,9 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.world.World;
 
-public class AccountExecutor extends AbstractSpongeCommand
+public class AccountCommand extends AbstractSpongeCommand
 {
-    public AccountExecutor()
+    public AccountCommand()
     {
         super(Commands.ACCOUNT_NAME, Commands.ACCOUNT_DESC, Arrays.asList(new SpongeCommandArgument("/" + Commands.ACCOUNT_NAME), new SpongeCommandArgument(Commands.PAGE_ACCOUNT, Syntax.OPTIONAL), new SpongeCommandArgument(Commands.PLAYER_ACCOUNT, Syntax.OPTIONAL), new SpongeCommandArgument(Commands.WORLD_ACCOUNT)), 0, "", true, TextUtils.redText(Messages.NO_PERMISSION), TextUtils.redText(Messages.PLAYER_CMD));
     }
@@ -141,13 +141,13 @@ public class AccountExecutor extends AbstractSpongeCommand
 		if (player.getUniqueId() != owner)
 			return player.hasPermission(Permissions.PLAYER);
 
-        if (ItemBank.config.isMultiWorldStorageEnabled())
+        if (SpongeItemBank.config.isMultiWorldStorageEnabled())
             if (player.getWorld() != world)
 		        if (player.hasPermission(Permissions.WORLD + "." + world.getName()) || player.hasPermission(Permissions.WORLD))
                     return true;
 
-        if (ItemBank.config.getPageLimit() > 0)
-            if (player.hasPermission(Permissions.PAGE) || page < ItemBank.config.getPageLimit())
+        if (SpongeItemBank.config.getPageLimit() > 0)
+            if (player.hasPermission(Permissions.PAGE) || page < SpongeItemBank.config.getPageLimit())
                 return true;
 
 		return false;

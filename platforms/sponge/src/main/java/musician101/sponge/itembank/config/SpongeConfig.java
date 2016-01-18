@@ -15,7 +15,7 @@ import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Configs;
 import musician101.itembank.common.Reference.Messages;
-import musician101.sponge.itembank.ItemBank;
+import musician101.sponge.itembank.SpongeItemBank;
 import musician101.sponge.itembank.util.IBUtils;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -36,7 +36,7 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-public class Config extends AbstractConfig
+public class SpongeConfig extends AbstractConfig
 {
 	ConfigurationLoader<CommentedConfigurationNode> configLoader;
 	ConfigurationNode config;
@@ -47,10 +47,10 @@ public class Config extends AbstractConfig
 	File playerData;
 	List<ItemStack> itemList = new ArrayList<>();
 	
-	public Config()
+	public SpongeConfig()
 	{
 		configFolder = new File("mod", Reference.ID);
-		Logger log = ItemBank.logger;
+		Logger log = SpongeItemBank.logger;
 		configFile = new File(configFolder, "config.conf");
 		if (!configFile.exists())
 		{
@@ -58,7 +58,7 @@ public class Config extends AbstractConfig
 			try
 			{
 				configFile.createNewFile();
-				URL url = ItemBank.class.getClass().getClassLoader().getResource("config.conf");
+				URL url = SpongeItemBank.class.getClass().getClassLoader().getResource("config.conf");
 				URLConnection connection = url.openConnection();
 				connection.setUseCaches(false);
 				InputStream input = connection.getInputStream();
@@ -115,7 +115,7 @@ public class Config extends AbstractConfig
             mysql.getNode(Configs.ENABLE).getBoolean(false);
 		
 		if (useMYSQL())
-			ItemBank.mysql = new MySQLHandler(mysql.getNode(Configs.DATABASE).getString(Configs.DATABASE), mysql.getNode(Configs.HOST).getString(Configs.LOCAL_HOST), mysql.getNode(Configs.PASSWORD).getString(Configs.PASSWORD), mysql.getNode(Configs.PORT).getString(Configs.PORT_DEFAULT), mysql.getNode(Configs.USER).getString(Configs.USER));
+			SpongeItemBank.mysql = new MySQLHandler(mysql.getNode(Configs.DATABASE).getString(Configs.DATABASE), mysql.getNode(Configs.HOST).getString(Configs.LOCAL_HOST), mysql.getNode(Configs.PASSWORD).getString(Configs.PASSWORD), mysql.getNode(Configs.PORT).getString(Configs.PORT_DEFAULT), mysql.getNode(Configs.USER).getString(Configs.USER));
 		
 		if (config.getNode(Configs.ITEM_LIST) != null)
 			itemList(config.getNode(Configs.ITEM_LIST));

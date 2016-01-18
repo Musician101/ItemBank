@@ -9,7 +9,7 @@ import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.common.UUIDUtils;
-import musician101.sponge.itembank.ItemBank;
+import musician101.sponge.itembank.SpongeItemBank;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 
@@ -20,9 +20,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class PurgeExecutor extends AbstractSpongeCommand
+public class PurgeCommand extends AbstractSpongeCommand
 {
-    public PurgeExecutor()
+    public PurgeCommand()
     {
         super(Commands.PURGE_NAME, Commands.PURGE_DESC, Arrays.asList(new SpongeCommandArgument("/" + Reference.ID), new SpongeCommandArgument(Commands.PURGE_NAME), new SpongeCommandArgument(Commands.PLAYER, Syntax.OPTIONAL, Syntax.REPLACE)), 0, Permissions.PURGE, false, TextUtils.redText(Messages.NO_PERMISSION), TextUtils.redText(Messages.PLAYER_CMD));
     }
@@ -45,11 +45,11 @@ public class PurgeExecutor extends AbstractSpongeCommand
 				return CommandResult.empty();
 			}
 			
-			if (ItemBank.mysql != null)
+			if (SpongeItemBank.mysql != null)
 			{
 				try
 				{
-					ItemBank.mysql.querySQL("DROP TABLE IF EXISTS ib_" + uuid.toString().replace("-", "_"));
+					SpongeItemBank.mysql.querySQL("DROP TABLE IF EXISTS ib_" + uuid.toString().replace("-", "_"));
 				}
 				catch (ClassNotFoundException | SQLException e)
 				{
@@ -61,7 +61,7 @@ public class PurgeExecutor extends AbstractSpongeCommand
 				return CommandResult.success();
 			}
 			
-			File file = ItemBank.config.getPlayerFile(uuid);
+			File file = SpongeItemBank.config.getPlayerFile(uuid);
 			if (!file.exists())
 			{
 				source.sendMessage(TextUtils.redText(Messages.PURGE_NO_FILE));
@@ -78,14 +78,14 @@ public class PurgeExecutor extends AbstractSpongeCommand
 			return CommandResult.success();
 		}
 		
-		if (ItemBank.mysql != null)
+		if (SpongeItemBank.mysql != null)
 		{
 			try
 			{
-				ResultSet rs = ItemBank.mysql.getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
+				ResultSet rs = SpongeItemBank.mysql.getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
 				while (rs.next())
 					if (rs.getString(3).contains("ib_"))
-						ItemBank.mysql.querySQL("DROP TABLE " + rs.getString(3));
+						SpongeItemBank.mysql.querySQL("DROP TABLE " + rs.getString(3));
 			}
 			catch (SQLException | ClassNotFoundException e)
 			{
@@ -95,7 +95,7 @@ public class PurgeExecutor extends AbstractSpongeCommand
 		}
 		else
         {
-            File[] files = ItemBank.config.getPlayerData().listFiles();
+            File[] files = SpongeItemBank.config.getPlayerData().listFiles();
             if (files != null)
                 for (File file : files)
                     if (!file.delete())

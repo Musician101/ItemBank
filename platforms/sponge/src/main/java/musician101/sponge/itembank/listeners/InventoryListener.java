@@ -5,8 +5,8 @@ import musician101.common.java.minecraft.sponge.TextUtils;
 import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.sponge.itembank.ItemBank;
-import musician101.sponge.itembank.config.Config;
+import musician101.sponge.itembank.SpongeItemBank;
+import musician101.sponge.itembank.config.SpongeConfig;
 import musician101.sponge.itembank.util.AccountUtil;
 import musician101.sponge.itembank.util.IBUtils;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -114,7 +114,7 @@ public class InventoryListener
         if (player.getUniqueId() != viewer)
             return;
 
-        Config config = ItemBank.config;
+        SpongeConfig config = SpongeItemBank.config;
         OrderedInventory inv = (OrderedInventory) event.getTargetInventory();
         int pageLimit = config.getPageLimit();
         if (((pageLimit > 0 && pageLimit < page) || page == 0) && !player.hasPermission(Permissions.ADMIN))

@@ -5,7 +5,7 @@ import com.google.common.reflect.TypeToken;
 import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.MySQL;
-import musician101.sponge.itembank.ItemBank;
+import musician101.sponge.itembank.SpongeItemBank;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -66,16 +66,16 @@ public class AccountUtil
             }
         }).build().getTranslation());
 		OrderedInventory inv = builder.build();
-		if (ItemBank.mysql != null)
+		if (SpongeItemBank.mysql != null)
 		{
-			ItemBank.mysql.querySQL("CREATE TABLE IF NOT EXISTS ib_" + uuid.toString().replace("-", "_") + "(World TEXT, Page int, Slot int, Item TEXT);");
+			SpongeItemBank.mysql.querySQL("CREATE TABLE IF NOT EXISTS ib_" + uuid.toString().replace("-", "_") + "(World TEXT, Page int, Slot int, Item TEXT);");
 			for (int slot = 0; slot < inv.size(); slot++)
-				inv.set(new SlotIndex(slot), getItem(ItemBank.mysql.querySQL("SELECT * FROM ib_" + uuid + " WHERE World = \"" + world + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
+				inv.set(new SlotIndex(slot), getItem(SpongeItemBank.mysql.querySQL("SELECT * FROM ib_" + uuid + " WHERE World = \"" + world + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
 			
 			return inv;
 		}
 		
-		File file = ItemBank.config.getPlayerFile(uuid);
+		File file = SpongeItemBank.config.getPlayerFile(uuid);
 		if (!file.exists())
 			IBUtils.createPlayerFile(file);
 		
@@ -109,9 +109,9 @@ public class AccountUtil
 	
 	public static void saveAccount(String worldName, UUID uuid, OrderedInventory inventory, int page) throws ClassNotFoundException, IOException, ObjectMappingException, ParseException, SQLException
 	{
-		if (ItemBank.mysql != null)
+		if (SpongeItemBank.mysql != null)
 		{
-			MySQLHandler sql = ItemBank.mysql;
+			MySQLHandler sql = SpongeItemBank.mysql;
 			sql.querySQL(MySQL.getTable(uuid));
 			for (int slot = 0; slot < inventory.size(); slot++)
 			{
@@ -124,7 +124,7 @@ public class AccountUtil
 			return;
 		}
 		
-		File file = ItemBank.config.getPlayerFile(uuid);
+		File file = SpongeItemBank.config.getPlayerFile(uuid);
 		if (!file.exists())
 			IBUtils.createPlayerFile(file);
 		

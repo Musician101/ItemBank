@@ -8,7 +8,7 @@ import musician101.common.java.minecraft.sponge.command.SpongeCommandArgument;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.sponge.itembank.ItemBank;
+import musician101.sponge.itembank.SpongeItemBank;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 
@@ -26,7 +26,7 @@ public class ReloadCommand extends AbstractSpongeCommand
         if (!testPermission(source))
             return CommandResult.empty();
 
-        ItemBank.config.reloadConfiguration();
+        SpongeItemBank.config.reloadConfiguration();
         source.sendMessage(TextUtils.greenText(Messages.RELOAD_SUCCESS));
         return CommandResult.success();
     }
