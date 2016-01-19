@@ -12,25 +12,25 @@ public class IBUtils
 {
     //TODO move to common?
     @Deprecated
-	public static void createPlayerFile(File file) throws IOException
-	{
-		if (!file.exists())
-			file.createNewFile();
-	}
-	
-	public static int getAmount(Inventory inv, ItemStack itemStack)
-	{
-		int amount = 0;
-		for (Inventory slot : inv.query(itemStack.getItem()))
-		{
+    public static void createPlayerFile(File file) throws IOException
+    {
+        if (!file.exists())
+            file.createNewFile();
+    }
+
+    public static int getAmount(Inventory inv, ItemStack itemStack)
+    {
+        int amount = 0;
+        for (Inventory slot : inv.query(itemStack.getItem()))
+        {
             ItemStack inventoryItemStack = slot.peek().get();
             if (itemStack.getItem() == inventoryItemStack.getItem() && isSameVariant(itemStack, inventoryItemStack))
                 amount += inventoryItemStack.getQuantity();
 
-		}
+        }
 
-		return amount;
-	}
+        return amount;
+    }
 
     public static boolean isSameVariant(ItemStack itemStack1, ItemStack itemStack2)
     {
@@ -54,10 +54,10 @@ public class IBUtils
 
         return false;
     }
-	
-	public static boolean isNumber(String s)
-	{
-		if (s == null)
+
+    public static boolean isNumber(String s)
+    {
+        if (s == null)
             return false;
 
         int length = s.length();
@@ -79,7 +79,7 @@ public class IBUtils
             if (c < '0' || c > '9')
                 return false;
         }
-		
-		return true;
-	}
+
+        return true;
+    }
 }

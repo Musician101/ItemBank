@@ -19,5 +19,7 @@ public abstract class AbstractAccountPage<Event, Inventory, Player, World>
 
     public abstract void onInventoryClose(Event event);
 
-    protected abstract void saveAccount(Player player, World world, UUID uuid, Inventory topInv, Inventory playerInv, int page);
+    protected abstract void saveAccount(Inventory topInv, Inventory playerInv);
+
+    protected abstract void returnInv(Inventory inventory, String message);
 }

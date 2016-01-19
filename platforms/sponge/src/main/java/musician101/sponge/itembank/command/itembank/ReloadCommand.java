@@ -1,7 +1,5 @@
 package musician101.sponge.itembank.command.itembank;
 
-import java.util.Arrays;
-import javax.annotation.Nonnull;
 import musician101.common.java.minecraft.sponge.TextUtils;
 import musician101.common.java.minecraft.sponge.command.AbstractSpongeCommand;
 import musician101.common.java.minecraft.sponge.command.SpongeCommandArgument;
@@ -11,6 +9,9 @@ import musician101.itembank.common.Reference.Permissions;
 import musician101.sponge.itembank.SpongeItemBank;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+
+import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 public class ReloadCommand extends AbstractSpongeCommand
 {

@@ -1,15 +1,5 @@
 package musician101.sponge.itembank.config;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import musician101.itembank.common.AbstractConfig;
 import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.common.Reference;
@@ -36,29 +26,42 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+//TODO config doesn't reload from file based on how it's written rn
+@Deprecated
 public class SpongeConfig extends AbstractConfig
 {
-	private ConfigurationLoader<CommentedConfigurationNode> configLoader;
-	private ConfigurationNode config;
-	private final File configFile;
-	private File configFolder;
+    private ConfigurationLoader<CommentedConfigurationNode> configLoader;
+    private ConfigurationNode config;
+    private final File configFile;
+    private File configFolder;
     //TODO need to create abstract account page
     @Deprecated
     private File playerData;
-	private final List<ItemStack> itemList = new ArrayList<>();
-	
-	public SpongeConfig()
-	{
-		configFolder = new File("mod", Reference.ID);
-		Logger log = SpongeItemBank.logger;
-		configFile = new File(configFolder, "config.conf");
-		if (!configFile.exists())
-		{
-			configFile.mkdirs();
-			try
-			{
-				configFile.createNewFile();
-				URL url = SpongeItemBank.class.getClass().getClassLoader().getResource("config.conf");
+    private final List<ItemStack> itemList = new ArrayList<>();
+
+    public SpongeConfig()
+    {
+        configFolder = new File("config", Reference.ID);
+        Logger log = SpongeItemBank.logger;
+        configFile = new File(configFolder, "config.conf");
+        if (!configFile.exists())
+        {
+            configFile.mkdirs();
+            try
+            {
+                configFile.createNewFile();
+                URL url = SpongeItemBank.class.getClass().getClassLoader().getResource("config.conf");
                 if (url == null)
                 {
                     log.error(Messages.fileCreateFail(configFile));
@@ -66,76 +69,76 @@ public class SpongeConfig extends AbstractConfig
                 }
 
                 URLConnection connection = url.openConnection();
-				connection.setUseCaches(false);
-				InputStream input = connection.getInputStream();
-				OutputStream output = new FileOutputStream(configFile);
-				byte[] buf = new byte[1024];
-				int len;
-				while ((len = input.read(buf)) > 0)
-					output.write(buf, 0, len);
-				
-				output.close();
-				input.close();
-			}
-			catch (IOException e)
-			{
-				log.warn(Messages.fileCreateFail(configFile));
-			}
-		}
-		
-		configFolder = configFile.getParentFile();
-		playerData = new File(configFolder, "playerdata");
-		configLoader = HoconConfigurationLoader.builder().setFile(configFile).build();
-		
-		try
-		{
-			config = configLoader.load();
-		}
-		catch (IOException e)
-		{
-			log.warn("An error occurred while parsing config.conf. Falling back to defaults.");
-		}
-		
-		reloadConfiguration();
-	}
-	
-	@Override
-	public File getPlayerFile(UUID uuid)
-	{
-		return new File(playerData, uuid.toString() + ".conf");
-	}
+                connection.setUseCaches(false);
+                InputStream input = connection.getInputStream();
+                OutputStream output = new FileOutputStream(configFile);
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = input.read(buf)) > 0)
+                    output.write(buf, 0, len);
+
+                output.close();
+                input.close();
+            }
+            catch (IOException e)
+            {
+                log.warn(Messages.fileCreateFail(configFile));
+            }
+        }
+
+        configFolder = configFile.getParentFile();
+        playerData = new File(configFolder, "playerdata");
+        configLoader = HoconConfigurationLoader.builder().setFile(configFile).build();
+
+        try
+        {
+            config = configLoader.load();
+        }
+        catch (IOException e)
+        {
+            log.warn("An error occurred while parsing config.conf. Falling back to defaults.");
+        }
+
+        reloadConfiguration();
+    }
+
+    @Override
+    public File getPlayerFile(UUID uuid)
+    {
+        return new File(playerData, uuid.toString() + ".conf");
+    }
 
     @Deprecated
-	public File getPlayerData()
-	{
-		return playerData;
-	}
-	
-	public void reloadConfiguration()
-	{
-		setIsWhitelist(config.getNode(Configs.WHITELIST).getBoolean(false));
-		setMultiWorldStorageEnabled(config.getNode(Configs.MULTI_WORLD).getBoolean(false));
-		setPageLimit(config.getNode(Configs.PAGE_LIMIT).getInt(0));
-		ConfigurationNode mysql = config.getNode(Configs.MYSQL);
-		if (!mysql.isVirtual())
+    public File getPlayerData()
+    {
+        return playerData;
+    }
+
+    public void reloadConfiguration()
+    {
+        setIsWhitelist(config.getNode(Configs.WHITELIST).getBoolean(false));
+        setMultiWorldStorageEnabled(config.getNode(Configs.MULTI_WORLD).getBoolean(false));
+        setPageLimit(config.getNode(Configs.PAGE_LIMIT).getInt(0));
+        ConfigurationNode mysql = config.getNode(Configs.MYSQL);
+        if (!mysql.isVirtual())
             mysql.getNode(Configs.ENABLE).getBoolean(false);
-		
-		if (useMYSQL())
-			SpongeItemBank.mysql = new MySQLHandler(mysql.getNode(Configs.DATABASE).getString(Configs.DATABASE), mysql.getNode(Configs.HOST).getString(Configs.LOCAL_HOST), mysql.getNode(Configs.PASSWORD).getString(Configs.PASSWORD), mysql.getNode(Configs.PORT).getString(Configs.PORT_DEFAULT), mysql.getNode(Configs.USER).getString(Configs.USER));
-		
-		if (config.getNode(Configs.ITEM_LIST) != null)
-			itemList(config.getNode(Configs.ITEM_LIST));
-		else
-			itemList.add(ItemStack.of(ItemTypes.BEDROCK, 0));
-	}
-	
-	private void itemList(ConfigurationNode node)
-	{
+
+        if (useMYSQL())
+            SpongeItemBank.mysql = new MySQLHandler(mysql.getNode(Configs.DATABASE).getString(Configs.DATABASE), mysql.getNode(Configs.HOST).getString(Configs.LOCAL_HOST), mysql.getNode(Configs.PASSWORD).getString(Configs.PASSWORD), mysql.getNode(Configs.PORT).getString(Configs.PORT_DEFAULT), mysql.getNode(Configs.USER).getString(Configs.USER));
+
+        if (config.getNode(Configs.ITEM_LIST) != null)
+            itemList(config.getNode(Configs.ITEM_LIST));
+        else
+            itemList.add(ItemStack.of(ItemTypes.BEDROCK, 0));
+    }
+
+    private void itemList(ConfigurationNode node)
+    {
         for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class))
-		{
+        {
             ConfigurationNode itemNode = node.getNode(itemType.getId());
-			if (!itemNode.isVirtual())
-			{
+            if (!itemNode.isVirtual())
+            {
                 ConfigurationNode amountNode = itemNode.getNode(Configs.AMOUNT);
                 ConfigurationNode variationNode = itemNode.getNode(Configs.VARIATIONS);
                 if (!amountNode.isVirtual())
@@ -182,12 +185,12 @@ public class SpongeConfig extends AbstractConfig
                     else if (item.get(CatalogItemData.SPAWNABLE_DATA).isPresent())
                         addItem(itemType, variationNode, CatalogTypes.ENTITY_TYPE, CatalogItemData.SPAWNABLE_DATA, Keys.SPAWNABLE_ENTITY_TYPE);
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 
     private <T extends CatalogType, D extends DataManipulator<D, I>, I extends ImmutableDataManipulator<I, D>>
-        void addItem(ItemType itemType, ConfigurationNode variationNode, Class<T> typeClass, Class<D> dataClass, Key<Value<T>> key)
+    void addItem(ItemType itemType, ConfigurationNode variationNode, Class<T> typeClass, Class<D> dataClass, Key<Value<T>> key)
     {
         for (T type : Sponge.getRegistry().getAllOf(typeClass))
         {
@@ -205,7 +208,7 @@ public class SpongeConfig extends AbstractConfig
         }
     }
 
-	public ItemStack getItem(ItemStack itemStack1)
+    public ItemStack getItem(ItemStack itemStack1)
     {
         for (ItemStack itemStack2 : itemList)
         {

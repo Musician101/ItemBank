@@ -1,8 +1,5 @@
 package musician101.sponge.itembank.command.itembank;
 
-import java.util.Arrays;
-import java.util.Collections;
-import javax.annotation.Nonnull;
 import musician101.common.java.minecraft.sponge.TextUtils;
 import musician101.common.java.minecraft.sponge.command.AbstractSpongeCommand;
 import musician101.common.java.minecraft.sponge.command.SpongeCommandArgument;
@@ -15,6 +12,10 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Collections;
+
 public class IBCommand extends AbstractSpongeCommand
 {
     public IBCommand()
@@ -23,9 +24,9 @@ public class IBCommand extends AbstractSpongeCommand
     }
 
     @Nonnull
-	@Override
-	public CommandResult process(@Nonnull CommandSource source, @Nonnull String arguments) throws CommandException
-	{
+    @Override
+    public CommandResult process(@Nonnull CommandSource source, @Nonnull String arguments) throws CommandException
+    {
         String[] args = splitArgs(arguments);
         if (args.length > 0)
         {
@@ -37,8 +38,8 @@ public class IBCommand extends AbstractSpongeCommand
                     return command.process(source, moveArguments(args));
         }
 
-		source.sendMessage(new SpongeHelpCommand(this, source).getUsage(source));
+        source.sendMessage(new SpongeHelpCommand(this, source).getUsage(source));
         source.sendMessage(new SpongeHelpCommand(new AccountCommand(), source).getUsage(source));
-		return CommandResult.success();
-	}
+        return CommandResult.success();
+    }
 }

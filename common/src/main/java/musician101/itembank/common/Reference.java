@@ -1,9 +1,10 @@
 package musician101.itembank.common;
 
+import org.json.simple.parser.ParseException;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
-import org.json.simple.parser.ParseException;
 
 public class Reference
 {

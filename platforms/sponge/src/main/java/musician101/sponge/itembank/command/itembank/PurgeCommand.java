@@ -28,72 +28,72 @@ public class PurgeCommand extends AbstractSpongeCommand
     }
 
     @Nonnull
-	@Override
-	public CommandResult process(@Nonnull CommandSource source, @Nonnull String arguments)
-	{
-		String[] args = splitArgs(arguments);
-		if (args.length > 0)
-		{
-			UUID uuid;
-			try
-			{
-				uuid = UUIDUtils.getUUIDOf(args[0]);
-			}
-			catch (Exception e)
-			{
-				source.sendMessage(TextUtils.redText(Messages.UNKNOWN_EX));
-				return CommandResult.empty();
-			}
-			
-			if (SpongeItemBank.mysql != null)
-			{
-				try
-				{
-					SpongeItemBank.mysql.querySQL("DROP TABLE IF EXISTS ib_" + uuid.toString().replace("-", "_"));
-				}
-				catch (ClassNotFoundException | SQLException e)
-				{
-					source.sendMessage(TextUtils.redText(Messages.SQL_EX));
-					return CommandResult.empty();
-				}
-				
-				source.sendMessage(TextUtils.redText(Messages.PURGE_SINGLE));
-				return CommandResult.success();
-			}
-			
-			File file = SpongeItemBank.config.getPlayerFile(uuid);
-			if (!file.exists())
-			{
-				source.sendMessage(TextUtils.redText(Messages.PURGE_NO_FILE));
-				return CommandResult.empty();
-			}
+    @Override
+    public CommandResult process(@Nonnull CommandSource source, @Nonnull String arguments)
+    {
+        String[] args = splitArgs(arguments);
+        if (args.length > 0)
+        {
+            UUID uuid;
+            try
+            {
+                uuid = UUIDUtils.getUUIDOf(args[0]);
+            }
+            catch (Exception e)
+            {
+                source.sendMessage(TextUtils.redText(Messages.UNKNOWN_EX));
+                return CommandResult.empty();
+            }
 
-			if (!file.delete())
+            if (SpongeItemBank.mysql != null)
+            {
+                try
+                {
+                    SpongeItemBank.mysql.querySQL("DROP TABLE IF EXISTS ib_" + uuid.toString().replace("-", "_"));
+                }
+                catch (ClassNotFoundException | SQLException e)
+                {
+                    source.sendMessage(TextUtils.redText(Messages.SQL_EX));
+                    return CommandResult.empty();
+                }
+
+                source.sendMessage(TextUtils.redText(Messages.PURGE_SINGLE));
+                return CommandResult.success();
+            }
+
+            File file = SpongeItemBank.config.getPlayerFile(uuid);
+            if (!file.exists())
+            {
+                source.sendMessage(TextUtils.redText(Messages.PURGE_NO_FILE));
+                return CommandResult.empty();
+            }
+
+            if (!file.delete())
             {
                 source.sendMessage(TextUtils.redText(Messages.purgeFileFail(file)));
                 return CommandResult.empty();
             }
 
-			source.sendMessage(TextUtils.redText(Messages.PURGE_SINGLE));
-			return CommandResult.success();
-		}
-		
-		if (SpongeItemBank.mysql != null)
-		{
-			try
-			{
-				ResultSet rs = SpongeItemBank.mysql.getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-				while (rs.next())
-					if (rs.getString(3).contains("ib_"))
-						SpongeItemBank.mysql.querySQL("DROP TABLE " + rs.getString(3));
-			}
-			catch (SQLException | ClassNotFoundException e)
-			{
-				source.sendMessage(TextUtils.redText(Messages.SQL_EX));
-				return CommandResult.empty();
-			}
-		}
-		else
+            source.sendMessage(TextUtils.redText(Messages.PURGE_SINGLE));
+            return CommandResult.success();
+        }
+
+        if (SpongeItemBank.mysql != null)
+        {
+            try
+            {
+                ResultSet rs = SpongeItemBank.mysql.getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
+                while (rs.next())
+                    if (rs.getString(3).contains("ib_"))
+                        SpongeItemBank.mysql.querySQL("DROP TABLE " + rs.getString(3));
+            }
+            catch (SQLException | ClassNotFoundException e)
+            {
+                source.sendMessage(TextUtils.redText(Messages.SQL_EX));
+                return CommandResult.empty();
+            }
+        }
+        else
         {
             File[] files = SpongeItemBank.config.getPlayerData().listFiles();
             if (files != null)
@@ -101,8 +101,8 @@ public class PurgeCommand extends AbstractSpongeCommand
                     if (!file.delete())
                         source.sendMessage(TextUtils.redText(Messages.purgeFileFail(file)));
         }
-		
-		source.sendMessage(TextUtils.redText(Messages.PURGE_MULTIPLE));
-		return CommandResult.empty();
-	}
+
+        source.sendMessage(TextUtils.redText(Messages.PURGE_MULTIPLE));
+        return CommandResult.empty();
+    }
 }

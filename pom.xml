@@ -1,46 +1,47 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>musician101</groupId>
-	<artifactId>itembank</artifactId>
-	<version>3.0</version>
-	<name>ItemBank</name>
-	<description>Virtual chest with configurable limits.</description>
-	<packaging>pom</packaging>
-	
-	<modules>
-		<module>common</module>
-		<module>platforms/spigot</module>
-		<module>platforms/sponge</module>
-	</modules>
-	
-	<dependencies>
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1</version>
-		</dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>musician101</groupId>
+    <artifactId>itembank</artifactId>
+    <version>3.0</version>
+    <name>ItemBank</name>
+    <description>Virtual chest with configurable limits.</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>common</module>
+        <module>platforms/spigot</module>
+        <module>platforms/sponge</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
+        </dependency>
         <dependency>
             <groupId>musician101</groupId>
             <artifactId>common</artifactId>
             <version>2.0-SNAPSHOT</version>
         </dependency>
-	</dependencies>
-	
-	<repositories>
-		<repository>
-			<id>opencsv</id>
-			<url>http://central.maven.org/maven2/net/sf/opencsv/opencsv/</url>
-		</repository>
-		<repository>
-			<id>json-simple</id>
-			<url>http://repo1.maven.org/maven2/</url>
-		</repository>
-		<repository>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>opencsv</id>
+            <url>http://central.maven.org/maven2/net/sf/opencsv/opencsv/</url>
+        </repository>
+        <repository>
+            <id>json-simple</id>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
             <id>Common-mvn-repo</id>
             <url>https://raw.github.com/Musician101/Common/mvn-repo</url>
             <snapshots>
@@ -48,5 +49,5 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
-	</repositories>
+    </repositories>
 </project>

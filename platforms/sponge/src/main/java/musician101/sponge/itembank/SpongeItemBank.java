@@ -17,21 +17,21 @@ import org.spongepowered.api.plugin.Plugin;
 @Plugin(id = "itembank", name = "ItemBank", version = "3.0")
 public class SpongeItemBank
 {
-	public static SpongeConfig config;
-	public static Logger logger;
-	public static MySQLHandler mysql;
-	
-	@Listener
-	public void preInit(GameStartedServerEvent event)
-	{
-		config = new SpongeConfig();
-		logger = LoggerFactory.getLogger(Reference.NAME);
+    public static SpongeConfig config;
+    public static Logger logger;
+    public static MySQLHandler mysql;
 
-		//TODO refer to InventoryListener
-		//game.getEventManager().register(this, new InventoryListener());
-		
-		Game game = Sponge.getGame();
-		game.getCommandManager().register(this, new IBCommand(), Commands.IB_CMD.replace("/", ""), "ib");
+    @Listener
+    public void preInit(GameStartedServerEvent event)
+    {
+        config = new SpongeConfig();
+        logger = LoggerFactory.getLogger(Reference.NAME);
+
+        //TODO refer to InventoryListener
+        //game.getEventManager().register(this, new InventoryListener());
+
+        Game game = Sponge.getGame();
+        game.getCommandManager().register(this, new IBCommand(), Commands.IB_CMD.replace("/", ""), "ib");
         game.getCommandManager().register(this, new AccountCommand(), Commands.ACCOUNT_NAME.replace("/", ""));
-	}
+    }
 }

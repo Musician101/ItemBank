@@ -10,7 +10,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 //TODO move to common library
 @Deprecated
@@ -67,9 +71,9 @@ public class UUIDUtils
         String PROFILE_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
         JSONParser parser = new JSONParser();
         Map<UUID, String> uuidStringMap = new HashMap<>();
-        for (UUID uuid: uuids)
+        for (UUID uuid : uuids)
         {
-            HttpURLConnection connection = (HttpURLConnection) new URL(PROFILE_URL+uuid.toString().replace("-", "")).openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(PROFILE_URL + uuid.toString().replace("-", "")).openConnection();
             JSONObject response = (JSONObject) parser.parse(new InputStreamReader(connection.getInputStream()));
             String name = (String) response.get("name");
             if (name == null)

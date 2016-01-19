@@ -50,47 +50,47 @@ public class InventoryListener
         this.page = page;
     }
 
-	// player.getUniqueId() and UUID are not always the same.
-	private void saveAccount(Player player, String worldName, UUID uuid, OrderedInventory topInv, OrderedInventory playerInv, int page)
-	{
-		OrderedInventory account;
-		try
-		{
-			account = AccountUtil.getAccount(Sponge.getServer().getWorld(worldName).get(), uuid, page);
-		}
-		catch (IOException e)
-		{
-			player.sendMessage(TextUtils.redText(Messages.IO_EX));
+    // player.getUniqueId() and UUID are not always the same.
+    private void saveAccount(Player player, String worldName, UUID uuid, OrderedInventory topInv, OrderedInventory playerInv, int page)
+    {
+        OrderedInventory account;
+        try
+        {
+            account = AccountUtil.getAccount(Sponge.getServer().getWorld(worldName).get(), uuid, page);
+        }
+        catch (IOException e)
+        {
+            player.sendMessage(TextUtils.redText(Messages.IO_EX));
             transferInv((OrderedInventory) player.getInventory(), playerInv);
-			return;
-		}
-		catch (ClassNotFoundException | ObjectMappingException | ParseException | SQLException e)
-		{
-			player.sendMessage(TextUtils.redText(Messages.PARSE_EX));
+            return;
+        }
+        catch (ClassNotFoundException | ObjectMappingException | ParseException | SQLException e)
+        {
+            player.sendMessage(TextUtils.redText(Messages.PARSE_EX));
             transferInv((OrderedInventory) player.getInventory(), playerInv);
-			return;
-		}
+            return;
+        }
 
-		transferInv(account, topInv);
-		try
-		{
-			AccountUtil.saveAccount(worldName, uuid, account, page);
-		}
-		catch (IOException e)
-		{
-			player.sendMessage(TextUtils.redText(Messages.IO_EX));
+        transferInv(account, topInv);
+        try
+        {
+            AccountUtil.saveAccount(worldName, uuid, account, page);
+        }
+        catch (IOException e)
+        {
+            player.sendMessage(TextUtils.redText(Messages.IO_EX));
             transferInv((OrderedInventory) player.getInventory(), playerInv);
-			return;
-		}
-		catch (ClassNotFoundException | ObjectMappingException | SQLException e)
-		{
-			player.sendMessage(TextUtils.redText(Messages.PARSE_EX));
+            return;
+        }
+        catch (ClassNotFoundException | ObjectMappingException | SQLException e)
+        {
+            player.sendMessage(TextUtils.redText(Messages.PARSE_EX));
             transferInv((OrderedInventory) player.getInventory(), playerInv);
-			return;
-		}
-		
-		player.sendMessage(TextUtils.greenText(Messages.ACCOUNT_UPDATED));
-	}
+            return;
+        }
+
+        player.sendMessage(TextUtils.greenText(Messages.ACCOUNT_UPDATED));
+    }
 
     private void transferInv(OrderedInventory transferTo, OrderedInventory transferFrom)
     {
@@ -101,16 +101,16 @@ public class InventoryListener
                 transferTo.set(new SlotIndex(x), itemStack.get());
         }
     }
-	
-	@Listener
-	public void onInventoryClose(InteractInventoryEvent.Close event)
-	{
-		//TODO missing methods
+
+    @Listener
+    public void onInventoryClose(InteractInventoryEvent.Close event)
+    {
+        //TODO missing methods
         Optional<Player> playerOptional = event.getCause().first(Player.class);
         if (!playerOptional.isPresent())
             return;
 
-		Player player = playerOptional.get();
+        Player player = playerOptional.get();
         if (player.getUniqueId() != viewer)
             return;
 
@@ -209,7 +209,7 @@ public class InventoryListener
                 }
             }
         }
-	}
+    }
 
     private void dropItemOnPlayer(Player player, ItemStack itemStack)
     {
