@@ -61,7 +61,7 @@ public class PurgeCommand extends AbstractSpongeCommand
                 return CommandResult.success();
             }
 
-            File file = SpongeItemBank.config.getPlayerFile(uuid);
+            File file = SpongeItemBank.accountStorage.getFile(uuid);
             if (!file.exists())
             {
                 source.sendMessage(TextUtils.redText(Messages.PURGE_NO_FILE));
@@ -94,13 +94,7 @@ public class PurgeCommand extends AbstractSpongeCommand
             }
         }
         else
-        {
-            File[] files = SpongeItemBank.config.getPlayerData().listFiles();
-            if (files != null)
-                for (File file : files)
-                    if (!file.delete())
-                        source.sendMessage(TextUtils.redText(Messages.purgeFileFail(file)));
-        }
+            SpongeItemBank.accountStorage.resetAll().forEach(file -> source.sendMessage(TextUtils.redText(Messages.purgeFileFail(file))));
 
         source.sendMessage(TextUtils.redText(Messages.PURGE_MULTIPLE));
         return CommandResult.empty();

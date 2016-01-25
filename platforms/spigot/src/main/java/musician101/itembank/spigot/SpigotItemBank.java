@@ -2,10 +2,11 @@ package musician101.itembank.spigot;
 
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.itembank.common.MySQLHandler;
+import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.spigot.command.account.AccountCommand;
 import musician101.itembank.spigot.command.itembank.IBCommand;
 import musician101.itembank.spigot.config.SpigotConfig;
-import musician101.itembank.spigot.lib.Messages;
+import musician101.itembank.spigot.inventory.SpigotAccountStorage;
 import musician101.itembank.spigot.util.Updater;
 import musician101.itembank.spigot.util.Updater.UpdateResult;
 import musician101.itembank.spigot.util.Updater.UpdateType;
@@ -24,11 +25,12 @@ public class SpigotItemBank extends JavaPlugin
     private Economy econ;
     private List<AbstractSpigotCommand> commands;
     private MySQLHandler mysql;
+    private SpigotAccountStorage accountStorage;
     private SpigotConfig config;
 
     private boolean setupEconomy()
     {
-        if (!config.enableVault())
+        if (!config.useEconomy())
             return false;
 
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
@@ -42,16 +44,16 @@ public class SpigotItemBank extends JavaPlugin
     private void versionCheck()
     {
         if (!config.checkForUpdate())
-            getLogger().info("Update check is disabled.");
+            getLogger().info(Messages.UPDATER_DISABLED);
         else
         {
             Updater updater = new Updater(this, 59073, this.getFile(), UpdateType.NO_DOWNLOAD, true);
             if (updater.getResult() == UpdateResult.UPDATE_AVAILABLE)
-                getLogger().info(Messages.UPDATER_NEW + " " + updater.getLatestName());
+                getLogger().info(Messages.updaterNew(updater.getLatestName()));
             else if (updater.getResult() == UpdateResult.NO_UPDATE)
-                getLogger().info(Messages.UPDATER_CURRENT + " " + updater.getLatestName());
+                getLogger().info(Messages.UPDATER_UP_TO_DATE);
             else
-                getLogger().info(Messages.UPDATER_ERROR);
+                getLogger().info(Messages.UPDATER_FAILED);
         }
     }
 
@@ -61,7 +63,7 @@ public class SpigotItemBank extends JavaPlugin
         config = new SpigotConfig(this);
         versionCheck();
         setupEconomy();
-
+        accountStorage = SpigotAccountStorage.load(this);
         commands = Arrays.asList(new AccountCommand(this), new IBCommand(this));
     }
 
@@ -114,5 +116,10 @@ public class SpigotItemBank extends JavaPlugin
     public List<AbstractSpigotCommand> getCommands()
     {
         return commands;
+    }
+
+    public SpigotAccountStorage getAccountStorage()
+    {
+        return accountStorage;
     }
 }

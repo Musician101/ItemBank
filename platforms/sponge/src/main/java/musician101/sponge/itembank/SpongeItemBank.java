@@ -6,6 +6,7 @@ import musician101.itembank.common.Reference.Commands;
 import musician101.sponge.itembank.command.account.AccountCommand;
 import musician101.sponge.itembank.command.itembank.IBCommand;
 import musician101.sponge.itembank.config.SpongeConfig;
+import musician101.sponge.itembank.inventory.SpongeAccountStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
@@ -17,19 +18,17 @@ import org.spongepowered.api.plugin.Plugin;
 @Plugin(id = "itembank", name = "ItemBank", version = "3.0")
 public class SpongeItemBank
 {
-    public static SpongeConfig config;
     public static Logger logger;
     public static MySQLHandler mysql;
+    public static SpongeAccountStorage accountStorage;
+    public static SpongeConfig config;
 
     @Listener
     public void preInit(GameStartedServerEvent event)
     {
         config = new SpongeConfig();
         logger = LoggerFactory.getLogger(Reference.NAME);
-
-        //TODO refer to InventoryListener
-        //game.getEventManager().register(this, new InventoryListener());
-
+        accountStorage = SpongeAccountStorage.load();
         Game game = Sponge.getGame();
         game.getCommandManager().register(this, new IBCommand(), Commands.IB_CMD.replace("/", ""), "ib");
         game.getCommandManager().register(this, new AccountCommand(), Commands.ACCOUNT_NAME.replace("/", ""));

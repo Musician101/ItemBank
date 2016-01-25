@@ -3,8 +3,11 @@ package musician101.itembank.spigot.command.itembank;
 import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
+import musician101.itembank.common.Reference.Commands;
+import musician101.itembank.common.Reference.Messages;
+import musician101.itembank.common.Reference.MySQL;
+import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.lib.Messages;
 import musician101.itembank.spigot.util.IBUtils;
 import org.bukkit.command.CommandSender;
 import org.json.simple.parser.ParseException;
@@ -22,7 +25,7 @@ public class PurgeCommand extends AbstractSpigotCommand
 
     public PurgeCommand(SpigotItemBank plugin)
     {
-        super("purge", "Delete all or a specified player's account.", Arrays.asList(new SpigotCommandArgument("/itembank"), new SpigotCommandArgument("purge"), new SpigotCommandArgument("player", Syntax.OPTIONAL)), 0, "itembank.purge", false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+        super(Commands.PURGE_NAME, Commands.PURGE_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.PURGE_NAME), new SpigotCommandArgument(Commands.PLAYER, Syntax.OPTIONAL)), 0, Permissions.PURGE, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
         this.plugin = plugin;
     }
 
@@ -49,7 +52,7 @@ public class PurgeCommand extends AbstractSpigotCommand
             {
                 try
                 {
-                    plugin.getMySQLHandler().querySQL("DROP TABLE IF EXISTS ib_" + uuid.toString().replace("-", "_"));
+                    plugin.getMySQLHandler().querySQL(MySQL.deleteAccount(uuid));
                 }
                 catch (ClassNotFoundException | SQLException e)
                 {
@@ -61,25 +64,18 @@ public class PurgeCommand extends AbstractSpigotCommand
                 return true;
             }
 
-            File file = plugin.getPluginConfig().getPlayerFile(uuid);
+            File file = plugin.getAccountStorage().getFile(uuid);
             if (!file.exists())
             {
                 sender.sendMessage(Messages.PURGE_NO_FILE);
                 return false;
             }
 
-            file.delete();
-            try
-            {
-                IBUtils.createPlayerFile(file);
-            }
-            catch (IOException e)
-            {
-                sender.sendMessage(Messages.IO_EX);
-                return false;
-            }
+            if (!file.delete())
+                sender.sendMessage(Messages.fileDeleteFail(file));
+            else
+                sender.sendMessage(Messages.PURGE_SINGLE);
 
-            sender.sendMessage(Messages.PURGE_SINGLE);
             return true;
         }
 
@@ -105,19 +101,8 @@ public class PurgeCommand extends AbstractSpigotCommand
             return true;
         }
 
-        //noinspection ConstantConditions
-        for (File file : plugin.getPluginConfig().getPlayerData().listFiles())
-            file.delete();
-
-        try
-        {
-            IBUtils.createPlayerFiles(plugin);
-        }
-        catch (IOException e)
-        {
-            sender.sendMessage(Messages.IO_EX);
-            return false;
-        }
+        for (File file : plugin.getAccountStorage().resetAll())
+            sender.sendMessage(Messages.fileDeleteFail(file));
 
         sender.sendMessage(Messages.PURGE_MULTIPLE);
         return true;

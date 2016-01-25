@@ -1,29 +1,29 @@
 package musician101.itembank.common;
 
-import java.io.File;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class AbstractConfig
+public abstract class AbstractConfig<ItemStack>
 {
-    private boolean checkForUpdate = true;
-    private boolean isMultiWorldStorageEnabled = false;
-    private boolean isWhitelist = false;
-    private boolean useMYSQL = false;
-    private int pageLimit = 0;
-    private String format = "json";
+    protected boolean enableEconomy = false;
+    protected boolean checkForUpdate = true;
+    protected boolean isMultiWorldStorageEnabled = false;
+    protected boolean isWhitelist = false;
+    protected boolean useMySQL = false;
+    protected double transactionCost;
+    protected int pageLimit = 0;
+    protected List<ItemStack> itemList = new ArrayList<>();
 
-    protected AbstractConfig()
-    {
-    }
+    protected AbstractConfig() {}
 
     public boolean checkForUpdate()
     {
         return checkForUpdate;
     }
 
-    public void setCheckForUpdate(boolean checkForUpdate)
+    public boolean useEconomy()
     {
-        this.checkForUpdate = checkForUpdate;
+        return enableEconomy;
     }
 
     public boolean isMultiWorldStorageEnabled()
@@ -31,29 +31,19 @@ public abstract class AbstractConfig
         return isMultiWorldStorageEnabled;
     }
 
-    public void setMultiWorldStorageEnabled(boolean isMultiWorldStorageEnabled)
-    {
-        this.isMultiWorldStorageEnabled = isMultiWorldStorageEnabled;
-    }
-
     public boolean isWhitelist()
     {
         return isWhitelist;
     }
 
-    public void setIsWhitelist(boolean isWhitelist)
+    public boolean useMySQL()
     {
-        this.isWhitelist = isWhitelist;
+        return useMySQL;
     }
 
-    public boolean useMYSQL()
+    public double getTransactionCost()
     {
-        return useMYSQL;
-    }
-
-    public void setUseMySQL(boolean useMYSQL)
-    {
-        this.useMYSQL = useMYSQL;
+        return transactionCost;
     }
 
     public int getPageLimit()
@@ -61,20 +51,7 @@ public abstract class AbstractConfig
         return pageLimit;
     }
 
-    public void setPageLimit(int pageLimit)
-    {
-        this.pageLimit = pageLimit;
-    }
+    public abstract ItemStack getItem(ItemStack itemStack);
 
-    public String getFormat()
-    {
-        return format;
-    }
-
-    public void setFormat(String format)
-    {
-        this.format = format;
-    }
-
-    public abstract File getPlayerFile(UUID uuid);
+    protected abstract void reload();
 }

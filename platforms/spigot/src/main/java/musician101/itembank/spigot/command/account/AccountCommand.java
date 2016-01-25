@@ -5,8 +5,8 @@ import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
 import musician101.common.java.minecraft.spigot.command.SpigotHelpCommand;
 import musician101.itembank.common.Reference.Commands;
+import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.lib.Messages;
 import musician101.itembank.spigot.util.IBUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,7 +23,7 @@ public class AccountCommand extends AbstractSpigotCommand
 
     public AccountCommand(SpigotItemBank plugin)
     {
-        super(Commands.ACCOUNT_NAME, Messages.ACCOUNT_DESC, Arrays.asList(new SpigotCommandArgument("/account"), new SpigotCommandArgument("page:<page>", Syntax.OPTIONAL), new SpigotCommandArgument("player:<player>", Syntax.OPTIONAL), new SpigotCommandArgument("world:<world>")), 0, "itembank.account", true, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+        super(Commands.ACCOUNT_NAME, Commands.ACCOUNT_DESC, Arrays.asList(new SpigotCommandArgument("/account"), new SpigotCommandArgument("page:<page>", Syntax.OPTIONAL), new SpigotCommandArgument("player:<player>", Syntax.OPTIONAL), new SpigotCommandArgument("world:<world>")), 0, "itembank.account", true, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
         this.plugin = plugin;
     }
 
@@ -41,7 +41,6 @@ public class AccountCommand extends AbstractSpigotCommand
         Player player = (Player) sender;
         UUID uuid = player.getUniqueId();
         World world = player.getWorld();
-        //TODO need to get InventoryManager of some sort
         if (args.length > 0)
         {
             if (args[0].equalsIgnoreCase("help"))
@@ -113,6 +112,6 @@ public class AccountCommand extends AbstractSpigotCommand
             }
         }
 
-        return IBUtils.openInv(plugin, player, world.getName(), uuid, page);
+        return plugin.getAccountStorage().openInv(player, uuid, world, page);
     }
 }

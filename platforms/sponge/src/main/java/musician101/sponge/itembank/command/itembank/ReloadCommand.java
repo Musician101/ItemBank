@@ -27,7 +27,7 @@ public class ReloadCommand extends AbstractSpongeCommand
         if (!testPermission(source))
             return CommandResult.empty();
 
-        SpongeItemBank.config.reloadConfiguration();
+        SpongeItemBank.config.reload();
         source.sendMessage(TextUtils.greenText(Messages.RELOAD_SUCCESS));
         return CommandResult.success();
     }

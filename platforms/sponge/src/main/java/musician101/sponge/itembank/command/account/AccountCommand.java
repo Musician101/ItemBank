@@ -9,21 +9,14 @@ import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.common.UUIDUtils;
 import musician101.sponge.itembank.SpongeItemBank;
-import musician101.sponge.itembank.util.AccountUtil;
 import musician101.sponge.itembank.util.IBUtils;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.json.simple.parser.ParseException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nonnull;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,37 +28,6 @@ public class AccountCommand extends AbstractSpongeCommand
         super(Commands.ACCOUNT_NAME, Commands.ACCOUNT_DESC, Arrays.asList(new SpongeCommandArgument("/" + Commands.ACCOUNT_NAME), new SpongeCommandArgument(Commands.PAGE_ACCOUNT, Syntax.OPTIONAL), new SpongeCommandArgument(Commands.PLAYER_ACCOUNT, Syntax.OPTIONAL), new SpongeCommandArgument(Commands.WORLD_ACCOUNT)), 0, "", true, TextUtils.redText(Messages.NO_PERMISSION), TextUtils.redText(Messages.PLAYER_CMD));
     }
 
-    private void openInv(Player player, World world, UUID uuid, int page)
-    {
-        Inventory inv;
-        try
-        {
-            inv = AccountUtil.getAccount(world, uuid, page);
-        }
-        catch (ClassNotFoundException | SQLException e)
-        {
-            player.sendMessage(TextUtils.redText(Messages.SQL_EX));
-            return;
-        }
-        catch (FileNotFoundException e)
-        {
-            player.sendMessage(TextUtils.redText(Messages.NO_FILE_EX));
-            return;
-        }
-        catch (IOException e)
-        {
-            player.sendMessage(TextUtils.redText(Messages.IO_EX));
-            return;
-        }
-        catch (ObjectMappingException | ParseException e)
-        {
-            player.sendMessage(TextUtils.redText(Messages.PARSE_EX));
-            return;
-        }
-
-        player.openInventory(inv);
-    }
-
     @Nonnull
     @Override
     public CommandResult process(@Nonnull CommandSource source, @Nonnull String arguments)
@@ -73,6 +35,7 @@ public class AccountCommand extends AbstractSpongeCommand
         if (!testPermission(source))
             return CommandResult.empty();
 
+        //TODO missing help command and argument length check
         Player player = (Player) source;
         String[] args = (arguments.length() == 0 ? new String[]{} : splitArgs(arguments));
         int page = 1;
@@ -130,7 +93,7 @@ public class AccountCommand extends AbstractSpongeCommand
             return CommandResult.empty();
         }
 
-        openInv(player, world, uuid, 1);
+        SpongeItemBank.accountStorage.openInv(player, uuid, world, 1);
         return CommandResult.success();
     }
 
