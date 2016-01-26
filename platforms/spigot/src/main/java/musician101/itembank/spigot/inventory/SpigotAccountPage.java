@@ -1,15 +1,8 @@
 package musician101.itembank.spigot.inventory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.UUID;
-
 import musician101.itembank.common.Reference.Messages;
-import musician101.itembank.common.account.AbstractAccountPage;
 import musician101.itembank.common.Reference.Permissions;
+import musician101.itembank.common.account.AbstractAccountPage;
 import musician101.itembank.spigot.SpigotItemBank;
 import musician101.itembank.spigot.config.SpigotConfig;
 import net.md_5.bungee.api.ChatColor;
@@ -25,7 +18,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.json.simple.parser.ParseException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.UUID;
 
 public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, Inventory, ItemStack, Player, String, World> implements Listener
 {
@@ -46,12 +45,7 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
         {
             inv = getAccount();
         }
-        catch (IOException e)
-        {
-            viewer.sendMessage(ChatColor.RED + Messages.IO_EX);
-            return false;
-        }
-        catch (InvalidConfigurationException | ParseException e)
+        catch (IOException | InvalidConfigurationException e)
         {
             viewer.sendMessage(ChatColor.RED + Messages.fileLoadFail(plugin.getAccountStorage().getFile(owner)));
             return false;
@@ -191,12 +185,7 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
             returnInv(playerInv, Messages.NO_FILE_EX);
             return;
         }
-        catch (IOException e)
-        {
-            returnInv(playerInv, Messages.IO_EX);
-            return;
-        }
-        catch (InvalidConfigurationException | ParseException e)
+        catch (InvalidConfigurationException | IOException e)
         {
             returnInv(playerInv, Messages.fileLoadFail(plugin.getAccountStorage().getFile(owner)));
             return;
@@ -243,12 +232,7 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
             returnInv(playerInv, Messages.NO_FILE_EX);
             return;
         }
-        catch (IOException e)
-        {
-            returnInv(playerInv, Messages.IO_EX);
-            return;
-        }
-        catch (InvalidConfigurationException e)
+        catch (InvalidConfigurationException | IOException e)
         {
             returnInv(playerInv, Messages.fileLoadFail(file));
             return;
@@ -273,7 +257,7 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
     }
 
     @Override
-    protected Inventory getAccount() throws ClassNotFoundException, IOException, InvalidConfigurationException, ParseException, SQLException
+    protected Inventory getAccount() throws ClassNotFoundException, IOException, InvalidConfigurationException, SQLException
     {
         final Inventory inv = Bukkit.createInventory(viewer, 54, Bukkit.getOfflinePlayer(owner).getName() + " - Page " + page);
         if (plugin.getPluginConfig().useMySQL())

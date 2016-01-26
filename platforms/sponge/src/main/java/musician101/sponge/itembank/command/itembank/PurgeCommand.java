@@ -84,7 +84,7 @@ public class PurgeCommand extends AbstractSpongeCommand
             {
                 ResultSet rs = SpongeItemBank.mysql.getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
                 while (rs.next())
-                    if (rs.getString(3).contains("ib_"))
+                    if (rs.getString(3).startsWith("ib_"))
                         SpongeItemBank.mysql.querySQL("DROP TABLE " + rs.getString(3));
             }
             catch (SQLException | ClassNotFoundException e)

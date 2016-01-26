@@ -4,6 +4,8 @@ import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.sponge.TextUtils;
 import musician101.common.java.minecraft.sponge.command.AbstractSpongeCommand;
 import musician101.common.java.minecraft.sponge.command.SpongeCommandArgument;
+import musician101.common.java.minecraft.sponge.command.SpongeHelpCommand;
+import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
@@ -11,9 +13,12 @@ import musician101.itembank.common.UUIDUtils;
 import musician101.sponge.itembank.SpongeItemBank;
 import musician101.sponge.itembank.util.IBUtils;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nonnull;
@@ -25,65 +30,73 @@ public class AccountCommand extends AbstractSpongeCommand
 {
     public AccountCommand()
     {
-        super(Commands.ACCOUNT_NAME, Commands.ACCOUNT_DESC, Arrays.asList(new SpongeCommandArgument("/" + Commands.ACCOUNT_NAME), new SpongeCommandArgument(Commands.PAGE_ACCOUNT, Syntax.OPTIONAL), new SpongeCommandArgument(Commands.PLAYER_ACCOUNT, Syntax.OPTIONAL), new SpongeCommandArgument(Commands.WORLD_ACCOUNT)), 0, "", true, TextUtils.redText(Messages.NO_PERMISSION), TextUtils.redText(Messages.PLAYER_CMD));
+        super(Commands.ACCOUNT_NAME, Commands.ACCOUNT_DESC, Arrays.asList(new SpongeCommandArgument("/" + Commands.ACCOUNT_NAME), new SpongeCommandArgument(Commands.getAccountArg(Commands.PAGE), Syntax.OPTIONAL), new SpongeCommandArgument(Commands.getAccountArg(Commands.PLAYER), Syntax.OPTIONAL), new SpongeCommandArgument(Commands.getAccountArg(Commands.WORLD), Syntax.OPTIONAL)), 0, "", true, TextUtils.redText(Messages.NO_PERMISSION), TextUtils.redText(Messages.PLAYER_CMD));
     }
 
     @Nonnull
     @Override
-    public CommandResult process(@Nonnull CommandSource source, @Nonnull String arguments)
+    public CommandResult process(@Nonnull CommandSource source, @Nonnull String arguments) throws CommandException
     {
         if (!testPermission(source))
             return CommandResult.empty();
 
-        //TODO missing help command and argument length check
         Player player = (Player) source;
         String[] args = (arguments.length() == 0 ? new String[]{} : splitArgs(arguments));
+        if (args.length > 1 && args[0].equalsIgnoreCase(Commands.HELP))
+        {
+            Text ends = Text.builder(Commands.HEADER_ENDS).color(TextColors.DARK_GREEN).build();
+            Text middle = Text.builder(Reference.NAME + " " + Reference.VERSION).color(TextColors.WHITE).build();
+            player.sendMessage(Text.builder().append(ends, middle, ends).build());
+            return new SpongeHelpCommand(this, source).process(source, arguments);
+        }
+
         int page = 1;
         World world = player.getWorld();
         UUID uuid = player.getUniqueId();
         for (String arg : args)
         {
-            if (arg.startsWith("page:"))
+            if (arg.contains(":"))
             {
-                String number = arg.split(":")[1];
-                if (IBUtils.isNumber(number))
-                    page = Integer.parseInt(number);
-
-                if (page <= 0)
-                    page = 1;
-            }
-
-            if (arg.startsWith("player:"))
-            {
-                String playerString = arg.split(":")[1];
-                try
+                String[] argSplit = arg.split(":");
+                if (argSplit[0].equalsIgnoreCase(Commands.PAGE))
                 {
-                    uuid = UUIDUtils.getUUIDOf(playerString);
-                }
-                catch (Exception e)
-                {
-                    player.sendMessage(TextUtils.redText(Messages.UNKNOWN_EX));
-                    return CommandResult.empty();
+                    if (IBUtils.isNumber(argSplit[1]))
+                        page = Integer.parseInt(argSplit[1]);
+
+                    if (page <= 0)
+                        page = 1;
                 }
 
-                if (uuid == null)
+                if (argSplit[0].equalsIgnoreCase(Commands.PLAYER))
                 {
-                    player.sendMessage(TextUtils.redText(Messages.PLAYER_DNE));
-                    return CommandResult.empty();
-                }
-            }
+                    try
+                    {
+                        uuid = UUIDUtils.getUUIDOf(argSplit[1]);
+                    }
+                    catch (Exception e)
+                    {
+                        player.sendMessage(TextUtils.redText(Messages.UNKNOWN_EX));
+                        return CommandResult.empty();
+                    }
 
-            if (arg.startsWith("world:"))
-            {
-                String worldString = arg.split(":")[1];
-                Optional<World> wo = Sponge.getServer().getWorld(worldString);
-                if (!wo.isPresent())
+                    if (uuid == null)
+                    {
+                        player.sendMessage(TextUtils.redText(Messages.PLAYER_DNE));
+                        return CommandResult.empty();
+                    }
+                }
+
+                if (argSplit[0].equalsIgnoreCase(Commands.WORLD))
                 {
-                    player.sendMessage(TextUtils.redText(Messages.ACCOUNT_WORLD_DNE));
-                    return CommandResult.empty();
-                }
+                    Optional<World> wo = Sponge.getServer().getWorld(argSplit[1]);
+                    if (!wo.isPresent())
+                    {
+                        player.sendMessage(TextUtils.redText(Messages.ACCOUNT_WORLD_DNE));
+                        return CommandResult.empty();
+                    }
 
-                world = wo.get();
+                    world = wo.get();
+                }
             }
         }
 
@@ -93,8 +106,10 @@ public class AccountCommand extends AbstractSpongeCommand
             return CommandResult.empty();
         }
 
-        SpongeItemBank.accountStorage.openInv(player, uuid, world, 1);
-        return CommandResult.success();
+        if (SpongeItemBank.accountStorage.openInv(player, uuid, world, 1))
+            return CommandResult.success();
+
+        return CommandResult.empty();
     }
 
     private boolean canAccessPage(Player player, UUID owner, int page, World world)

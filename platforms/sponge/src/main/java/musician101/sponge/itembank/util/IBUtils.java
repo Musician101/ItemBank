@@ -5,33 +5,8 @@ import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import java.io.File;
-import java.io.IOException;
-
 public class IBUtils
 {
-    //TODO move to common?
-    @Deprecated
-    public static void createPlayerFile(File file) throws IOException
-    {
-        if (!file.exists())
-            file.createNewFile();
-    }
-
-    public static int getAmount(Inventory inv, ItemStack itemStack)
-    {
-        int amount = 0;
-        for (Inventory slot : inv.query(itemStack.getItem()))
-        {
-            ItemStack inventoryItemStack = slot.peek().get();
-            if (itemStack.getItem() == inventoryItemStack.getItem() && isSameVariant(itemStack, inventoryItemStack))
-                amount += inventoryItemStack.getQuantity();
-
-        }
-
-        return amount;
-    }
-
     public static boolean isSameVariant(ItemStack itemStack1, ItemStack itemStack2)
     {
         DataContainer container1 = itemStack1.toContainer();
@@ -42,19 +17,11 @@ public class IBUtils
                     if (container1.get(query1).get() == container2.get(query2).get())
                         return true;
 
-        // Code for possible future use
-        /*for (DataManipulator data : itemStack1.getContainers())
-        {
-            if (data instanceof VariantData)
-            {
-                Object value = ((VariantData) data).type().get();
-                String variant = (value instanceof CatalogType) ? ((CatalogType) value).getId() : value.toString();
-            }
-        }*/
-
         return false;
     }
 
+    //TODO move to common library
+    @Deprecated
     public static boolean isNumber(String s)
     {
         if (s == null)

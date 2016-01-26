@@ -9,25 +9,26 @@ public class Reference
     public static final String ID = NAME.toLowerCase();
     public static final String DESCRIPTION = "${project.description}";
     public static final String PREFIX = "[" + NAME + "] ";
+    public static final String VERSION = "3.0";
 
     public static class Commands
     {
-        public static final String ACCOUNT_NAME = "/account";
+        public static final String ACCOUNT_NAME = "account";
         public static final String ACCOUNT_DESC = "Open the first page of your account.";
+        public static final String HEADER_ENDS = " ==== ";
         public static final String HELP = "help";
         public static final String IB_CMD = "/" + ID;
-        public static final String PAGE_ACCOUNT = getAccountArg("page");
+        public static final String PAGE = "page";
         public static final String PLAYER = "player";
-        public static final String PLAYER_ACCOUNT = getAccountArg(PLAYER);
         public static final String PURGE_NAME = "purge";
         public static final String PURGE_DESC = "Delete all or a specified player's account.";
         public static final String RELOAD_NAME = "reload";
         public static final String RELOAD_DESC = "Reload the plugin's config file.";
         public static final String UUID_NAME = "uuid";
         public static final String UUID_DESC = "Get a player's UUID.";
-        public static final String WORLD_ACCOUNT = getAccountArg("world");
+        public static final String WORLD = "world";
 
-        private static String getAccountArg(String argName)
+        public static String getAccountArg(String argName)
         {
             return argName + ":<" + argName + ">";
         }
@@ -143,14 +144,19 @@ public class Reference
             return "CREATE TABLE IF NOT EXISTS " + getTableName(owner) + "(World TEXT, Page int, Slot int, ItemStack TEXT);";
         }
 
-        public static String deleteAccount(UUID owner)
-        {
-            return "DROP TABLE IF EXISTS " + getTableName(owner);
-        }
-
         public static String deleteItem(UUID owner, String worldName, int page, int slot)
         {
             return "DELETE FROM ib_" + getTableName(owner) + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";";
+        }
+
+        public static String deleteTable(String tableName)
+        {
+            return "DROP TABLE IF EXISTS " + tableName;
+        }
+
+        public static String deleteTable(UUID owner)
+        {
+            return deleteTable(getTableName(owner));
         }
 
         public static String getTable(String tableName)

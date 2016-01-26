@@ -7,7 +7,6 @@ import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.MySQL;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.itembank.common.Reference.PlayerData;
 import musician101.itembank.common.UUIDUtils;
 import musician101.itembank.common.account.AbstractAccountPage;
 import musician101.sponge.itembank.SpongeItemBank;
@@ -75,14 +74,9 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
         {
             inv = getAccount();
         }
-        catch (IOException e)
+        catch (IOException | ObjectMappingException e)
         {
-            viewer.sendMessage(TextUtils.redText(Messages.IO_EX));
-            return false;
-        }
-        catch (ObjectMappingException e)
-        {
-            viewer.sendMessage(TextUtils.redText(Messages.fileLoadFail(new File("config/" + Reference.ID, owner.toString() + PlayerData.FILE_EXTENSION))));
+            viewer.sendMessage(TextUtils.redText(Messages.fileLoadFail(SpongeItemBank.accountStorage.getFile(owner))));
             return false;
         }
         catch (ClassNotFoundException | SQLException e)
@@ -168,7 +162,15 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
                 if (itemStackOptional.isPresent())
                 {
                     ItemStack itemStack = itemStackOptional.get();
-                    int itemAmount = IBUtils.getAmount(inv, itemStack);
+                    int itemAmount = 0;
+                    for (Inventory slot : inv.query(itemStack.getItem()))
+                    {
+                        ItemStack inventoryItemStack = slot.peek().get();
+                        if (itemStack.getItem() == inventoryItemStack.getItem() && IBUtils.isSameVariant(itemStack, inventoryItemStack))
+                            itemAmount += inventoryItemStack.getQuantity();
+
+                    }
+
                     if (config.getItem(itemStack) != null && !config.isWhitelist())
                     {
                         int maxAmount = config.getItem(itemStack).getQuantity();
@@ -335,12 +337,7 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
         {
             account = getAccount();
         }
-        catch (IOException e)
-        {
-            returnInv(playerInv, Messages.IO_EX);
-            return;
-        }
-        catch (ClassNotFoundException | ObjectMappingException e)
+        catch (ClassNotFoundException | IOException | ObjectMappingException e)
         {
             returnInv(playerInv, Messages.fileLoadFail(SpongeItemBank.accountStorage.getFile(owner)));
             return;
@@ -392,12 +389,7 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
             pageNode.setValue(items);
             accountNode.getNode(world.getName(), page + "").setValue(pageNode);
         }
-        catch (IOException e)
-        {
-            returnInv(playerInv, Messages.IO_EX);
-            return;
-        }
-        catch (ClassNotFoundException | ObjectMappingException e)
+        catch (ClassNotFoundException | IOException | ObjectMappingException e)
         {
             returnInv(playerInv, Messages.fileLoadFail(SpongeItemBank.accountStorage.getFile(owner)));
             return;

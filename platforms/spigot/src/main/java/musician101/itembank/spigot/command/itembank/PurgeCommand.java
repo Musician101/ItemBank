@@ -7,10 +7,9 @@ import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.MySQL;
 import musician101.itembank.common.Reference.Permissions;
+import musician101.itembank.common.UUIDUtils;
 import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.util.IBUtils;
 import org.bukkit.command.CommandSender;
-import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,9 +37,9 @@ public class PurgeCommand extends AbstractSpigotCommand
         UUID uuid;
         try
         {
-            uuid = IBUtils.getUUIDOf(args[0]);
+            uuid = UUIDUtils.getUUIDOf(args[0]);
         }
-        catch (InterruptedException | IOException | ParseException e)
+        catch (InterruptedException | IOException e)
         {
             sender.sendMessage(Messages.UNKNOWN_EX);
             return false;
@@ -52,7 +51,7 @@ public class PurgeCommand extends AbstractSpigotCommand
             {
                 try
                 {
-                    plugin.getMySQLHandler().querySQL(MySQL.deleteAccount(uuid));
+                    plugin.getMySQLHandler().querySQL(MySQL.deleteTable(uuid));
                 }
                 catch (ClassNotFoundException | SQLException e)
                 {
@@ -87,8 +86,8 @@ public class PurgeCommand extends AbstractSpigotCommand
                 while (rs.next())
                 {
                     sender.sendMessage(rs.getString(3));
-                    if (rs.getString(3).contains("ib_"))
-                        plugin.getMySQLHandler().querySQL("DROP TABLE " + rs.getString(3));
+                    if (rs.getString(3).startsWith(MySQL.TABLE_PREFIX))
+                        plugin.getMySQLHandler().querySQL(MySQL.deleteTable(rs.getString(3)));
                 }
             }
             catch (SQLException | ClassNotFoundException e)
