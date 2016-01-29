@@ -62,7 +62,8 @@ public class SpigotItemBank extends JavaPlugin
     {
         config = new SpigotConfig(this);
         versionCheck();
-        setupEconomy();
+        if (!setupEconomy())
+            getLogger().warning(Messages.ECON_LOAD_FAIL);
         accountStorage = SpigotAccountStorage.load(this);
         commands = Arrays.asList(new AccountCommand(this), new IBCommand(this));
     }

@@ -43,7 +43,8 @@ import java.util.zip.ZipFile;
  * @author Gravity
  * @version 2.1
  */
-
+//TODO replace with custom class
+@SuppressWarnings("ALL")
 public class Updater
 {
 

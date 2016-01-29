@@ -12,7 +12,7 @@ public abstract class AbstractConfig<ItemStack>
     protected boolean useMySQL = false;
     protected double transactionCost;
     protected int pageLimit = 0;
-    protected List<ItemStack> itemList = new ArrayList<>();
+    protected final List<ItemStack> itemList = new ArrayList<>();
 
     protected AbstractConfig() {}
 

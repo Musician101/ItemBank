@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SpongeAccountStorage extends AbstractAccountStorage<SpongeAccountPage, Player, World>
 {
@@ -97,8 +98,7 @@ public class SpongeAccountStorage extends AbstractAccountStorage<SpongeAccountPa
                     for (Object worldName : account.getChildrenMap().keySet())
                     {
                         ConfigurationNode world = account.getNode(worldName);
-                        for (Object page : world.getChildrenMap().keySet())
-                            pages.add(SpongeAccountPage.createNewPage(owner, Sponge.getServer().getWorld(worldName.toString()).get(), Integer.parseInt(page.toString())));
+                        pages.addAll(world.getChildrenMap().keySet().stream().map(page -> SpongeAccountPage.createNewPage(owner, Sponge.getServer().getWorld(worldName.toString()).get(), Integer.parseInt(page.toString()))).collect(Collectors.toList()));
                     }
 
                     accountPages.put(owner, pages);

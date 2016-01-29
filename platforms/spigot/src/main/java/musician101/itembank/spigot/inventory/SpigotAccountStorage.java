@@ -20,10 +20,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SpigotAccountStorage extends AbstractAccountStorage<SpigotAccountPage, Player, World>
 {
-    SpigotItemBank plugin;
+    private final SpigotItemBank plugin;
 
     private SpigotAccountStorage(SpigotItemBank plugin)
     {
@@ -95,8 +96,7 @@ public class SpigotAccountStorage extends AbstractAccountStorage<SpigotAccountPa
                     for (String worldName : account.getValues(false).keySet())
                     {
                         ConfigurationSection world = account.getConfigurationSection(worldName);
-                        for (String pageString : world.getValues(false).keySet())
-                            pages.add(SpigotAccountPage.createNewPage(plugin, owner, Bukkit.getWorld(worldName), Integer.parseInt(pageString)));
+                        pages.addAll(world.getValues(false).keySet().stream().map(pageString -> SpigotAccountPage.createNewPage(plugin, owner, Bukkit.getWorld(worldName), Integer.parseInt(pageString))).collect(Collectors.toList()));
                     }
 
                     accountPages.put(owner, pages);

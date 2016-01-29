@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public abstract class AbstractAccountStorage<Page extends AbstractAccountPage, Player, World>
 {
-    protected File storageDir;
-    protected Map<UUID, List<Page>> accountPages = new HashMap<>();
+    protected final File storageDir;
+    protected final Map<UUID, List<Page>> accountPages = new HashMap<>();
 
     protected AbstractAccountStorage(File storageDir)
     {

@@ -9,6 +9,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.stream.Collectors;
+
 public class SpigotConfig extends AbstractConfig<ItemStack>
 {
     private final SpigotItemBank plugin;
@@ -39,8 +41,7 @@ public class SpigotConfig extends AbstractConfig<ItemStack>
             for (String materialKey : config.getConfigurationSection(Config.ITEM_LIST).getValues(false).keySet())
             {
                 ConfigurationSection materialSection = itemListSection.getConfigurationSection(materialKey);
-                for (String durabilityKey : itemListSection.getConfigurationSection(materialKey).getValues(false).keySet())
-                    itemList.add(new ItemStack(Material.getMaterial(materialKey.toUpperCase()), materialSection.getInt(durabilityKey), Short.parseShort(durabilityKey)));
+                itemList.addAll(itemListSection.getConfigurationSection(materialKey).getValues(false).keySet().stream().map(durabilityKey -> new ItemStack(Material.getMaterial(materialKey.toUpperCase()), materialSection.getInt(durabilityKey), Short.parseShort(durabilityKey))).collect(Collectors.toList()));
             }
         }
 

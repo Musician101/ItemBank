@@ -5,10 +5,10 @@ import java.util.UUID;
 
 public abstract class AbstractAccountPage<Event, Inventory, ItemStack, Player, Serialization, World>
 {
-    protected int page;
+    protected final int page;
     protected Player viewer;
-    protected UUID owner;
-    protected World world;
+    protected final UUID owner;
+    protected final World world;
 
     protected AbstractAccountPage(UUID owner, World world, int page)
     {
