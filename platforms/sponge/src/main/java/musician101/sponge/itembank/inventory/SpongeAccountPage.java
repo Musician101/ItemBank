@@ -2,12 +2,12 @@ package musician101.sponge.itembank.inventory;
 
 import com.google.common.reflect.TypeToken;
 import musician101.common.java.minecraft.sponge.TextUtils;
+import musician101.common.java.minecraft.uuid.UUIDUtils;
 import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.MySQL;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.itembank.common.UUIDUtils;
 import musician101.itembank.common.account.AbstractAccountPage;
 import musician101.sponge.itembank.SpongeItemBank;
 import musician101.sponge.itembank.config.SpongeConfig;

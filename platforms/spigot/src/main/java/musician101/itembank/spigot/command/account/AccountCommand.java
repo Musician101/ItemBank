@@ -4,13 +4,13 @@ import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
 import musician101.common.java.minecraft.spigot.command.SpigotHelpCommand;
+import musician101.common.java.minecraft.uuid.UUIDUtils;
+import musician101.common.java.util.Utils;
 import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.itembank.common.UUIDUtils;
 import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.util.IBUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -68,7 +68,7 @@ public class AccountCommand extends AbstractSpigotCommand
                     {
                         if (argSplit[0].equalsIgnoreCase(Commands.PAGE))
                         {
-                            if (IBUtils.isNumber(argSplit[1]))
+                            if (Utils.isInteger(argSplit[1]))
                                 page = Integer.parseInt(argSplit[1]);
 
                             if (page <= 0)

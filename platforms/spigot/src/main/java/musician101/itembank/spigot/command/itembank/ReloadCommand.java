@@ -3,9 +3,9 @@ package musician101.itembank.spigot.command.itembank;
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
 import musician101.itembank.common.Reference.Commands;
+import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.spigot.SpigotItemBank;
-import musician101.itembank.spigot.lib.Messages;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;

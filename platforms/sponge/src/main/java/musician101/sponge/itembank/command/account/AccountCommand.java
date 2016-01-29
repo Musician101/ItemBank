@@ -5,13 +5,13 @@ import musician101.common.java.minecraft.sponge.TextUtils;
 import musician101.common.java.minecraft.sponge.command.AbstractSpongeCommand;
 import musician101.common.java.minecraft.sponge.command.SpongeCommandArgument;
 import musician101.common.java.minecraft.sponge.command.SpongeHelpCommand;
+import musician101.common.java.minecraft.uuid.UUIDUtils;
+import musician101.common.java.util.Utils;
 import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.itembank.common.UUIDUtils;
 import musician101.sponge.itembank.SpongeItemBank;
-import musician101.sponge.itembank.util.IBUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -60,7 +60,7 @@ public class AccountCommand extends AbstractSpongeCommand
                 String[] argSplit = arg.split(":");
                 if (argSplit[0].equalsIgnoreCase(Commands.PAGE))
                 {
-                    if (IBUtils.isNumber(argSplit[1]))
+                    if (Utils.isInteger(argSplit[1]))
                         page = Integer.parseInt(argSplit[1]);
 
                     if (page <= 0)

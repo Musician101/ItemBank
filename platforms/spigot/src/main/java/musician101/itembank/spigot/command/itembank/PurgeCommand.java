@@ -3,11 +3,11 @@ package musician101.itembank.spigot.command.itembank;
 import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
+import musician101.common.java.minecraft.uuid.UUIDUtils;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.MySQL;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.itembank.common.UUIDUtils;
 import musician101.itembank.spigot.SpigotItemBank;
 import org.bukkit.command.CommandSender;
 
@@ -39,7 +39,7 @@ public class PurgeCommand extends AbstractSpigotCommand
         {
             uuid = UUIDUtils.getUUIDOf(args[0]);
         }
-        catch (InterruptedException | IOException e)
+        catch (IOException e)
         {
             sender.sendMessage(Messages.UNKNOWN_EX);
             return false;

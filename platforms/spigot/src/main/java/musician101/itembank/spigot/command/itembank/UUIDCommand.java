@@ -3,10 +3,10 @@ package musician101.itembank.spigot.command.itembank;
 import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
 import musician101.common.java.minecraft.spigot.command.SpigotCommandArgument;
+import musician101.common.java.minecraft.uuid.UUIDUtils;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
-import musician101.itembank.spigot.util.IBUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,7 +30,7 @@ public class UUIDCommand extends AbstractSpigotCommand
         {
             try
             {
-                sender.sendMessage(Messages.uuid(args[0], IBUtils.getUUIDOf(args[0])));
+                sender.sendMessage(Messages.uuid(args[0], UUIDUtils.getUUIDOf(args[0])));
                 return true;
             }
             catch (Exception e)
