@@ -1,4 +1,4 @@
-package musician101.sponge.itembank.inventory;
+package musician101.itembank.sponge.inventory;
 
 import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.common.Reference;
@@ -6,7 +6,7 @@ import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.MySQL;
 import musician101.itembank.common.Reference.PlayerData;
 import musician101.itembank.common.account.AbstractAccountStorage;
-import musician101.sponge.itembank.SpongeItemBank;
+import musician101.itembank.sponge.SpongeItemBank;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;

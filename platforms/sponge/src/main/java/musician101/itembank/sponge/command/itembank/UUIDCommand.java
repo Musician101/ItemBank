@@ -1,4 +1,4 @@
-package musician101.sponge.itembank.command.itembank;
+package musician101.itembank.sponge.command.itembank;
 
 import musician101.common.java.minecraft.command.AbstractCommandArgument.Syntax;
 import musician101.common.java.minecraft.sponge.TextUtils;

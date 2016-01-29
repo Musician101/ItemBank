@@ -1,4 +1,4 @@
-package musician101.sponge.itembank.util;
+package musician101.itembank.sponge.util;
 
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;

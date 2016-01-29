@@ -1,4 +1,4 @@
-package musician101.sponge.itembank.command.itembank;
+package musician101.itembank.sponge.command.itembank;
 
 import musician101.common.java.minecraft.sponge.TextUtils;
 import musician101.common.java.minecraft.sponge.command.AbstractSpongeCommand;
@@ -7,7 +7,7 @@ import musician101.common.java.minecraft.sponge.command.SpongeHelpCommand;
 import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
-import musician101.sponge.itembank.command.account.AccountCommand;
+import musician101.itembank.sponge.command.account.AccountCommand;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;

@@ -1,4 +1,4 @@
-package musician101.sponge.itembank.inventory;
+package musician101.itembank.sponge.inventory;
 
 import com.google.common.reflect.TypeToken;
 import musician101.common.java.minecraft.sponge.TextUtils;
@@ -9,9 +9,9 @@ import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.MySQL;
 import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.common.account.AbstractAccountPage;
-import musician101.sponge.itembank.SpongeItemBank;
-import musician101.sponge.itembank.config.SpongeConfig;
-import musician101.sponge.itembank.util.IBUtils;
+import musician101.itembank.sponge.SpongeItemBank;
+import musician101.itembank.sponge.util.IBUtils;
+import musician101.itembank.sponge.config.SpongeConfig;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;

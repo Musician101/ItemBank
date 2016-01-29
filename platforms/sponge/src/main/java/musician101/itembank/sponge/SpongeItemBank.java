@@ -1,12 +1,12 @@
-package musician101.sponge.itembank;
+package musician101.itembank.sponge;
 
 import musician101.itembank.common.MySQLHandler;
 import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Commands;
-import musician101.sponge.itembank.command.account.AccountCommand;
-import musician101.sponge.itembank.command.itembank.IBCommand;
-import musician101.sponge.itembank.config.SpongeConfig;
-import musician101.sponge.itembank.inventory.SpongeAccountStorage;
+import musician101.itembank.sponge.command.itembank.IBCommand;
+import musician101.itembank.sponge.command.account.AccountCommand;
+import musician101.itembank.sponge.config.SpongeConfig;
+import musician101.itembank.sponge.inventory.SpongeAccountStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
