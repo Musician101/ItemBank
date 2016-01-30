@@ -54,6 +54,17 @@
                                 <includes>
                                     <include>musician101.itembank:common</include>
                                 </includes>
+                                <filters>
+                                    <filter>
+                                        <artifact>musician101:common</artifact>
+                                        <includes>
+                                            <include>musician101/common/java/minecraft/sponge/**</include>
+                                            <include>musician101/common/java/minecraft/command/**</include>
+                                            <include>musician101/common/java/minecraft/util/UUIDUtils.java</include>
+                                            <include>musician101/common/java/util/Utils.java</include>
+                                        </includes>
+                                    </filter>
+                                </filters>
                             </artifactSet>
                         </configuration>
                     </execution>
