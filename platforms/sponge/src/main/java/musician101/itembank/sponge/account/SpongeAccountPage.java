@@ -10,7 +10,7 @@ import musician101.itembank.common.Reference.MySQL;
 import musician101.itembank.common.Reference.Permissions;
 import musician101.itembank.common.account.AbstractAccountPage;
 import musician101.itembank.sponge.SpongeItemBank;
-import musician101.itembank.sponge.util.IBUtils;
+import musician101.itembank.sponge.IBUtils;
 import musician101.itembank.sponge.config.SpongeConfig;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;

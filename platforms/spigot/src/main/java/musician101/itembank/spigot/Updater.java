@@ -4,7 +4,7 @@
  * This class provides the means to safely and easily update a plugin, or check to see if it is updated using dev.bukkit.org
  */
 
-package musician101.itembank.spigot.util;
+package musician101.itembank.spigot;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -43,7 +43,6 @@ import java.util.zip.ZipFile;
  * @author Gravity
  * @version 2.1
  */
-//TODO replace with custom class
 @SuppressWarnings("ALL")
 public class Updater
 {

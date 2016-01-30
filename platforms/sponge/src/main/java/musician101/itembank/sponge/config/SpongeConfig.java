@@ -6,7 +6,7 @@ import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Config;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.sponge.SpongeItemBank;
-import musician101.itembank.sponge.util.IBUtils;
+import musician101.itembank.sponge.IBUtils;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
