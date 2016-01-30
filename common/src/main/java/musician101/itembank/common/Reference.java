@@ -68,7 +68,9 @@ public class Reference
         public static final String ACCOUNT_ILLEGAL_PAGE = PREFIX + "You are not allowed to store items on this page. The items have been returned to you. If your inventory is full then check the floor.";
         public static final String ACCOUNT_UPDATED = PREFIX + "Account updated.";
         public static final String ACCOUNT_WORLD_DNE = PREFIX + "That world does not exist.";
+        public static final String ECON_LOAD_FAIL_NO_SERVICE = "No economy service was detected. Disabling economy support.";
         public static final String ECON_LOAD_FAIL = "An error occurred while enabling economy support. Economy support now disabled.";
+        public static final String ECON_LOAD_SUCCESS = "Economy service detected and enabled.";
         public static final String NO_FILE_EX = PREFIX + "Error: File not found. Please contact an administrator immediately.";
         public static final String NO_PERMISSION = PREFIX + "Error: You do not have permission for this command.";
         public static final String PLAYER_CMD = PREFIX + "Error: This is a player command.";

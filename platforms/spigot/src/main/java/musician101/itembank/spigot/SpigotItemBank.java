@@ -28,17 +28,20 @@ public class SpigotItemBank extends JavaPlugin
     private SpigotAccountStorage accountStorage;
     private SpigotConfig config;
 
-    private boolean setupEconomy()
+    private void setupEconomy()
     {
         if (!config.useEconomy())
-            return false;
+            return;
 
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null)
-            return false;
+        {
+            getLogger().warning(Messages.ECON_LOAD_FAIL_NO_SERVICE);
+            return;
+        }
 
         econ = rsp.getProvider();
-        return econ != null;
+        getLogger().info(Messages.ECON_LOAD_SUCCESS);
     }
 
     private void versionCheck()
@@ -62,8 +65,7 @@ public class SpigotItemBank extends JavaPlugin
     {
         config = new SpigotConfig(this);
         versionCheck();
-        if (!setupEconomy())
-            getLogger().warning(Messages.ECON_LOAD_FAIL);
+        setupEconomy();
         accountStorage = SpigotAccountStorage.load(this);
         commands = Arrays.asList(new AccountCommand(this), new IBCommand(this));
     }
