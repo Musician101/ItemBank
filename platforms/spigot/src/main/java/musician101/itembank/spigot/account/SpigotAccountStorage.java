@@ -1,20 +1,17 @@
-package musician101.itembank.sponge.inventory;
+package musician101.itembank.spigot.account;
 
 import musician101.itembank.common.MySQLHandler;
-import musician101.itembank.common.Reference;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.MySQL;
 import musician101.itembank.common.Reference.PlayerData;
 import musician101.itembank.common.account.AbstractAccountStorage;
-import musician101.itembank.sponge.SpongeItemBank;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.world.World;
+import musician101.itembank.spigot.SpigotItemBank;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,21 +22,23 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class SpongeAccountStorage extends AbstractAccountStorage<SpongeAccountPage, Player, World>
+public class SpigotAccountStorage extends AbstractAccountStorage<SpigotAccountPage, Player, World>
 {
-    private SpongeAccountStorage()
+    private final SpigotItemBank plugin;
+
+    private SpigotAccountStorage(SpigotItemBank plugin)
     {
-        super(new File("config/" + Reference.ID, PlayerData.DIRECTORY));
+        super(new File(plugin.getDataFolder(), PlayerData.DIRECTORY));
+        this.plugin = plugin;
         loadPages();
     }
 
     @Override
     protected void loadPages()
     {
-        Logger logger = SpongeItemBank.logger;
-        if (SpongeItemBank.config.useMySQL())
+        if (plugin.getPluginConfig().useMySQL())
         {
-            MySQLHandler mysql = SpongeItemBank.mysql;
+            MySQLHandler mysql = plugin.getMySQLHandler();
             try
             {
                 ResultSet tableSet = mysql.getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
@@ -48,17 +47,17 @@ public class SpongeAccountStorage extends AbstractAccountStorage<SpongeAccountPa
                     String tableName = tableSet.getString(3);
                     if (tableName.startsWith(MySQL.TABLE_PREFIX))
                     {
-                        List<SpongeAccountPage> pages = new ArrayList<>();
+                        List<SpigotAccountPage> pages = new ArrayList<>();
                         ResultSet pageSet = mysql.querySQL(MySQL.getTable(tableName));
                         UUID owner = MySQL.getUUIDFromTableName(tableName);
                         if (owner == null)
                         {
-                            logger.error(Messages.badUUID(tableName));
+                            plugin.getLogger().warning(Messages.badUUID(tableName));
                             return;
                         }
 
                         while (pageSet.next())
-                            pages.add(SpongeAccountPage.createNewPage(owner, Sponge.getServer().getWorld(pageSet.getString(MySQL.WORLD)).get(), pageSet.getInt(MySQL.PAGE)));
+                            pages.add(SpigotAccountPage.createNewPage(plugin, owner, Bukkit.getWorld(pageSet.getString(MySQL.WORLD)), pageSet.getInt(MySQL.PAGE)));
 
                         accountPages.put(owner, pages);
                     }
@@ -66,7 +65,7 @@ public class SpongeAccountStorage extends AbstractAccountStorage<SpongeAccountPa
             }
             catch (ClassNotFoundException | SQLException e)
             {
-                logger.error(Messages.SQL_EX);
+                plugin.getLogger().warning(Messages.SQL_EX);
             }
 
             return;
@@ -77,28 +76,27 @@ public class SpongeAccountStorage extends AbstractAccountStorage<SpongeAccountPa
         {
             if (file.getName().endsWith(PlayerData.FILE_EXTENSION))
             {
-                List<SpongeAccountPage> pages = new ArrayList<>();
+                List<SpigotAccountPage> pages = new ArrayList<>();
                 UUID owner = PlayerData.getUUIDFromFileName(file);
                 if (owner == null)
-                    logger.error(Messages.badUUID(file.getName()));
+                    plugin.getLogger().warning(Messages.badUUID(file.getName()));
                 else
                 {
-                    ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(file).build();
-                    ConfigurationNode account;
+                    YamlConfiguration account = new YamlConfiguration();
                     try
                     {
-                        account = loader.load();
+                        account.load(file);
                     }
-                    catch (IOException e)
+                    catch (InvalidConfigurationException | IOException e)
                     {
-                        logger.error(Messages.fileLoadFail(file));
+                        plugin.getLogger().warning(Messages.fileLoadFail(file));
                         return;
                     }
 
-                    for (Object worldName : account.getChildrenMap().keySet())
+                    for (String worldName : account.getValues(false).keySet())
                     {
-                        ConfigurationNode world = account.getNode(worldName);
-                        pages.addAll(world.getChildrenMap().keySet().stream().map(page -> SpongeAccountPage.createNewPage(owner, Sponge.getServer().getWorld(worldName.toString()).get(), Integer.parseInt(page.toString()))).collect(Collectors.toList()));
+                        ConfigurationSection world = account.getConfigurationSection(worldName);
+                        pages.addAll(world.getValues(false).keySet().stream().map(pageString -> SpigotAccountPage.createNewPage(plugin, owner, Bukkit.getWorld(worldName), Integer.parseInt(pageString))).collect(Collectors.toList()));
                     }
 
                     accountPages.put(owner, pages);
@@ -110,15 +108,15 @@ public class SpongeAccountStorage extends AbstractAccountStorage<SpongeAccountPa
     @Override
     public boolean openInv(Player viewer, UUID owner, World world, int page)
     {
-        for (SpongeAccountPage sap : accountPages.get(owner))
+        for (SpigotAccountPage sap : accountPages.get(owner))
             if (owner == sap.getOwner() && world.getName().equals(sap.getWorld().getName()) && page == sap.getPage())
                 return sap.openInv(viewer);
 
         return false;
     }
 
-    public static SpongeAccountStorage load()
+    public static SpigotAccountStorage load(SpigotItemBank plugin)
     {
-        return new SpongeAccountStorage();
+        return new SpigotAccountStorage(plugin);
     }
 }

@@ -1,4 +1,4 @@
-package musician101.itembank.sponge.inventory;
+package musician101.itembank.sponge.account;
 
 import com.google.common.reflect.TypeToken;
 import musician101.common.java.minecraft.sponge.TextUtils;

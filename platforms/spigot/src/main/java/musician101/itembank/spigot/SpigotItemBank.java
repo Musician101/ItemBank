@@ -6,7 +6,7 @@ import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.spigot.command.account.AccountCommand;
 import musician101.itembank.spigot.command.itembank.IBCommand;
 import musician101.itembank.spigot.config.SpigotConfig;
-import musician101.itembank.spigot.inventory.SpigotAccountStorage;
+import musician101.itembank.spigot.account.SpigotAccountStorage;
 import musician101.itembank.spigot.util.Updater;
 import musician101.itembank.spigot.util.Updater.UpdateResult;
 import musician101.itembank.spigot.util.Updater.UpdateType;

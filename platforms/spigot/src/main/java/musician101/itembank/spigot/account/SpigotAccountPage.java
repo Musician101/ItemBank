@@ -1,4 +1,4 @@
-package musician101.itembank.spigot.inventory;
+package musician101.itembank.spigot.account;
 
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
