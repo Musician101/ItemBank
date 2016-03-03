@@ -7,17 +7,18 @@ import musician101.common.java.minecraft.uuid.UUIDUtils;
 import musician101.itembank.common.Reference.Commands;
 import musician101.itembank.common.Reference.Messages;
 import musician101.itembank.common.Reference.Permissions;
+import musician101.itembank.spigot.SpigotItemBank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
-public class UUIDCommand extends AbstractSpigotCommand
+public class UUIDCommand extends AbstractSpigotCommand<SpigotItemBank>
 {
-    public UUIDCommand()
+    public UUIDCommand(SpigotItemBank plugin)
     {
-        super(Commands.UUID_NAME, Commands.UUID_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.UUID_NAME), new SpigotCommandArgument(Commands.PLAYER, Syntax.REQUIRED)), 0, Permissions.UUID, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+        super(plugin, Commands.UUID_NAME, Commands.UUID_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.UUID_NAME), new SpigotCommandArgument(Commands.PLAYER, Syntax.REQUIRED)), 0, Permissions.UUID, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
     }
 
     @Override

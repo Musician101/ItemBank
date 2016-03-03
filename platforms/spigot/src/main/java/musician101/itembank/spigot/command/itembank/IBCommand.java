@@ -13,14 +13,11 @@ import org.bukkit.command.CommandSender;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class IBCommand extends AbstractSpigotCommand
+public class IBCommand extends AbstractSpigotCommand<SpigotItemBank>
 {
-    private final SpigotItemBank plugin;
-
     public IBCommand(SpigotItemBank plugin)
     {
-        super(Reference.ID, Reference.DESCRIPTION, Collections.singletonList(new SpigotCommandArgument(Commands.IB_CMD)), 0, "", false, Messages.NO_PERMISSION, Messages.PLAYER_CMD, Arrays.asList(new PurgeCommand(plugin), new ReloadCommand(plugin), new UUIDCommand()));
-        this.plugin = plugin;
+        super(plugin, Reference.ID, Reference.DESCRIPTION, Collections.singletonList(new SpigotCommandArgument(Commands.IB_CMD)), 0, "", false, Messages.NO_PERMISSION, Messages.PLAYER_CMD, Arrays.asList(new PurgeCommand(plugin), new ReloadCommand(plugin), new UUIDCommand(plugin)));
     }
 
     @Override
@@ -33,7 +30,7 @@ public class IBCommand extends AbstractSpigotCommand
                 String ends = ChatColor.DARK_GREEN + Commands.HEADER_ENDS;
                 String middle = ChatColor.RESET + Reference.NAME + " " + Reference.VERSION;
                 sender.sendMessage(ends + middle + ends);
-                return new SpigotHelpCommand(this).onCommand(sender, moveArguments(args));
+                return new SpigotHelpCommand<>(plugin, this).onCommand(sender, moveArguments(args));
             }
 
             for (AbstractSpigotCommand command : getSubCommands())
@@ -45,7 +42,7 @@ public class IBCommand extends AbstractSpigotCommand
         String middle = ChatColor.RESET + Reference.NAME + " " + Reference.VERSION;
         sender.sendMessage(ends + middle + ends);
         for (AbstractSpigotCommand command : plugin.getCommands())
-            sender.sendMessage(new SpigotHelpCommand(command).getCommandHelpInfo());
+            sender.sendMessage(new SpigotHelpCommand<>(plugin, command).getCommandHelpInfo());
 
         return true;
     }

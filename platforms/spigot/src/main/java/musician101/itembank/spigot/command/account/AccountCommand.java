@@ -20,13 +20,11 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class AccountCommand extends AbstractSpigotCommand
+public class AccountCommand extends AbstractSpigotCommand<SpigotItemBank>
 {
-    private final SpigotItemBank plugin;
-
     public AccountCommand(SpigotItemBank plugin)
     {
-        super(Commands.ACCOUNT_NAME, Commands.ACCOUNT_DESC, Arrays.asList(new SpigotCommandArgument("/" + Commands.ACCOUNT_NAME), new SpigotCommandArgument(Commands.getAccountArg(Commands.PAGE), Syntax.OPTIONAL), new SpigotCommandArgument(Commands.getAccountArg(Commands.PLAYER), Syntax.OPTIONAL), new SpigotCommandArgument(Commands.getAccountArg(Commands.PAGE), Syntax.OPTIONAL)), 0, "", true, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+        super(plugin, Commands.ACCOUNT_NAME, Commands.ACCOUNT_DESC, Arrays.asList(new SpigotCommandArgument("/" + Commands.ACCOUNT_NAME), new SpigotCommandArgument(Commands.getAccountArg(Commands.PAGE), Syntax.OPTIONAL), new SpigotCommandArgument(Commands.getAccountArg(Commands.PLAYER), Syntax.OPTIONAL), new SpigotCommandArgument(Commands.getAccountArg(Commands.PAGE), Syntax.OPTIONAL)), 0, "", true, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
         this.plugin = plugin;
     }
 
@@ -36,7 +34,7 @@ public class AccountCommand extends AbstractSpigotCommand
         if (!(sender instanceof Player))
         {
             sender.sendMessage(ChatColor.RED + Messages.PLAYER_CMD);
-            return new SpigotHelpCommand(this).onCommand(sender, moveArguments(args));
+            return new SpigotHelpCommand<>(plugin, this).onCommand(sender, moveArguments(args));
         }
 
         Player player = (Player) sender;
@@ -56,7 +54,7 @@ public class AccountCommand extends AbstractSpigotCommand
                 String ends = ChatColor.DARK_GREEN + Commands.HEADER_ENDS;
                 String middle = ChatColor.RESET + Reference.NAME + " " + Reference.VERSION;
                 player.sendMessage(ends + middle + ends);
-                return new SpigotHelpCommand(this).onCommand(sender, moveArguments(args));
+                return new SpigotHelpCommand<>(plugin, this).onCommand(sender, moveArguments(args));
             }
 
             for (String arg : args)

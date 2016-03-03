@@ -10,13 +10,13 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 
-public class ReloadCommand extends AbstractSpigotCommand
+public class ReloadCommand extends AbstractSpigotCommand<SpigotItemBank>
 {
     private final SpigotItemBank plugin;
 
     public ReloadCommand(SpigotItemBank plugin)
     {
-        super(Commands.RELOAD_NAME, Commands.RELOAD_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.RELOAD_NAME)), 0, Permissions.RELOAD, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+        super(plugin, Commands.RELOAD_NAME, Commands.RELOAD_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.RELOAD_NAME)), 0, Permissions.RELOAD, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
         this.plugin = plugin;
     }
 

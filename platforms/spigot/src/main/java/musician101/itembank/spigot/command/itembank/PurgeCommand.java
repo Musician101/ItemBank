@@ -18,13 +18,11 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class PurgeCommand extends AbstractSpigotCommand
+public class PurgeCommand extends AbstractSpigotCommand<SpigotItemBank>
 {
-    private final SpigotItemBank plugin;
-
     public PurgeCommand(SpigotItemBank plugin)
     {
-        super(Commands.PURGE_NAME, Commands.PURGE_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.PURGE_NAME), new SpigotCommandArgument(Commands.PLAYER, Syntax.OPTIONAL)), 0, Permissions.PURGE, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
+        super(plugin, Commands.PURGE_NAME, Commands.PURGE_DESC, Arrays.asList(new SpigotCommandArgument(Commands.IB_CMD), new SpigotCommandArgument(Commands.PURGE_NAME), new SpigotCommandArgument(Commands.PLAYER, Syntax.OPTIONAL)), 0, Permissions.PURGE, false, Messages.NO_PERMISSION, Messages.PLAYER_CMD);
         this.plugin = plugin;
     }
 
