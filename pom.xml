@@ -1,35 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>musician101</groupId>
+    <groupId>io.musician101</groupId>
     <artifactId>itembank</artifactId>
-    <version>3.0</version>
+    <version>3.1</version>
     <name>ItemBank</name>
     <description>Virtual chest with configurable limits.</description>
     <packaging>pom</packaging>
 
     <modules>
         <module>common</module>
-        <module>platforms/spigot</module>
-        <module>platforms/sponge</module>
+        <module>spigot</module>
+        <module>sponge</module>
     </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>musician101</groupId>
-            <artifactId>common</artifactId>
-            <version>2.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-
-    <repositories>
-        <repository>
-            <id>Common-mvn-repo</id>
-            <url>https://raw.github.com/Musician101/Common/mvn-repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
