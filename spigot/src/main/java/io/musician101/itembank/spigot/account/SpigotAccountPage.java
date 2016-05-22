@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,14 +29,13 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 @SuppressWarnings("WeakerAccess")
-public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, Inventory, ItemStack, Player, String, World> implements Listener
+public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, PlayerQuitEvent, Inventory, ItemStack, Player, String, World> implements Listener
 {
-    private final SpigotItemBank plugin;
+    private static final String ITEM = "item";
 
-    private SpigotAccountPage(SpigotItemBank plugin, UUID owner, World world, int page)
+    private SpigotAccountPage(UUID owner, World world, int page)
     {
         super(owner, world, page);
-        this.plugin = plugin;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
         }
         catch (IOException | InvalidConfigurationException e)//NOSONAR
         {
-            viewer.sendMessage(ChatColor.RED + Messages.fileLoadFail(plugin.getAccountStorage().getFile(owner)));
+            viewer.sendMessage(ChatColor.RED + Messages.fileLoadFail(SpigotItemBank.instance().getAccountStorage().getFile(owner)));
             return false;
         }
         catch (ClassNotFoundException | SQLException e)//NOSONAR
@@ -59,32 +59,29 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
         }
 
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(viewer.getUniqueId());
-        if (offlinePlayer.getUniqueId() == owner && plugin.getEconomy() != null && plugin.getPluginConfig().useEconomy())
+        if (offlinePlayer.getUniqueId() == owner && SpigotItemBank.instance().getEconomy() != null && SpigotItemBank.instance().getPluginConfig().useEconomy())
         {
-            if (plugin.getEconomy() != null && !plugin.getEconomy().withdrawPlayer(offlinePlayer, plugin.getPluginConfig().getTransactionCost()).transactionSuccess())
+            if (SpigotItemBank.instance().getEconomy() != null && !SpigotItemBank.instance().getEconomy().withdrawPlayer(offlinePlayer, SpigotItemBank.instance().getPluginConfig().getTransactionCost()).transactionSuccess())
             {
                 viewer.sendMessage(ChatColor.RED + Messages.ACCOUNT_ECON_WITHDRAW_FAIL);
                 return false;
             }
 
-            viewer.sendMessage(ChatColor.GREEN + Messages.accountWithdrawSuccess("$", plugin.getPluginConfig().getTransactionCost()));
+            viewer.sendMessage(ChatColor.GREEN + Messages.accountWithdrawSuccess("$", SpigotItemBank.instance().getPluginConfig().getTransactionCost()));
         }
 
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        SpigotItemBank.instance().getServer().getPluginManager().registerEvents(this, SpigotItemBank.instance());
         viewer.openInventory(inv);
         return true;
     }
 
-    @EventHandler
     @Override
-    public void onInventoryClose(InventoryCloseEvent event)//NOSONAR
+    protected void processEvent(Player player, Inventory inv)//NOSONAR
     {
-        Player player = (Player) event.getPlayer();
         if (player.getUniqueId() != viewer.getUniqueId() && player.hasPermission(Permissions.ADMIN))
             return;
 
-        Inventory inv = event.getView().getTopInventory();
-        SpigotConfig config = plugin.getPluginConfig();
+        SpigotConfig config = SpigotItemBank.instance().getPluginConfig();
         int pageLimit = config.getPageLimit();
         if (((pageLimit > 0 && pageLimit < page) || page == 0) && !player.hasPermission(Permissions.ADMIN))
         {
@@ -173,6 +170,21 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
         HandlerList.unregisterAll(this);
     }
 
+    @EventHandler
+    @Override
+    public void onInventoryClose(InventoryCloseEvent event)
+    {
+        processEvent((Player) event.getPlayer(), event.getInventory());
+    }
+
+    @EventHandler
+    @Override
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
+        Player player = event.getPlayer();
+        processEvent(event.getPlayer(), player.getOpenInventory().getTopInventory());
+    }
+
     @Override
     protected void saveAccount(Inventory topInv, Inventory playerInv)//NOSONAR
     {
@@ -188,7 +200,7 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
         }
         catch (InvalidConfigurationException | IOException e)//NOSONAR
         {
-            returnInv(playerInv, Messages.fileLoadFail(plugin.getAccountStorage().getFile(owner)));
+            returnInv(playerInv, Messages.fileLoadFail(SpigotItemBank.instance().getAccountStorage().getFile(owner)));
             return;
         }
         catch (ClassNotFoundException | SQLException e)//NOSONAR
@@ -198,18 +210,18 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
         }
 
         account.setContents(topInv.getContents());
-        File file = plugin.getAccountStorage().getFile(owner);
+        File file = SpigotItemBank.instance().getAccountStorage().getFile(owner);
         try
         {
-            if (plugin.getPluginConfig().useMySQL())
+            if (SpigotItemBank.instance().getPluginConfig().useMySQL())
             {
-                plugin.getMySQLHandler().querySQL(MySQL.createTable(owner));
+                SpigotItemBank.instance().getMySQLHandler().querySQL(MySQL.createTable(owner));
                 for (int slot = 0; slot < account.getSize(); slot++)
                 {
-                    plugin.getMySQLHandler().querySQL(MySQL.deleteItem(owner, world.getName(), page, slot));
+                    SpigotItemBank.instance().getMySQLHandler().querySQL(MySQL.deleteItem(owner, world.getName(), page, slot));
                     ItemStack item = account.getItem(slot);
                     if (item != null)//NOSONAR
-                        plugin.getMySQLHandler().updateSQL(MySQL.addItem(owner, world.getName(), page, slot, serializeItem(item).replace("\"", "\\\"")));
+                        SpigotItemBank.instance().getMySQLHandler().updateSQL(MySQL.addItem(owner, world.getName(), page, slot, serializeItem(item).replace("\"", "\\\"")));
                 }
 
                 return;
@@ -217,7 +229,7 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
 
             if (file == null)
             {
-                viewer.sendMessage(ChatColor.RED + Messages.fileLoadFail(plugin.getAccountStorage().getFile(owner)));
+                viewer.sendMessage(ChatColor.RED + Messages.fileLoadFail(SpigotItemBank.instance().getAccountStorage().getFile(owner)));
                 return;
             }
 
@@ -260,17 +272,17 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
     @Override
     protected Inventory getAccount() throws ClassNotFoundException, IOException, InvalidConfigurationException, SQLException
     {
-        final Inventory inv = Bukkit.createInventory(viewer, 54, Bukkit.getOfflinePlayer(owner).getName() + " - Page " + page);
-        if (plugin.getPluginConfig().useMySQL())
+        final Inventory inv = Bukkit.createInventory(viewer, 54, Messages.page(Bukkit.getOfflinePlayer(owner).getName(), page));
+        if (SpigotItemBank.instance().getPluginConfig().useMySQL())
         {
-            plugin.getMySQLHandler().querySQL("CREATE TABLE IF NOT EXISTS ib_" + owner.toString().replace("-", "_") + "(World varchar(255), Page int, Slot int, ItemStack varchar(300));");
+            SpigotItemBank.instance().getMySQLHandler().querySQL(MySQL.createTable(owner));
             for (int slot = 0; slot < inv.getSize(); slot++)
-                inv.setItem(slot, getItem(plugin.getMySQLHandler().querySQL("SELECT * FROM ib_" + owner + " WHERE World = \"" + world.getName() + "\" AND Page = " + page + " AND Slot = " + slot + ";")));
+                inv.setItem(slot, getItem(SpigotItemBank.instance().getMySQLHandler().querySQL(MySQL.getTable(owner, world.getName(), page, slot))));
 
             return inv;
         }
 
-        File file = plugin.getAccountStorage().getFile(owner);
+        File file = SpigotItemBank.instance().getAccountStorage().getFile(owner);
         YamlConfiguration account = new YamlConfiguration();
         account.load(file);
         for (int slot = 0; slot < inv.getSize(); slot++)
@@ -283,24 +295,24 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
     protected ItemStack getItem(ResultSet resultSet) throws SQLException
     {
         YamlConfiguration yaml = new YamlConfiguration();
-        yaml.set("item", resultSet.getString("ItemStack"));
-        return yaml.getItemStack("item");
+        yaml.set(ITEM, resultSet.getString("ItemStack"));
+        return yaml.getItemStack(ITEM);
     }
 
     @Override
     protected String serializeItem(ItemStack itemStack)
     {
         YamlConfiguration yaml = new YamlConfiguration();
-        yaml.set("item", itemStack);
-        return yaml.get("item").toString();
+        yaml.set(ITEM, itemStack);
+        return yaml.get(ITEM).toString();
     }
 
     @Override
     protected ItemStack deserializeItem(String string)
     {
         YamlConfiguration yaml = new YamlConfiguration();
-        yaml.set("item", string);
-        return yaml.getItemStack("item");
+        yaml.set(ITEM, string);
+        return yaml.getItemStack(ITEM);
     }
 
     @Override
@@ -309,8 +321,8 @@ public class SpigotAccountPage extends AbstractAccountPage<InventoryCloseEvent, 
         HandlerList.unregisterAll(this);
     }
 
-    public static SpigotAccountPage createNewPage(SpigotItemBank plugin, UUID owner, World world, int page)
+    public static SpigotAccountPage createNewPage(UUID owner, World world, int page)
     {
-        return new SpigotAccountPage(plugin, owner, world, page);
+        return new SpigotAccountPage(owner, world, page);
     }
 }

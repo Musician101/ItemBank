@@ -9,7 +9,6 @@ import io.musician101.common.java.minecraft.sponge.command.SpongeCommandUsage;
 import io.musician101.common.java.minecraft.sponge.command.SpongeHelpCommand;
 import io.musician101.common.java.minecraft.uuid.UUIDUtils;
 import io.musician101.common.java.util.Utils;
-import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.Permissions;
@@ -20,7 +19,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nonnull;
@@ -46,12 +44,7 @@ public class AccountCommand extends AbstractSpongeCommand
         Player player = (Player) source;
         String[] args = arguments.length() == 0 ? new String[]{} : splitArgs(arguments);
         if (args.length > 1 && args[0].equalsIgnoreCase(Commands.HELP))
-        {
-            Text ends = Text.builder(Commands.HEADER_ENDS).color(TextColors.DARK_GREEN).build();
-            Text middle = Text.builder(Reference.NAME + " " + Reference.VERSION).color(TextColors.WHITE).build();
-            player.sendMessage(Text.builder().append(ends, middle, ends).build());
             return new SpongeHelpCommand(this, source, SpongeItemBank.getPluginContainer()).process(source, arguments);
-        }
 
         int page = 1;
         World world = player.getWorld();

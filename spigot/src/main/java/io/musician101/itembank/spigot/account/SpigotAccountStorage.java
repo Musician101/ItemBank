@@ -54,7 +54,7 @@ public class SpigotAccountStorage extends AbstractAccountStorage<SpigotAccountPa
                         }
 
                         while (pageSet.next())
-                            pages.add(SpigotAccountPage.createNewPage(SpigotItemBank.instance(), owner, Bukkit.getWorld(pageSet.getString(MySQL.WORLD)), pageSet.getInt(MySQL.PAGE)));
+                            pages.add(SpigotAccountPage.createNewPage(owner, Bukkit.getWorld(pageSet.getString(MySQL.WORLD)), pageSet.getInt(MySQL.PAGE)));
 
                         accountPages.put(owner, pages);
                     }
@@ -93,7 +93,7 @@ public class SpigotAccountStorage extends AbstractAccountStorage<SpigotAccountPa
                     for (String worldName : account.getValues(false).keySet())//NOSONAR
                     {
                         ConfigurationSection world = account.getConfigurationSection(worldName);
-                        pages.addAll(world.getValues(false).keySet().stream().map(pageString -> SpigotAccountPage.createNewPage(SpigotItemBank.instance(), owner, Bukkit.getWorld(worldName), Integer.parseInt(pageString))).collect(Collectors.toList()));
+                        pages.addAll(world.getValues(false).keySet().stream().map(pageString -> SpigotAccountPage.createNewPage(owner, Bukkit.getWorld(worldName), Integer.parseInt(pageString))).collect(Collectors.toList()));
                     }
 
                     accountPages.put(owner, pages);

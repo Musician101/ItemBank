@@ -3,7 +3,8 @@ package io.musician101.itembank.common.account;
 import java.sql.ResultSet;
 import java.util.UUID;
 
-public abstract class AbstractAccountPage<E, I, S, P, C, W>
+@SuppressWarnings("unused")
+public abstract class AbstractAccountPage<E, Q, I, S, P, C, W>
 {
     protected final int page;
     protected P viewer;
@@ -19,8 +20,11 @@ public abstract class AbstractAccountPage<E, I, S, P, C, W>
 
     public abstract boolean openInv(P viewer);
 
-    @SuppressWarnings("unused")
+    protected abstract void processEvent(P player, I inventory);
+
     public abstract void onInventoryClose(E event);
+
+    public abstract void onPlayerQuit(Q event);
 
     protected abstract void saveAccount(I topInv, I playerInv);
 

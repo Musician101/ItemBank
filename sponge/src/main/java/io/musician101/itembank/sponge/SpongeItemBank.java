@@ -18,7 +18,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import java.io.File;
 
-@Plugin(id = "itembank", name = "ItemBank", version = "3.0")
+@Plugin(id = Reference.ID, name = Reference.NAME, version = Reference.VERSION, description = Reference.DESCRIPTION, authors = {"Musician101"})
 public class SpongeItemBank extends AbstractSpongePlugin<SpongeConfig>
 {
     private MySQLHandler mysql;

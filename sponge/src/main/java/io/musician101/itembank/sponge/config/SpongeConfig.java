@@ -5,8 +5,8 @@ import io.musician101.itembank.common.MySQLHandler;
 import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Config;
 import io.musician101.itembank.common.Reference.Messages;
-import io.musician101.itembank.sponge.SpongeItemBank;
 import io.musician101.itembank.sponge.IBUtils;
+import io.musician101.itembank.sponge.SpongeItemBank;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -177,7 +177,7 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack>
     }
 
     private <T extends CatalogType, D extends DataManipulator<D, I>, I extends ImmutableDataManipulator<I, D>>
-        void addItem(ItemType itemType, ConfigurationNode variationNode, Class<T> typeClass, Class<D> dataClass, Key<Value<T>> key)
+    void addItem(ItemType itemType, ConfigurationNode variationNode, Class<T> typeClass, Class<D> dataClass, Key<Value<T>> key)
     {
         for (T type : Sponge.getRegistry().getAllOf(typeClass))
         {

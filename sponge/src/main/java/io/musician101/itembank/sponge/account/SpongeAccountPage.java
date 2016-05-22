@@ -31,6 +31,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
@@ -54,8 +55,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
-public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEvent.Close, OrderedInventory, ItemStack, Player, ConfigurationNode, World>
+@SuppressWarnings({"OptionalGetWithoutIsPresent", "WeakerAccess"})
+public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEvent.Close, ClientConnectionEvent.Disconnect, OrderedInventory, ItemStack, Player, ConfigurationNode, World>
 {
     private SpongeAccountPage(UUID owner, World world, int page)
     {
@@ -121,19 +122,9 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
         return true;
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    @Listener
     @Override
-    public void onInventoryClose(InteractInventoryEvent.Close event)
+    protected void processEvent(Player player, OrderedInventory inv)//NOSONAR
     {
-        Optional<Player> playerOptional = event.getCause().first(Player.class);
-        if (!playerOptional.isPresent())
-        {
-            unregisterListener();
-            return;
-        }
-
-        Player player = playerOptional.get();
         if (player.getUniqueId() != viewer.getUniqueId())
         {
             unregisterListener();
@@ -141,7 +132,6 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
         }
 
         SpongeConfig config = SpongeItemBank.instance().getConfig();
-        OrderedInventory inv = (OrderedInventory) event.getTargetInventory();
         int pageLimit = config.getPageLimit();
         if (((pageLimit > 0 && pageLimit < page) || page == 0) && !player.hasPermission(Permissions.ADMIN))
         {
@@ -161,15 +151,15 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
                 {
                     ItemStack itemStack = itemStackOptional.get();
                     int itemAmount = 0;
-                    for (Inventory slot : inv.query(itemStack.getItem()))
+                    for (Inventory slot : inv.query(itemStack.getItem()))//NOSONAR
                     {
-                                ItemStack inventoryItemStack = slot.peek().get();
+                        ItemStack inventoryItemStack = slot.peek().get();
                         if (itemStack.getItem() == inventoryItemStack.getItem() && IBUtils.isSameVariant(itemStack, inventoryItemStack))
                             itemAmount += inventoryItemStack.getQuantity();
 
                     }
 
-                    if (config.getItem(itemStack) != null && !config.isWhitelist())
+                    if (config.getItem(itemStack) != null && !config.isWhitelist())//NOSONAR
                     {
                         int maxAmount = config.getItem(itemStack).getQuantity();
                         if (maxAmount == 0)
@@ -200,7 +190,7 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
                                         {
                                             Optional<ItemStack> itemOptional = inv.getSlot(new SlotIndex(y)).get().peek();
                                             if (itemOptional.isPresent())
-                                                if (IBUtils.isSameVariant(itemOptional.get(), itemStack))
+                                                if (IBUtils.isSameVariant(itemOptional.get(), itemStack))//NOSONAR
                                                     slot = y;
                                         }
 
@@ -226,16 +216,40 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
                         hasIllegalItems = true;
                     }
 
-                    if (hasIllegalItems)
+                    if (hasIllegalItems)//NOSONAR
                         player.sendMessage(TextUtils.redText(Messages.ACCOUNT_ILLEGAL_ITEM));
 
-                    if (hasIllegalAmount)
+                    if (hasIllegalAmount)//NOSONAR
                         player.sendMessage(TextUtils.redText(Messages.ACCOUNT_ILLEGAL_AMOUNT));
 
                     saveAccount(inv, (OrderedInventory) player.getInventory());
                 }
             }
         }
+    }
+
+    @Listener
+    @Override
+    public void onInventoryClose(InteractInventoryEvent.Close event)//NOSONAR
+    {
+        Optional<Player> playerOptional = event.getCause().first(Player.class);
+        if (!playerOptional.isPresent())
+        {
+            unregisterListener();
+            return;
+        }
+
+        processEvent(playerOptional.get(), (OrderedInventory) event.getTargetInventory());
+    }
+
+    @Listener
+    @Override
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect event)
+    {
+        Player player = event.getTargetEntity();
+        Optional<Inventory> invOptional = player.getOpenInventory();
+        if (invOptional.isPresent())
+            processEvent(player, (OrderedInventory) invOptional.get());
     }
 
     private void dropItemOnPlayer(ItemStack itemStack)
@@ -266,7 +280,7 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
 
         File file = SpongeItemBank.instance().getAccountStorage().getFile(owner);
         if (!file.exists())
-            throw new IOException("Could not create file.");
+            throw new IOException(Messages.fileLoadFail(file));
 
         ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(file).build();
         ConfigurationNode account = loader.load();
@@ -334,7 +348,7 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
                 for (int slot = 0; slot < topInv.size(); slot++)
                 {
                     sql.querySQL(MySQL.deleteItem(owner, world.getName(), page, slot));
-                        Optional<ItemStack> opt = topInv.getSlot(new SlotIndex(slot)).get().peek();
+                    Optional<ItemStack> opt = topInv.getSlot(new SlotIndex(slot)).get().peek();
                     if (opt.isPresent())//NOSONAR
                         sql.updateSQL(MySQL.addItem(owner, world.getName(), page, slot, serializeItem(opt.get())));
                 }

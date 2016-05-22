@@ -9,6 +9,7 @@ import io.musician101.common.java.minecraft.sponge.command.SpongeCommandUsage;
 import io.musician101.common.java.minecraft.uuid.UUIDUtils;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
+import io.musician101.itembank.common.Reference.MySQL;
 import io.musician101.itembank.common.Reference.Permissions;
 import io.musician101.itembank.sponge.SpongeItemBank;
 import org.spongepowered.api.command.CommandResult;
@@ -53,7 +54,7 @@ public class PurgeCommand extends AbstractSpongeCommand
             {
                 try
                 {
-                    SpongeItemBank.instance().getMySQL().querySQL("DROP TABLE IF EXISTS ib_" + uuid.toString().replace("-", "_"));
+                    SpongeItemBank.instance().getMySQL().querySQL(MySQL.deleteTable(uuid));
                 }
                 catch (ClassNotFoundException | SQLException e)//NOSONAR
                 {
@@ -89,7 +90,7 @@ public class PurgeCommand extends AbstractSpongeCommand
                 ResultSet rs = SpongeItemBank.instance().getMySQL().getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
                 while (rs.next())
                     if (rs.getString(3).startsWith("ib_"))//NOSONAR
-                        SpongeItemBank.instance().getMySQL().querySQL("DROP TABLE " + rs.getString(3));
+                        SpongeItemBank.instance().getMySQL().querySQL(MySQL.deleteTable(rs.getString(3)));
             }
             catch (SQLException | ClassNotFoundException e)//NOSONAR
             {
