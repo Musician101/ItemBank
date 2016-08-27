@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.musician101.itembank</groupId>
     <artifactId>spigot</artifactId>
-    <name>ItemBank-spigot</name>
+    <name>ItemBank-Spigot</name>
     <description>ItemBank for Spigot</description>
 
     <parent>
@@ -36,7 +36,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                    <finalName>ItemBank</finalName>
+                    <finalName>${project.name}</finalName>
                 </configuration>
             </plugin>
             <plugin>
