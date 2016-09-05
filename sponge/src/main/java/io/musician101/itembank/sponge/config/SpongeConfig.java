@@ -74,7 +74,7 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack>
                 URLConnection connection = url.openConnection();
                 connection.setUseCaches(false);
                 InputStream input = connection.getInputStream();
-                OutputStream output = new FileOutputStream(configFile);
+                OutputStream output = new FileOutputStream(configFile);//NOSONAR
                 byte[] buf = new byte[1024];
                 int len;
                 while ((len = input.read(buf)) > 0)
