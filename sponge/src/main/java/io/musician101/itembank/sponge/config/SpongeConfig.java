@@ -38,7 +38,7 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack>
 {
     public SpongeConfig(File configDir)
     {
-        super(new File(configDir, SpongeItemBank.getPluginContainer().getUnqualifiedId() + ".conf"));
+        super(new File(configDir, SpongeItemBank.getPluginContainer().getName() + ".conf"));
         reload();
     }
 
