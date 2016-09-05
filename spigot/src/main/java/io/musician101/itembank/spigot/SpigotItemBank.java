@@ -1,8 +1,8 @@
 package io.musician101.itembank.spigot;
 
+import io.musician101.common.java.MySQLHandler;
 import io.musician101.common.java.minecraft.spigot.AbstractSpigotPlugin;
 import io.musician101.common.java.minecraft.spigot.command.AbstractSpigotCommand;
-import io.musician101.itembank.common.MySQLHandler;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.spigot.account.SpigotAccountStorage;
 import io.musician101.itembank.spigot.command.account.AccountCommand;

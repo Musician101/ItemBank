@@ -56,6 +56,7 @@
                                     <artifact>io.musician101.common:java</artifact>
                                     <includes>
                                         <include>io/musician101/common/java/util/Utils.java</include>
+                                        <include>io/musician101/common/java/MySQLHandler.java</include>
                                     </includes>
                                 </filter>
                             </filters>

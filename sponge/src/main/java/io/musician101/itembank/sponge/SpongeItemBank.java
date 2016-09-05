@@ -1,7 +1,7 @@
 package io.musician101.itembank.sponge;
 
+import io.musician101.common.java.MySQLHandler;
 import io.musician101.common.java.minecraft.sponge.AbstractSpongePlugin;
-import io.musician101.itembank.common.MySQLHandler;
 import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.sponge.account.SpongeAccountStorage;

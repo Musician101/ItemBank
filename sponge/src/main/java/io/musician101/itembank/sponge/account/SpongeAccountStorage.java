@@ -1,6 +1,6 @@
 package io.musician101.itembank.sponge.account;
 
-import io.musician101.itembank.common.MySQLHandler;
+import io.musician101.common.java.MySQLHandler;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.MySQL;
 import io.musician101.itembank.common.Reference.PlayerData;

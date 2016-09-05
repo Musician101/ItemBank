@@ -1,9 +1,9 @@
 package io.musician101.itembank.sponge.account;
 
 import com.google.common.reflect.TypeToken;
+import io.musician101.common.java.MySQLHandler;
 import io.musician101.common.java.minecraft.sponge.TextUtils;
 import io.musician101.common.java.minecraft.uuid.UUIDUtils;
-import io.musician101.itembank.common.MySQLHandler;
 import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.MySQL;
