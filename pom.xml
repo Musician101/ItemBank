@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.musician101</groupId>
     <artifactId>itembank</artifactId>
-    <version>3.1</version>
+    <version>3.2</version>
     <name>ItemBank</name>
     <description>Virtual chest with configurable limits.</description>
     <packaging>pom</packaging>
