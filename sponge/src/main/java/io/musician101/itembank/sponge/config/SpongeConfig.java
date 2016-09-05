@@ -177,7 +177,7 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack>
     }
 
     private <T extends CatalogType, D extends DataManipulator<D, I>, I extends ImmutableDataManipulator<I, D>>
-    void addItem(ItemType itemType, ConfigurationNode variationNode, Class<T> typeClass, Class<D> dataClass, Key<Value<T>> key)
+        void addItem(ItemType itemType, ConfigurationNode variationNode, Class<T> typeClass, Class<D> dataClass, Key<Value<T>> key)
     {
         for (T type : Sponge.getRegistry().getAllOf(typeClass))
         {
