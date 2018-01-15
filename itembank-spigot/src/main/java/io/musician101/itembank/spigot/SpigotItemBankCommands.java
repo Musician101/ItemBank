@@ -27,11 +27,9 @@ public class SpigotItemBankCommands {
     private SpigotItemBankCommands() {
 
     }
-
-    //TODO change args to page, world, player
-    @Deprecated
+    
     public static SpigotCommand<SpigotItemBank> account() {
-        return SpigotCommand.<SpigotItemBank>builder().name(Commands.ACCOUNT_NAME).description(Commands.ACCOUNT_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of("/" + Commands.ACCOUNT_NAME), SpigotCommandArgument.of(Commands.getAccountArg(Commands.PAGE), Syntax.OPTIONAL), SpigotCommandArgument.of(Commands.getAccountArg(Commands.PLAYER), Syntax.OPTIONAL), SpigotCommandArgument.of(Commands.getAccountArg(Commands.WORLD), Syntax.OPTIONAL))).permissions(SpigotCommandPermissions.builder().permissionNode("").noPermissionMessage("").isPlayerOnly(true).playerOnlyMessage(ChatColor.RED + Messages.PLAYER_CMD).build()).function((sender, args) -> {
+        return SpigotCommand.<SpigotItemBank>builder().name(Commands.ACCOUNT_NAME).description(Commands.ACCOUNT_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of("/" + Commands.ACCOUNT_NAME), SpigotCommandArgument.of(Commands.PAGE, Syntax.OPTIONAL), SpigotCommandArgument.of(Commands.WORLD, Syntax.OPTIONAL), SpigotCommandArgument.of(Commands.PLAYER, Syntax.OPTIONAL))).permissions(SpigotCommandPermissions.builder().permissionNode("").noPermissionMessage("").isPlayerOnly(true).playerOnlyMessage(ChatColor.RED + Messages.PLAYER_CMD).build()).function((sender, args) -> {
             Player player = (Player) sender;
             if (!player.hasPermission(Permissions.ACCOUNT) && !player.hasPermission(Permissions.ADMIN)) {
                 player.sendMessage(ChatColor.RED + Messages.NO_PERMISSION);
@@ -42,42 +40,33 @@ public class SpigotItemBankCommands {
             UUID uuid = player.getUniqueId();
             World world = player.getWorld();
             if (args.size() > 0) {
-                for (String arg : args) {
-                    if (arg.contains(":")) {
-                        String[] argSplit = arg.split(":");
-                        if (argSplit.length > 0) {
-                            if (argSplit[0].equalsIgnoreCase(Commands.PAGE)) {
-                                if (Utils.isInteger(argSplit[1])) {
-                                    page = Integer.parseInt(argSplit[1]);
-                                }
+                if (Utils.isInteger(args.get(0))) {
+                    page = Integer.parseInt(args.get(0));
+                }
 
-                                if (page <= 0) {
-                                    page = 1;
-                                }
-                            }
+                if (page <= 0) {
+                    page = 1;
+                }
 
-                            if (argSplit[0].equalsIgnoreCase(Commands.PLAYER)) {
-                                try {
-                                    uuid = UUIDUtils.getUUIDOf(argSplit[1]);
-                                }
-                                catch (IOException e) {
-                                    player.sendMessage(Messages.UNKNOWN_EX);
-                                    return false;
-                                }
+                if (args.size() > 1) {
+                    try {
+                        uuid = UUIDUtils.getUUIDOf(args.get(1));
+                    }
+                    catch (IOException e) {
+                        player.sendMessage(Messages.UNKNOWN_EX);
+                        return false;
+                    }
 
-                                if (uuid == null) {
-                                    player.sendMessage(Messages.PLAYER_DNE);
-                                    return false;
-                                }
-                            }
+                    if (uuid == null) {
+                        player.sendMessage(Messages.PLAYER_DNE);
+                        return false;
+                    }
 
-                            if (argSplit[0].equalsIgnoreCase(Commands.WORLD)) {
-                                world = Bukkit.getWorld(argSplit[1]);
-                                if (world == null) {
-                                    player.sendMessage(Messages.ACCOUNT_WORLD_DNE);
-                                    return false;
-                                }
-                            }
+                    if (args.size() > 2) {
+                        world = Bukkit.getWorld(args.get(2));
+                        if (world == null) {
+                            player.sendMessage(Messages.ACCOUNT_WORLD_DNE);
+                            return false;
                         }
                     }
                 }

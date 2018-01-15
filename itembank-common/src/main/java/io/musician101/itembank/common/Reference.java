@@ -35,10 +35,6 @@ public class Reference {
         private Commands() {
 
         }
-
-        public static String getAccountArg(String argName) {
-            return argName + ":<" + argName + ">";
-        }
     }
 
     public static class Config {
