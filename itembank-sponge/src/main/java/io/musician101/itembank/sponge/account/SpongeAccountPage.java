@@ -312,7 +312,6 @@ public class SpongeAccountPage extends AbstractAccountPage<InteractInventoryEven
 
     @Override
     protected void saveAccount(Inventory topInv, Inventory playerInv) {
-        //TODO LEFT OFF HERE
         SpongeItemBank.instance().ifPresent(plugin -> {
             Inventory account;
             try {

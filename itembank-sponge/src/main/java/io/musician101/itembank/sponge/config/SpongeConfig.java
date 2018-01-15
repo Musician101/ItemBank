@@ -8,14 +8,11 @@ import io.musician101.itembank.sponge.IBUtils;
 import io.musician101.itembank.sponge.SpongeItemBank;
 import io.musician101.musicianlibrary.java.MySQLHandler;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
@@ -24,14 +21,11 @@ import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.DataManipulator;
-import org.spongepowered.api.data.manipulator.ImmutableDataManipulator;
-import org.spongepowered.api.data.manipulator.catalog.CatalogBlockData;
-import org.spongepowered.api.data.manipulator.catalog.CatalogItemData;
 import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStack.Builder;
 
 public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
 
@@ -40,19 +34,8 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
         reload();
     }
 
-    private <T extends CatalogType, D extends DataManipulator<D, I>, I extends ImmutableDataManipulator<I, D>> void addItem(ItemType itemType, ConfigurationNode variationNode, Class<T> typeClass, Class<D> dataClass, Key<Value<T>> key) {
-        for (T type : Sponge.getRegistry().getAllOf(typeClass)) {
-            ConfigurationNode amount = variationNode.getNode(Config.AMOUNT);
-            ConfigurationNode variation = variationNode.getNode(Config.VARIATION);
-            if (!amount.isVirtual() && type.getId().equalsIgnoreCase(variation.getString(""))) {
-                ItemStack.Builder builder = ItemStack.builder();
-                builder.itemType(itemType);
-                builder.quantity(amount.getInt(0));
-                D data = Sponge.getDataManager().getManipulatorBuilder(dataClass).get().create().set(Sponge.getRegistry().getValueFactory().createValue(key, type));
-                builder.itemData(data);
-                itemList.add(builder.build());
-            }
-        }
+    private <T extends CatalogType> void setVariant(ItemStack.Builder builder, Key<Value<T>> key, Class<T> typeClass, String variant) {
+        Sponge.getRegistry().getType(typeClass, variant).ifPresent(value -> builder.add(key, value));
     }
 
     @Override
@@ -67,76 +50,78 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
     }
 
     private void itemList(ConfigurationNode node) {
-        for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class)) {
+        Sponge.getRegistry().getAllOf(ItemType.class).forEach(itemType -> {
             ConfigurationNode itemNode = node.getNode(itemType.getId());
             if (!itemNode.isVirtual()) {
                 ConfigurationNode amountNode = itemNode.getNode(Config.AMOUNT);
                 ConfigurationNode variationNode = itemNode.getNode(Config.VARIATIONS);
+                Builder builder = ItemStack.builder().itemType(itemType).quantity(0);
                 if (!amountNode.isVirtual()) {
-                    itemList.add(ItemStack.of(itemType, amountNode.getInt()));
+                    builder.quantity(amountNode.getInt());
                 }
-                else if (!variationNode.isVirtual()) {
-                    ItemStack item = ItemStack.of(itemType, 0);
-                    if (item.get(CatalogBlockData.STONE_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.STONE_TYPE, CatalogBlockData.STONE_DATA, Keys.STONE_TYPE);
+
+                if (!variationNode.isVirtual()) {
+                    ItemStack tempStack = builder.build();
+                    if (tempStack.supports(Keys.BRICK_TYPE)) {
+                        setVariant(builder, Keys.BRICK_TYPE, CatalogTypes.BRICK_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.DIRT_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.DIRT_TYPE, CatalogBlockData.DIRT_DATA, Keys.DIRT_TYPE);
+                    else if (tempStack.supports(Keys.COAL_TYPE)) {
+                        setVariant(builder, Keys.COAL_TYPE, CatalogTypes.COAL_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.TREE_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.TREE_TYPE, CatalogBlockData.TREE_DATA, Keys.TREE_TYPE);
+                    else if (tempStack.supports(Keys.COOKED_FISH)) {
+                        setVariant(builder, Keys.COOKED_FISH, CatalogTypes.COOKED_FISH, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.SAND_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.SAND_TYPE, CatalogBlockData.SAND_DATA, Keys.SAND_TYPE);
+                    else if (tempStack.supports(Keys.DIRT_TYPE)) {
+                        setVariant(builder, Keys.DIRT_TYPE, CatalogTypes.DIRT_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.SANDSTONE_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.SANDSTONE_TYPE, CatalogBlockData.SANDSTONE_DATA, Keys.SANDSTONE_TYPE);
+                    else if (tempStack.supports(Keys.DISGUISED_BLOCK_TYPE)) {
+                        setVariant(builder, Keys.DISGUISED_BLOCK_TYPE, CatalogTypes.DISGUISED_BLOCK_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.SHRUB_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.SHRUB_TYPE, CatalogBlockData.SHRUB_DATA, Keys.SHRUB_TYPE);
+                    else if (tempStack.supports(Keys.DOUBLE_PLANT_TYPE)) {
+                        setVariant(builder, Keys.DOUBLE_PLANT_TYPE, CatalogTypes.DOUBLE_PLANT_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.DYEABLE_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.DYE_COLOR, CatalogBlockData.DYEABLE_DATA, Keys.DYE_COLOR);
+                    else if (tempStack.supports(Keys.DYE_COLOR)) {
+                        setVariant(builder, Keys.DYE_COLOR, CatalogTypes.DYE_COLOR, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.SLAB_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.SLAB_TYPE, CatalogBlockData.SLAB_DATA, Keys.SLAB_TYPE);
+                    else if (tempStack.supports(Keys.FISH_TYPE)) {
+                        setVariant(builder, Keys.FISH_TYPE, CatalogTypes.FISH, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.DISGUISED_BLOCK_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.DISGUISED_BLOCK_TYPE, CatalogBlockData.DISGUISED_BLOCK_DATA, Keys.DISGUISED_BLOCK_TYPE);
+                    else if (tempStack.supports(Keys.GOLDEN_APPLE_TYPE)) {
+                        setVariant(builder, Keys.GOLDEN_APPLE_TYPE, CatalogTypes.GOLDEN_APPLE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.BRICK_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.BRICK_TYPE, CatalogBlockData.BRICK_DATA, Keys.BRICK_TYPE);
+                    else if (tempStack.supports(Keys.PRISMARINE_TYPE)) {
+                        setVariant(builder, Keys.PRISMARINE_TYPE, CatalogTypes.PRISMARINE_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.WALL_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.WALL_TYPE, CatalogBlockData.WALL_DATA, Keys.WALL_TYPE);
+                    else if (tempStack.supports(Keys.QUARTZ_TYPE)) {
+                        setVariant(builder, Keys.QUARTZ_TYPE, CatalogTypes.QUARTZ_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.QUARTZ_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.QUARTZ_TYPE, CatalogBlockData.QUARTZ_DATA, Keys.QUARTZ_TYPE);
+                    else if (tempStack.supports(Keys.SAND_TYPE)) {
+                        setVariant(builder, Keys.SAND_TYPE, CatalogTypes.SAND_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.PRISMARINE_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.PRISMARINE_TYPE, CatalogBlockData.PRISMARINE_DATA, Keys.PRISMARINE_TYPE);
+                    else if (tempStack.supports(Keys.SANDSTONE_TYPE)) {
+                        setVariant(builder, Keys.SANDSTONE_TYPE, CatalogTypes.SANDSTONE_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogBlockData.DOUBLE_PLANT_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.DOUBLE_PLANT_TYPE, CatalogBlockData.DOUBLE_PLANT_DATA, Keys.DOUBLE_PLANT_TYPE);
+                    else if (tempStack.supports(Keys.SHRUB_TYPE)) {
+                        setVariant(builder, Keys.SHRUB_TYPE, CatalogTypes.SHRUB_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogItemData.COAL_ITEM_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.COAL_TYPE, CatalogItemData.COAL_ITEM_DATA, Keys.COAL_TYPE);
+                    else if (tempStack.supports(Keys.SLAB_TYPE)) {
+                        setVariant(builder, Keys.SLAB_TYPE, CatalogTypes.SLAB_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogItemData.GOLDEN_APPLE_ITEM_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.GOLDEN_APPLE, CatalogItemData.GOLDEN_APPLE_ITEM_DATA, Keys.GOLDEN_APPLE_TYPE);
+                    else if (tempStack.supports(Keys.SPAWNABLE_ENTITY_TYPE)) {
+                        setVariant(builder, Keys.SPAWNABLE_ENTITY_TYPE, CatalogTypes.ENTITY_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogItemData.FISH_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.FISH, CatalogItemData.FISH_DATA, Keys.FISH_TYPE);
+                    else if (tempStack.supports(Keys.STONE_TYPE)) {
+                        setVariant(builder, Keys.STONE_TYPE, CatalogTypes.STONE_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogItemData.COOKED_FISH_ITEM_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.COOKED_FISH, CatalogItemData.COOKED_FISH_ITEM_DATA, Keys.COOKED_FISH);
+                    else if (tempStack.supports(Keys.TREE_TYPE)) {
+                        setVariant(builder, Keys.TREE_TYPE, CatalogTypes.TREE_TYPE, variationNode.getString());
                     }
-                    else if (item.get(CatalogItemData.SPAWNABLE_DATA).isPresent()) {
-                        addItem(itemType, variationNode, CatalogTypes.ENTITY_TYPE, CatalogItemData.SPAWNABLE_DATA, Keys.SPAWNABLE_ENTITY_TYPE);
+                    else if (tempStack.supports(Keys.WALL_TYPE)) {
+                        setVariant(builder, Keys.WALL_TYPE, CatalogTypes.WALL_TYPE, variationNode.getString());
                     }
                 }
             }
-        }
+        });
     }
 
     @Override
@@ -153,28 +138,22 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
                 }
 
                 try {
-                    if (!configFile.createNewFile()) {
-                        log.error(Messages.fileCreateFail(configFile));
-                        return;
-                    }
-
-                    URL url = SpongeItemBank.class.getClass().getClassLoader().getResource("config.conf");
-                    if (url == null) {
-                        log.error(Messages.fileCreateFail(configFile));
-                        return;
-                    }
-
-                    URLConnection connection = url.openConnection();
-                    connection.setUseCaches(false);
-                    InputStream input = connection.getInputStream();
-                    OutputStream output = new FileOutputStream(configFile);
-                    byte[] buf = new byte[1024];
-                    int len;
-                    while ((len = input.read(buf)) > 0)
-                        output.write(buf, 0, len);
-
-                    output.close();
-                    input.close();
+                    configFile.createNewFile();
+                    ConfigurationNode config = SimpleCommentedConfigurationNode.root();
+                    config.getNode(Config.WHITELIST).setValue(false);
+                    config.getNode(Config.MULTI_WORLD).setValue(false);
+                    config.getNode(Config.PAGE_LIMIT).setValue(0);
+                    ConfigurationNode bedrock = SimpleConfigurationNode.root();
+                    bedrock.getNode(Config.AMOUNT).setValue(0);
+                    config.getNode(Config.ITEM_LIST).setValue(bedrock);
+                    ConfigurationNode mysql = SimpleConfigurationNode.root();
+                    mysql.getNode(Config.HOST).setValue("127.0.0.1");
+                    mysql.getNode(Config.ENABLE_MYSQL).setValue(false);
+                    mysql.getNode(Config.DATABASE).setValue("database");
+                    mysql.getNode(Config.PASSWORD).setValue("password");
+                    mysql.getNode(Config.PORT).setValue(3306);
+                    config.getNode(Config.MYSQL).setValue(mysql);
+                    HoconConfigurationLoader.builder().setFile(configFile).build().save(config);
                 }
                 catch (IOException e) {
                     log.warn(Messages.fileCreateFail(configFile));
