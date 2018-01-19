@@ -34,10 +34,6 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
         reload();
     }
 
-    private <T extends CatalogType> void setVariant(ItemStack.Builder builder, Key<Value<T>> key, Class<T> typeClass, String variant) {
-        Sponge.getRegistry().getType(typeClass, variant).ifPresent(value -> builder.add(key, value));
-    }
-
     @Override
     public ItemStack getItem(ItemStack itemStack) {
         for (ItemStack is : itemList) {
@@ -189,5 +185,9 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
                 itemList.add(ItemStack.of(ItemTypes.BEDROCK, 0));
             }
         });
+    }
+
+    private <T extends CatalogType> void setVariant(ItemStack.Builder builder, Key<Value<T>> key, Class<T> typeClass, String variant) {
+        Sponge.getRegistry().getType(typeClass, variant).ifPresent(value -> builder.add(key, value));
     }
 }

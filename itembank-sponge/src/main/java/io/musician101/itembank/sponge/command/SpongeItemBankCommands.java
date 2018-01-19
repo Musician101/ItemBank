@@ -3,20 +3,29 @@ package io.musician101.itembank.sponge.command;
 import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
-import io.musician101.itembank.common.Reference.MySQL;
 import io.musician101.itembank.common.Reference.Permissions;
 import io.musician101.itembank.sponge.SpongeItemBank;
-import io.musician101.musicianlibrary.java.MySQLHandler;
+import io.musician101.itembank.sponge.command.args.PlayerCommandElement;
+import io.musician101.itembank.sponge.command.args.WorldCommandElement;
+import io.musician101.itembank.sponge.config.SpongeConfig;
 import io.musician101.musicianlibrary.java.minecraft.uuid.UUIDUtils;
-import java.io.File;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.math.BigDecimal;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
 import java.util.UUID;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.cause.EventContextKeys;
+import org.spongepowered.api.service.economy.Currency;
+import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.service.economy.transaction.ResultType;
+import org.spongepowered.api.service.economy.transaction.TransactionResult;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
@@ -33,10 +42,23 @@ public class SpongeItemBankCommands {
                 return SpongeItemBank.instance().map(plugin -> {
                     Player player = (Player) source;
                     int page = args.<Integer>getOne(Commands.PAGE).orElse(1);
-                    UUID uuid = args.<UUID>getOne(PlayerCommandElement.KEY).orElse(player.getUniqueId());
+                    Entry<UUID, String> entry = args.<Entry<UUID, String>>getOne(PlayerCommandElement.KEY).orElse(new SimpleEntry<>(player.getUniqueId(), player.getName()));
                     World world = args.<World>getOne(WorldCommandElement.KEY).orElse(player.getWorld());
-                    if (canAccessPage(player, uuid, page, world)) {
-                        plugin.getAccountStorage().openInv(player, uuid, world, page);
+                    SpongeConfig config = plugin.getConfig();
+                    Sponge.getServiceManager().provide(EconomyService.class).ifPresent(economy -> {
+                        Currency currency = economy.getDefaultCurrency();
+                        economy.getOrCreateAccount(player.getUniqueId()).ifPresent(account -> {
+                            TransactionResult result = account.withdraw(currency, new BigDecimal(config.getTransactionCost()), Cause.of(EventContext.builder().add(EventContextKeys.PLUGIN, plugin.getPluginContainer()).add(EventContextKeys.PLAYER, player).build(), plugin, player));
+                            if (result.getResult() != ResultType.SUCCESS) {
+                                player.sendMessage(Text.builder(Messages.ACCOUNT_ECON_WITHDRAW_FAIL).color(TextColors.RED).build());
+                            }
+
+                            player.sendMessage(Text.builder(Messages.accountWithdrawSuccess(currency.getSymbol().toPlain(), config.getTransactionCost())).color(TextColors.RED).build());
+                        });
+                    });
+
+                    if (canAccessPage(player, entry.getKey(), page, world)) {
+                        plugin.getAccountStorage().openInv(player, entry.getKey(), entry.getValue(), world, page);
                         return CommandResult.success();
                     }
 
@@ -75,57 +97,15 @@ public class SpongeItemBankCommands {
     }
 
     private static CommandSpec purge() {
-        return CommandSpec.builder().description(Text.of(Commands.PURGE_DESC)).arguments(GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> SpongeItemBank.instance().map(plugin -> {
-            MySQLHandler mySQL = plugin.getMySQL();
-            return args.<UUID>getOne(PlayerCommandElement.KEY).map(uuid -> {
-                if (mySQL != null) {
-                    try {
-                        mySQL.querySQL(MySQL.deleteTable(uuid));
-                    }
-                    catch (ClassNotFoundException | SQLException e) {
-                        source.sendMessage(Text.builder(Messages.SQL_EX).color(TextColors.RED).build());
-                        return CommandResult.empty();
-                    }
-
-                    source.sendMessage(Text.builder(Messages.PURGE_SINGLE).color(TextColors.RED).build());
-                    return CommandResult.success();
-                }
-
-                File file = plugin.getAccountStorage().getFile(uuid);
-                if (!file.exists()) {
-                    source.sendMessage(Text.builder(Messages.PURGE_NO_FILE).color(TextColors.RED).build());
-                    return CommandResult.empty();
-                }
-
-                if (!file.delete()) {
-                    source.sendMessage(Text.builder(Messages.purgeFileFail(file)).color(TextColors.RED).build());
-                    return CommandResult.empty();
-                }
-
-                source.sendMessage(Text.builder(Messages.PURGE_SINGLE).color(TextColors.GREEN).build());
-                return CommandResult.success();
-            }).orElseGet(() -> {
-                if (mySQL != null) {
-                    try {
-                        ResultSet rs = mySQL.getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-                        while (rs.next())
-                            if (rs.getString(3).startsWith("ib_")) {
-                                mySQL.querySQL(MySQL.deleteTable(rs.getString(3)));
-                            }
-                    }
-                    catch (SQLException | ClassNotFoundException e) {
-                        source.sendMessage(Text.builder(Messages.SQL_EX).color(TextColors.RED).build());
-                        return CommandResult.empty();
-                    }
-                }
-                else {
-                    plugin.getAccountStorage().resetAll().forEach(file -> source.sendMessage(Text.builder(Messages.purgeFileFail(file)).color(TextColors.RED).build()));
-                }
-
-                source.sendMessage(Text.builder(Messages.PURGE_MULTIPLE).color(TextColors.GREEN).build());
-                return CommandResult.empty();
-            });
-        }).orElse(CommandResult.empty())).permission(Permissions.PURGE).build();
+        return CommandSpec.builder().description(Text.of(Commands.PURGE_DESC)).arguments(GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> SpongeItemBank.instance().map(plugin -> args.<UUID>getOne(PlayerCommandElement.KEY).map(uuid -> {
+            plugin.getAccountStorage().resetAccount(uuid);
+            source.sendMessage(Text.builder(Messages.PURGE_SINGLE).color(TextColors.GREEN).build());
+            return CommandResult.success();
+        }).orElseGet(() -> {
+            plugin.getAccountStorage().resetAll();
+            source.sendMessage(Text.builder(Messages.PURGE_MULTIPLE).color(TextColors.GREEN).build());
+            return CommandResult.empty();
+        })).orElse(CommandResult.empty())).permission(Permissions.PURGE).build();
     }
 
     private static CommandSpec reload() {

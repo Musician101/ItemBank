@@ -3,8 +3,9 @@ package io.musician101.itembank.spigot;
 import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
-import io.musician101.itembank.common.Reference.MySQL;
 import io.musician101.itembank.common.Reference.Permissions;
+import io.musician101.itembank.spigot.account.SpigotAccountStorage;
+import io.musician101.itembank.spigot.config.SpigotConfig;
 import io.musician101.musicianlibrary.java.minecraft.spigot.command.SpigotCommand;
 import io.musician101.musicianlibrary.java.minecraft.spigot.command.SpigotCommandArgument;
 import io.musician101.musicianlibrary.java.minecraft.spigot.command.SpigotCommandArgument.Syntax;
@@ -12,11 +13,11 @@ import io.musician101.musicianlibrary.java.minecraft.spigot.command.SpigotComman
 import io.musician101.musicianlibrary.java.minecraft.spigot.command.SpigotCommandUsage;
 import io.musician101.musicianlibrary.java.minecraft.uuid.UUIDUtils;
 import io.musician101.musicianlibrary.java.util.Utils;
-import java.io.File;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.UUID;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
+import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -27,7 +28,7 @@ public class SpigotItemBankCommands {
     private SpigotItemBankCommands() {
 
     }
-    
+
     public static SpigotCommand<SpigotItemBank> account() {
         return SpigotCommand.<SpigotItemBank>builder().name(Commands.ACCOUNT_NAME).description(Commands.ACCOUNT_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of("/" + Commands.ACCOUNT_NAME), SpigotCommandArgument.of(Commands.PAGE, Syntax.OPTIONAL), SpigotCommandArgument.of(Commands.WORLD, Syntax.OPTIONAL), SpigotCommandArgument.of(Commands.PLAYER, Syntax.OPTIONAL))).permissions(SpigotCommandPermissions.builder().permissionNode("").noPermissionMessage("").isPlayerOnly(true).playerOnlyMessage(ChatColor.RED + Messages.PLAYER_CMD).build()).function((sender, args) -> {
             Player player = (Player) sender;
@@ -37,10 +38,11 @@ public class SpigotItemBankCommands {
             }
 
             int page = 1;
+            String name = args.get(0);
             UUID uuid = player.getUniqueId();
             World world = player.getWorld();
             if (args.size() > 0) {
-                if (Utils.isInteger(args.get(0))) {
+                if (Utils.isInteger(name)) {
                     page = Integer.parseInt(args.get(0));
                 }
 
@@ -72,8 +74,23 @@ public class SpigotItemBankCommands {
                 }
             }
 
+            SpigotItemBank plugin = SpigotItemBank.instance();
+            SpigotConfig config = plugin.getPluginConfig();
+            Economy economy = plugin.getEconomy();
+            if (player.getUniqueId().equals(uuid) && plugin.getPluginConfig().useEconomy() && economy != null) {
+                EconomyResponse economyResponse = economy.withdrawPlayer(player, config.getTransactionCost());
+                if (economyResponse.type != ResponseType.SUCCESS) {
+                    player.sendMessage(Messages.ACCOUNT_ECON_WITHDRAW_FAIL);
+                    return false;
+                }
+                else {
+                    player.sendMessage(Messages.accountWithdrawSuccess("$", config.getTransactionCost()));
+                }
+            }
+
             if (canAccessPage(player, uuid, page, world)) {
-                return SpigotItemBank.instance().getAccountStorage().openInv(player, uuid, world, page);
+                SpigotItemBank.instance().getAccountStorage().openInv(player, uuid, name, world, page);
+                return true;
             }
 
             player.sendMessage(ChatColor.RED + Messages.NO_PERMISSION);
@@ -97,8 +114,9 @@ public class SpigotItemBankCommands {
         return SpigotCommand.<SpigotItemBank>builder().name(Commands.IB_CMD.replace("/", "")).description(Reference.DESCRIPTION).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.IB_CMD))).permissions(SpigotCommandPermissions.blank()).addCommand(purge()).addCommand(reload()).addCommand(uuid()).build(SpigotItemBank.instance());
     }
 
-    public static SpigotCommand<SpigotItemBank> purge() {
+    private static SpigotCommand<SpigotItemBank> purge() {
         return SpigotCommand.<SpigotItemBank>builder().name(Commands.PURGE_NAME).description(Commands.PURGE_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.IB_CMD), SpigotCommandArgument.of(Commands.PURGE_NAME))).permissions(SpigotCommandPermissions.builder().permissionNode(Permissions.PURGE).noPermissionMessage(ChatColor.RED + Messages.NO_PERMISSION).playerOnlyMessage("").build()).function((sender, args) -> {
+            SpigotAccountStorage accountStorage = SpigotItemBank.instance().getAccountStorage();
             if (args.size() > 0) {
                 UUID uuid;
                 try {
@@ -109,64 +127,18 @@ public class SpigotItemBankCommands {
                     return false;
                 }
 
-                if (SpigotItemBank.instance().getPluginConfig().useMySQL()) {
-                    try {
-                        SpigotItemBank.instance().getMySQLHandler().querySQL(MySQL.deleteTable(uuid));
-                    }
-                    catch (ClassNotFoundException | SQLException e) {
-                        sender.sendMessage(Messages.SQL_EX);
-                        return false;
-                    }
-
-                    sender.sendMessage(Messages.PURGE_SINGLE);
-                    return true;
-                }
-
-                File file = SpigotItemBank.instance().getAccountStorage().getFile(uuid);
-                if (!file.exists()) {
-                    sender.sendMessage(Messages.PURGE_NO_FILE);
-                    return false;
-                }
-
-                if (!file.delete()) {
-                    sender.sendMessage(Messages.fileDeleteFail(file));
-                }
-                else {
-                    sender.sendMessage(Messages.PURGE_SINGLE);
-                }
-
+                accountStorage.resetAccount(uuid);
+                sender.sendMessage(Messages.PURGE_SINGLE);
                 return true;
             }
 
-            if (SpigotItemBank.instance().getPluginConfig().useMySQL()) {
-                try {
-                    ResultSet rs = SpigotItemBank.instance().getMySQLHandler().getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-                    while (rs.next()) {
-                        sender.sendMessage(rs.getString(3));
-                        if (rs.getString(3).startsWith(MySQL.TABLE_PREFIX)) {
-                            SpigotItemBank.instance().getMySQLHandler().querySQL(MySQL.deleteTable(rs.getString(3)));
-                        }
-                    }
-                }
-                catch (SQLException | ClassNotFoundException e) {
-                    sender.sendMessage(Messages.SQL_EX);
-                    return false;
-                }
-
-                sender.sendMessage(Messages.PURGE_MULTIPLE);
-                return true;
-            }
-
-            for (File file : SpigotItemBank.instance().getAccountStorage().resetAll()) {
-                sender.sendMessage(Messages.fileDeleteFail(file));
-            }
-
+            accountStorage.resetAll();
             sender.sendMessage(Messages.PURGE_MULTIPLE);
             return true;
         }).build(SpigotItemBank.instance());
     }
 
-    public static SpigotCommand<SpigotItemBank> reload() {
+    private static SpigotCommand<SpigotItemBank> reload() {
         return SpigotCommand.<SpigotItemBank>builder().name(Commands.RELOAD_NAME).description(Commands.RELOAD_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.RELOAD_NAME), SpigotCommandArgument.of(Commands.RELOAD_NAME))).permissions(SpigotCommandPermissions.builder().permissionNode(Permissions.RELOAD).noPermissionMessage(ChatColor.RED + Messages.NO_PERMISSION).playerOnlyMessage("").build()).function((sender, args) -> {
             SpigotItemBank.instance().getPluginConfig().reload();
             sender.sendMessage(Messages.RELOAD_SUCCESS);
@@ -174,7 +146,7 @@ public class SpigotItemBankCommands {
         }).build(SpigotItemBank.instance());
     }
 
-    public static SpigotCommand<SpigotItemBank> uuid() {
+    private static SpigotCommand<SpigotItemBank> uuid() {
         return SpigotCommand.<SpigotItemBank>builder().name(Commands.UUID_NAME).description(Commands.UUID_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.IB_CMD), SpigotCommandArgument.of(Commands.UUID_NAME))).permissions(SpigotCommandPermissions.builder().permissionNode(Permissions.UUID).noPermissionMessage(ChatColor.RED + Messages.NO_PERMISSION).playerOnlyMessage("").build()).function((sender, args) -> {
             if (args.size() > 0) {
                 try {

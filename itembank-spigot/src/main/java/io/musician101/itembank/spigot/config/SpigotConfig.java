@@ -6,6 +6,7 @@ import io.musician101.itembank.spigot.SpigotItemBank;
 import io.musician101.musicianlibrary.java.MySQLHandler;
 import java.io.File;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,6 +19,7 @@ public class SpigotConfig extends AbstractItemBankConfig<ItemStack> {
         reload();
     }
 
+    @Nullable
     @Override
     public ItemStack getItem(ItemStack itemStack) {
         for (ItemStack item : itemList) {

@@ -1,115 +1,255 @@
 package io.musician101.itembank.sponge.account;
 
+import com.google.common.collect.Multimap;
+import com.google.gson.JsonParseException;
+import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.MySQL;
 import io.musician101.itembank.common.Reference.PlayerData;
 import io.musician101.itembank.common.account.AbstractAccountStorage;
+import io.musician101.itembank.common.account.Account;
+import io.musician101.itembank.common.account.AccountPage;
+import io.musician101.itembank.common.account.AccountSlot;
+import io.musician101.itembank.common.account.AccountWorld;
 import io.musician101.itembank.sponge.SpongeItemBank;
+import io.musician101.itembank.sponge.json.account.AccountSerializer;
 import io.musician101.musicianlibrary.java.MySQLHandler;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
-public class SpongeAccountStorage extends AbstractAccountStorage<SpongeAccountPage, Player, World> {
+import static io.musician101.itembank.sponge.SpongeItemBank.GSON;
 
-    private SpongeAccountStorage(File configDir) {
+public class SpongeAccountStorage extends AbstractAccountStorage<ItemStack, Player, World> {
+
+    public SpongeAccountStorage(File configDir) {
         super(new File(configDir, PlayerData.DIRECTORY));
-        loadPages();
-    }
-
-    public static SpongeAccountStorage load(File configDir) {
-        return new SpongeAccountStorage(configDir);
     }
 
     @Override
-    protected void loadPages() {
+    public void load() {
         SpongeItemBank.instance().ifPresent(plugin -> {
             Logger logger = plugin.getLogger();
-            if (plugin.getConfig().useMySQL()) {
-                MySQLHandler mysql = plugin.getMySQL();
+            MySQLHandler mysql = plugin.getMySQL();
+            if (plugin.getConfig().useMySQL() && mysql != null) {
                 try {
-                    ResultSet tableSet = mysql.getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-                    while (tableSet.next()) {
-                        String tableName = tableSet.getString(3);
-                        if (tableName.startsWith(MySQL.TABLE_PREFIX)) {
-                            List<SpongeAccountPage> pages = new ArrayList<>();
-                            ResultSet pageSet = mysql.querySQL(MySQL.getTable(tableName));
-                            UUID owner = MySQL.getUUIDFromTableName(tableName);
-                            if (owner == null) {
-                                logger.error(Messages.badUUID(tableName));
-                                return;
-                            }
+                    mysql.querySQL(MySQL.CREATE_TABLE);
+                    List<String> uuidSkip = new ArrayList<>();
+                    List<String> itemStackSkip = new ArrayList<>();
+                    List<String> worldSkip = new ArrayList<>();
+                    ResultSet pageSet = mysql.querySQL(MySQL.SELECT_TABLE);
+                    while (pageSet.next()) {
+                        String uuidString = pageSet.getString(MySQL.UUID);
+                        if (uuidSkip.contains(uuidString)) {
+                            continue;
+                        }
 
-                            while (pageSet.next()) {
-                                Optional<World> world = Sponge.getServer().getWorld(pageSet.getString(MySQL.WORLD));
-                                if (world.isPresent()) {
-                                    pages.add(SpongeAccountPage.createNewPage(owner, world.get(), pageSet.getInt(MySQL.PAGE)));
-                                }
-                            }
+                        String name = pageSet.getString(MySQL.NAME);
+                        UUID uuid;
+                        try {
+                            uuid = UUID.fromString(uuidString);
+                        }
+                        catch (IllegalArgumentException e) {
+                            uuidSkip.add(uuidString);
+                            logger.error(Messages.badUUID(name, uuidString));
+                            continue;
+                        }
 
-                            accountPages.put(owner, pages);
+                        Account<ItemStack> account = getAccount(uuid);
+                        if (account == null) {
+                            account = new Account<>(uuid, name);
+                            setAccount(account);
+                        }
+
+                        String worldName = pageSet.getString(MySQL.WORLD);
+                        if (worldSkip.contains(worldName)) {
+                            logger.error(Messages.worldDNE(name, worldName));
+                            continue;
+                        }
+
+                        if (Sponge.getServer().getWorld(worldName).isPresent()) {
+                            worldSkip.add(worldName);
+                            continue;
+                        }
+
+                        AccountWorld<ItemStack> world = account.getWorld(worldName);
+                        if (world == null) {
+                            world = new AccountWorld<>(worldName);
+                            account.setWorld(world);
+                        }
+
+                        int page = pageSet.getInt(MySQL.SLOT);
+                        if (page < 1) {
+                            logger.error(Messages.invalidPage(name, worldName, page));
+                            continue;
+                        }
+
+                        AccountPage<ItemStack> accountPage = world.getPage(page);
+                        if (accountPage == null) {
+                            accountPage = new AccountPage<>(page);
+                            world.setPage(accountPage);
+                        }
+
+                        int slot = pageSet.getInt(MySQL.SLOT);
+                        if (slot < 0 || slot > 53) {
+                            logger.error(Messages.invalidSlot(name, worldName, slot));
+                            continue;
+                        }
+
+                        String itemStackString = pageSet.getString(MySQL.ITEM);
+                        if (itemStackSkip.contains(itemStackString)) {
+                            continue;
+                        }
+
+                        ItemStack itemStack;
+                        try {
+                            itemStack = GSON.fromJson(itemStackString, ItemStack.class);
+                        }
+                        catch (JsonParseException e) {
+                            itemStackSkip.add(itemStackString);
+                            logger.error(Messages.invalidItem(name, worldName, page, slot, itemStackString));
+                            continue;
+                        }
+
+                        AccountSlot<ItemStack> accountSlot = accountPage.getSlot(slot);
+                        if (accountSlot == null) {
+                            accountSlot = new AccountSlot<>(slot, itemStack);
+                            accountPage.setSlot(accountSlot);
                         }
                     }
                 }
                 catch (ClassNotFoundException | SQLException e) {
                     logger.error(Messages.SQL_EX);
                 }
-
-                return;
             }
-
-            for (File file : storageDir.listFiles()) {
-                if (file.getName().endsWith(PlayerData.FILE_EXTENSION)) {
-                    List<SpongeAccountPage> pages = new ArrayList<>();
-                    UUID owner = PlayerData.getUUIDFromFileName(file);
-                    if (owner == null) {
-                        logger.error(Messages.badUUID(file.getName()));
-                    }
-                    else {
-                        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(file).build();
-                        ConfigurationNode account;
-                        try {
-                            account = loader.load();
-                        }
-                        catch (IOException e) {
-                            logger.error(Messages.fileLoadFail(file));
-                            return;
-                        }
-
-                        for (Object worldName : account.getChildrenMap().keySet()) {
-                            ConfigurationNode world = account.getNode(worldName);
-                            pages.addAll(world.getChildrenMap().keySet().stream().map(page -> SpongeAccountPage.createNewPage(owner, Sponge.getServer().getWorld(worldName.toString()).get(), Integer.parseInt(page.toString()))).collect(Collectors.toList()));
-                        }
-
-                        accountPages.put(owner, pages);
-                    }
+            else {
+                getStorageDir().mkdirs();
+                File[] files = getStorageDir().listFiles();
+                if (files == null) {
+                    return;
                 }
+
+                Arrays.stream(files).filter(file -> file.getName().endsWith(PlayerData.FILE_EXTENSION)).map(file -> {
+                    try {
+                        return GSON.<Account<ItemStack>>fromJson(new FileReader(file), AccountSerializer.TYPE);
+                    }
+                    catch (FileNotFoundException e) {
+                        logger.error(Messages.fileLoadFail(file));
+                        return null;
+                    }
+                }).filter(Objects::nonNull).forEach(this::setAccount);
             }
         });
     }
 
     @Override
-    public boolean openInv(Player viewer, UUID owner, World world, int page) {
-        for (SpongeAccountPage sap : accountPages.get(owner)) {
-            if (owner == sap.getOwner() && world.getName().equals(sap.getWorld().getName()) && page == sap.getPage()) {
-                return sap.openInv(viewer);
-            }
+    public void openInv(@Nonnull Player viewer, @Nonnull UUID uuid, @Nonnull String name, @Nonnull World world, int page) {
+        Account<ItemStack> account = getAccount(uuid);
+        if (account == null) {
+            account = new Account<>(uuid, name);
+            setAccount(account);
         }
 
-        return false;
+        AccountWorld<ItemStack> accountWorld = account.getWorld(world.getName());
+        if (accountWorld == null) {
+            accountWorld = new AccountWorld<>(world.getName());
+            account.setWorld(accountWorld);
+        }
+
+        AccountPage<ItemStack> accountPage = accountWorld.getPage(page);
+        if (accountPage == null) {
+            accountPage = new AccountPage<>(page);
+            accountWorld.setPage(accountPage);
+        }
+
+        Optional<SpongeItemBank> plugin = SpongeItemBank.instance();
+        if (!plugin.isPresent()) {
+            viewer.sendMessage(Text.builder(Reference.PREFIX + Messages.PLUGIN_NOT_INITIALIZED).color(TextColors.RED).build());
+            return;
+        }
+
+        new SpongeInventoryHandler(plugin.get(), accountPage, viewer, uuid, name, world);
+    }
+
+    @Override
+    public void save() {
+        SpongeItemBank.instance().ifPresent(plugin -> {
+            Logger logger = plugin.getLogger();
+            MySQLHandler mysql = plugin.getMySQL();
+            if (plugin.getConfig().useMySQL() && mysql != null) {
+                List<String> queries = new ArrayList<>();
+                Multimap<UUID, String> changedNames = Account.getChangedNames();
+                if (!changedNames.isEmpty()) {
+                    changedNames.forEach((uuid, name) -> queries.add(MySQL.deleteUser(uuid, name)));
+                }
+
+                getAccounts().values().forEach(account -> {
+                    String name = account.getName();
+                    UUID uuid = account.getID();
+                    queries.add(MySQL.deleteUser(uuid));
+                    account.getWorlds().values().forEach(world -> {
+                        String worldName = world.getWorldName();
+                        world.getPages().values().forEach(page -> {
+                            int pg = page.getPage();
+                            for (int i = 0; i < 54; i++) {
+                                AccountSlot<ItemStack> slot = page.getSlot(i);
+                                if (slot == null) {
+                                    queries.add(MySQL.deleteItem(uuid, name, worldName, pg, i));
+                                }
+                                else {
+                                    int s = slot.getSlot();
+                                    String item = GSON.toJson(slot.getItemStack());
+                                    queries.add(MySQL.addItem(uuid, name, worldName, pg, s, item));
+                                }
+                            }
+                        });
+                    });
+                });
+
+                try {
+                    mysql.executeBatch(queries);
+                }
+                catch (ClassNotFoundException | SQLException e) {
+                    logger.error(Messages.SQL_EX);
+                }
+            }
+            else {
+                getStorageDir().mkdirs();
+                getAccounts().values().forEach(account -> {
+                    File file = new File(getStorageDir(), account.getID().toString() + PlayerData.FILE_EXTENSION);
+                    try {
+                        if (!file.exists()) {
+                            file.createNewFile();
+                        }
+
+                        OutputStream os = new FileOutputStream(file);
+                        os.write(GSON.toJson(account).getBytes());
+                        os.close();
+                    }
+                    catch (IOException e) {
+                        logger.error(Messages.fileLoadFail(file));
+                    }
+                });
+            }
+        });
     }
 }

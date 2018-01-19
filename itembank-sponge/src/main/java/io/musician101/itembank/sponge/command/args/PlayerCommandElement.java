@@ -1,9 +1,12 @@
-package io.musician101.itembank.sponge.command;
+package io.musician101.itembank.sponge.command.args;
 
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
+import io.musician101.musicianlibrary.java.minecraft.uuid.UUIDUtils;
+import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -17,17 +20,16 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.World;
 
-public class WorldCommandElement extends CommandElement {
+public class PlayerCommandElement extends CommandElement {
 
-    public static Text KEY = Text.of(Commands.WORLD);
+    public static final Text KEY = Text.of(Commands.PLAYER);
 
-    public WorldCommandElement() {
+    public PlayerCommandElement() {
         this(KEY);
     }
 
-    public WorldCommandElement(@Nullable Text key) {
+    public PlayerCommandElement(@Nullable Text key) {
         super(key);
     }
 
@@ -52,11 +54,19 @@ public class WorldCommandElement extends CommandElement {
     @Nullable
     @Override
     protected Object parseValue(@Nonnull CommandSource source, @Nonnull CommandArgs args) throws ArgumentParseException {
-        Optional<World> optional = Sponge.getServer().getWorld(args.next());
-        if (!optional.isPresent()) {
-            throw args.createError(Text.builder(Messages.ACCOUNT_WORLD_DNE).color(TextColors.RED).build());
+        String name = args.next();
+        UUID uuid;
+        try {
+            uuid = UUIDUtils.getUUIDOf(name);
+        }
+        catch (IOException e) {
+            throw args.createError(Text.builder(Messages.UNKNOWN_EX).color(TextColors.RED).build());
         }
 
-        return optional.get();
+        if (uuid == null) {
+            throw args.createError(Text.builder(Messages.PLAYER_DNE).color(TextColors.RED).build());
+        }
+
+        return new SimpleEntry<>(uuid, name);
     }
 }

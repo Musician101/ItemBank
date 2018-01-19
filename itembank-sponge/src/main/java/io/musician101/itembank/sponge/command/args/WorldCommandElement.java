@@ -1,11 +1,9 @@
-package io.musician101.itembank.sponge.command;
+package io.musician101.itembank.sponge.command.args;
 
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
-import io.musician101.musicianlibrary.java.minecraft.uuid.UUIDUtils;
-import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -19,16 +17,17 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.World;
 
-public class PlayerCommandElement extends CommandElement {
+public class WorldCommandElement extends CommandElement {
 
-    public static Text KEY = Text.of(Commands.PLAYER);
+    public static final Text KEY = Text.of(Commands.WORLD);
 
-    public PlayerCommandElement() {
+    public WorldCommandElement() {
         this(KEY);
     }
 
-    public PlayerCommandElement(@Nullable Text key) {
+    public WorldCommandElement(@Nullable Text key) {
         super(key);
     }
 
@@ -53,18 +52,11 @@ public class PlayerCommandElement extends CommandElement {
     @Nullable
     @Override
     protected Object parseValue(@Nonnull CommandSource source, @Nonnull CommandArgs args) throws ArgumentParseException {
-        UUID uuid;
-        try {
-            uuid = UUIDUtils.getUUIDOf(args.next());
-        }
-        catch (IOException e) {
-            throw args.createError(Text.builder(Messages.UNKNOWN_EX).color(TextColors.RED).build());
+        Optional<World> optional = Sponge.getServer().getWorld(args.next());
+        if (!optional.isPresent()) {
+            throw args.createError(Text.builder(Messages.ACCOUNT_WORLD_DNE).color(TextColors.RED).build());
         }
 
-        if (uuid == null) {
-            throw args.createError(Text.builder(Messages.PLAYER_DNE).color(TextColors.RED).build());
-        }
-
-        return uuid;
+        return optional.get();
     }
 }

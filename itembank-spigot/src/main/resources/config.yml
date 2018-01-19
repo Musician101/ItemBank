@@ -11,14 +11,6 @@ itemlist:
 # Enable vault support?
 enableVault: false
 
-# Which format player accounts should be saved in.
-# This option is ignored if MySQL is enabled.
-# Supported formats: csv, json, yml.
-format: yml
-
-# Language selection.
-lang: en
-
 # Enable Multi-World support.
 # Full - Every world and dimension will have it's own set of accounts (i.e. world1, world1_nether, world1_the_end will have separate accounts).
 # Partial - Every world and it's dimensions will have their own set of accounts (i.e. world1, world1_nether, world1_the_end will have the same account).
@@ -34,8 +26,8 @@ mysql:
     user: user
     pass: password
 
-# Limit the number of pages of items players can have.
-# If the amount is 0 then the amount of pages is infinite.
+# Limit the number of worlds of items players can have.
+# If the amount is 0 then the amount of worlds is infinite.
 pageLimit: 0
 
 # How much to charge for use of /account

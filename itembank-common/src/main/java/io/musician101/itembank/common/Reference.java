@@ -2,6 +2,7 @@ package io.musician101.itembank.common;
 
 import java.io.File;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 
 public class Reference {
 
@@ -20,15 +21,14 @@ public class Reference {
         public static final String ACCOUNT_DESC = "Open the first page of your account.";
         public static final String ACCOUNT_NAME = "account";
         public static final String HEADER_ENDS = "==== ";
-        public static final String HELP = "help";
         public static final String IB_CMD = "/ib";
         public static final String PAGE = "page";
-        public static final String PLAYER = "player";
-        public static final String PURGE_DESC = "Delete all or a specified player's account.";
+        public static final String PLAYER = "viewer";
+        public static final String PURGE_DESC = "Delete all or a specified viewer's account.";
         public static final String PURGE_NAME = "purge";
         public static final String RELOAD_DESC = "Reload the plugin's config file.";
         public static final String RELOAD_NAME = "reload";
-        public static final String UUID_DESC = "Get a player's UUID.";
+        public static final String UUID_DESC = "Get a viewer's UUID.";
         public static final String UUID_NAME = "uuid";
         public static final String WORLD = "world";
 
@@ -55,7 +55,6 @@ public class Reference {
         public static final String TRANSACTION_COST = "transaction_cost";
         public static final String UPDATE_CHECK = "check_for_update";
         public static final String USER = "user";
-        public static final String VARIATION = "variation";
         public static final String VARIATIONS = "variations";
         public static final String WHITELIST = "whitelist";
 
@@ -66,122 +65,97 @@ public class Reference {
 
     public static class Messages {
 
-        public static final String ACCOUNT_ECON_GET_ACCOUNT_FAIL = PREFIX + "An error occurred while trying to fetch your account.";
-        public static final String ACCOUNT_ECON_NOT_AVAILABLE = PREFIX + "Economy has been enabled in the config, but no implemented economy was found.";
-        public static final String ACCOUNT_ECON_UNKNOWN_FAIL = PREFIX + "An unknown error occurred while trying to withdraw from your account.";
         public static final String ACCOUNT_ECON_WITHDRAW_FAIL = PREFIX + "You do not have enough money to complete the current transaction.";
         public static final String ACCOUNT_ILLEGAL_AMOUNT = PREFIX + "Some of the items you deposited put you over the limit. They have been returned to you.";
         public static final String ACCOUNT_ILLEGAL_ITEM = PREFIX + "You attempted to deposit prohibited items into your account. They have been returned to you.";
-        public static final String ACCOUNT_ILLEGAL_PAGE = PREFIX + "You are not allowed to store items on this page. The items have been returned to you. If your inventory is full then check the floor.";
-        public static final String ACCOUNT_UPDATED = PREFIX + "Account updated.";
         public static final String ACCOUNT_WORLD_DNE = PREFIX + "That world does not exist.";
-        public static final String ECON_LOAD_FAIL = "An error occurred while enabling economy support. Economy support now disabled.";
         public static final String ECON_LOAD_FAIL_NO_SERVICE = "No economy service was detected. Disabling economy support.";
         public static final String ECON_LOAD_SUCCESS = "Economy service detected and enabled.";
-        public static final String NO_FILE_EX = PREFIX + "Error: File not found. Please contact an administrator immediately.";
         public static final String NO_PERMISSION = PREFIX + "Error: You do not have permission for this command.";
-        public static final String PLAYER_CMD = PREFIX + "Error: This is a player command.";
+        public static final String PLAYER_CMD = PREFIX + "Error: This is a viewer command.";
         public static final String PLAYER_DNE = PREFIX + "Error: Player not found. Make sure you're spelling the name correctly.";
+        public static final String PLUGIN_NOT_INITIALIZED = "ItemBank has not been initialized.";
         public static final String PURGE_MULTIPLE = PREFIX + "All accounts have been reset.";
-        public static final String PURGE_NO_FILE = PREFIX + "File not found. Please check spelling and capitalization.";
         public static final String PURGE_SINGLE = PREFIX + "Account reset.";
         public static final String RELOAD_SUCCESS = PREFIX + "Config reloaded.";
-        public static final String SQL_EX = PREFIX + "Error: Unable to connect to the database.";
-        public static final String UNKNOWN_EX = PREFIX + "An unknown error has occurred while obtaining the player's UUID.";
-        public static final String UPDATER_DISABLED = "The update checker is currently disabled.";
-        public static final String UPDATER_FAILED = "Error: Update check failed.";
-        public static final String UPDATER_UP_TO_DATE = "The current version is the latest.";
+        public static final String SQL_EX = "Error: Unable to connect to the database.";
+        public static final String UNKNOWN_EX = PREFIX + "An unknown error has occurred while obtaining the viewer's UUID.";
 
         private Messages() {
 
         }
 
-        public static String accountWithdrawSuccess(String currencySymbol, double amount) {
+        public static String accountWithdrawSuccess(@Nonnull String currencySymbol, double amount) {
             return PREFIX + "A fee of " + currencySymbol + amount + " has been deducted from your account.";
         }
 
-        public static String badUUID(String string) {
-            return "Failed to parse " + string + " as UUID.";
+        public static String badUUID(@Nonnull String name, @Nonnull String string) {
+            return "Failed to parse " + name + "'s uuid: " + string;
         }
 
-        public static String fileCreateFail(File file) {
+        public static String fileCreateFail(@Nonnull File file) {
             return PREFIX + "Could not create " + file.getName() + ".";
         }
 
-        public static String fileDeleteFail(File file) {
+        public static String fileLoadFail(@Nonnull File file) {
             return PREFIX + "Could not delete " + file.getName() + ".";
         }
 
-        public static String fileLoadFail(File file) {
-            return PREFIX + "Could not delete " + file.getName() + ".";
+        public static String invalidItem(@Nonnull String name, @Nonnull String worldName, int page, int slot, @Nonnull String itemStackString) {
+            return "Invalid item in " + name + "'s account under " + worldName + ", page " + page + ", slot " + slot + ": " + itemStackString;
         }
 
-        public static String page(String name, int page) {
+        public static String invalidPage(@Nonnull String name, @Nonnull String worldName, int page) {
+            return "Invalid page number in " + name + "'s account under " + worldName + ": " + page;
+        }
+
+        public static String invalidSlot(@Nonnull String name, @Nonnull String worldName, int slot) {
+            return "Invalid slot number in " + name + "'s account under " + worldName + ": " + slot;
+        }
+
+        public static String page(@Nonnull String name, int page) {
             return name + " - Page " + page;
         }
 
-        public static String purgeFileFail(File file) {
-            return PREFIX + file.getName() + " could not be deleted.";
-        }
-
-        public static String updaterNew(String newVersionName) {
-            return "A new version is available." + newVersionName;
-        }
-
-        public static String uuid(String name, UUID uuid) {
+        public static String uuid(@Nonnull String name, @Nonnull UUID uuid) {
             return PREFIX + name + "'s UUID: " + uuid.toString();
+        }
+
+        public static String worldDNE(@Nonnull String name, @Nonnull String worldName) {
+            return "Invalid world name in " + name + "'s account: " + worldName;
         }
     }
 
     public static class MySQL {
 
+        public static final String ITEM = "Item";
+        public static final String NAME = "Name";
         public static final String PAGE = "Page";
-        public static final String TABLE_PREFIX = "ib_";
+        public static final String SLOT = "Slot";
+        public static final String TABLE_NAME = "ib_accounts";
+        public static final String SELECT_TABLE = "SELECT * FROM " + TABLE_NAME;
+        public static final String UUID = "UUID";
         public static final String WORLD = "World";
+        public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS ib_accounts(" + UUID + " TEXT, " + NAME + " TEXT, " + WORLD + " TEXT, " + PAGE + " int, " + SLOT + " int, " + ITEM + " TEXT);";
 
         private MySQL() {
 
         }
 
-        public static String addItem(UUID owner, String worldName, int page, int slot, String itemStack) {
-            return "INSERT INTO " + getTableName(owner) + "(World, Page, Slot, Item) VALUES (\"" + worldName + "\", " + page + ", " + slot + ", \"" + itemStack + ");";
+        public static String addItem(@Nonnull UUID uuid, @Nonnull String name, @Nonnull String worldName, int page, int slot, @Nonnull String itemStack) {
+            return "INSERT INTO " + TABLE_NAME + "(" + UUID + ", " + NAME + ", " + WORLD + ", " + PAGE + ", " + SLOT + ", " + ITEM + ") VALUES (\"" + uuid.toString() + "\", \"" + name + "\", \"" + worldName + "\", " + page + ", " + slot + ", \"" + itemStack + ");";
         }
 
-        public static String createTable(UUID owner) {
-            return "CREATE TABLE IF NOT EXISTS " + getTableName(owner) + "(World TEXT, Page int, Slot int, ItemStack TEXT);";
+        public static String deleteItem(@Nonnull UUID uuid, @Nonnull String name, @Nonnull String worldName, int page, int slot) {
+            return deleteUser(uuid) + " AND " + NAME + " = \"" + name + "\" AND " + WORLD + " = \"" + worldName + "\" AND " + PAGE + " = " + page + " AND " + SLOT + " = " + slot + ";";
         }
 
-        public static String deleteItem(UUID owner, String worldName, int page, int slot) {
-            return "DELETE FROM ib_" + getTableName(owner) + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";";
+        public static String deleteUser(@Nonnull UUID uuid) {
+            return "DELETE FROM " + TABLE_NAME + " WHERE " + UUID + " = \"" + uuid.toString() + "\"";
         }
 
-        public static String deleteTable(String tableName) {
-            return "DROP TABLE IF EXISTS " + tableName;
-        }
-
-        public static String deleteTable(UUID owner) {
-            return deleteTable(getTableName(owner));
-        }
-
-        public static String getTable(String tableName) {
-            return "SELECT * FROM " + tableName + ";";
-        }
-
-        public static String getTable(UUID owner, String worldName, int page, int slot) {
-            return "SELECT * FROM " + getTableName(owner) + " WHERE World = \"" + worldName + "\" AND Page = " + page + " AND Slot = " + slot + ";";
-        }
-
-        private static String getTableName(UUID uuid) {
-            return TABLE_PREFIX + uuid.toString().replace("-", "_");
-        }
-
-        public static UUID getUUIDFromTableName(String tableName) {
-            String noPrefix = tableName.replace(TABLE_PREFIX, "");
-            if (!noPrefix.contains("_")) {
-                return null;
-            }
-
-            return UUID.fromString(noPrefix.replace("_", "-"));
+        public static String deleteUser(@Nonnull UUID uuid, @Nonnull String name) {
+            return "DELETE FROM " + TABLE_NAME + " WHERE " + UUID + " = \"" + uuid.toString() + "\" AND " + NAME + " = \"" + name + "\"";
         }
     }
 
@@ -190,7 +164,7 @@ public class Reference {
         public static final String ACCOUNT = ID + ".account";
         public static final String ADMIN = ACCOUNT + ".admin";
         public static final String PAGE = ACCOUNT + ".page";
-        public static final String PLAYER = ACCOUNT + ".player";
+        public static final String PLAYER = ACCOUNT + ".viewer";
         public static final String PURGE = ID + ".purge";
         public static final String RELOAD = ID + ".reload";
         public static final String UUID = ID + ".uuid";
@@ -204,19 +178,19 @@ public class Reference {
     public static class PlayerData {
 
         public static final String DIRECTORY = "player_data";
-        public static final String FILE_EXTENSION = ".itembank";
+        public static final String FILE_EXTENSION = ".json";
+        public static final String ID = "uuid";
+        public static final String ITEM = "item";
+        public static final String ITEMS = "items";
+        public static final String NAME = "name";
+        public static final String PAGE = "page";
+        public static final String PAGES = "page";
+        public static final String SLOT = "slot";
+        public static final String WORLD = "world";
+        public static final String WORLDS = "worlds";
 
         private PlayerData() {
 
-        }
-
-        public static UUID getUUIDFromFileName(File file) {
-            String name = file.getName().replace(FILE_EXTENSION, "");
-            if (!name.contains("-")) {
-                return null;
-            }
-
-            return UUID.fromString(name);
         }
     }
 }

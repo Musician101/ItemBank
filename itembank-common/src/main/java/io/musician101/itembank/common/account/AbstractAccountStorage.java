@@ -1,51 +1,58 @@
 package io.musician101.itembank.common.account;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-//TODO load into memory
-public abstract class AbstractAccountStorage<A extends AbstractAccountPage, P, W> {
+//TODO create different versions for each module and create MySQL versions
+public abstract class AbstractAccountStorage<I, P, W> {
 
-    protected final Map<UUID, List<A>> accountPages = new HashMap<>();
-    protected final File storageDir;
+    @Nonnull
+    private final Map<UUID, Account<I>> accounts = new HashMap<>();
+    @Nonnull
+    private final File storageDir;
 
-    protected AbstractAccountStorage(File storageDir) {
+    public AbstractAccountStorage(@Nonnull File storageDir) {
         this.storageDir = storageDir;
+        load();
     }
 
-    public File getFile(UUID uuid) {
-        File file = new File(storageDir, uuid.toString() + ".itembank");
-        if (!file.exists()) {
-            try {
-                if (!file.createNewFile()) {
-                    return null;
-                }
-            }
-            catch (IOException e) {
-                return null;
-            }
-        }
-
-        return file;
+    @Nullable
+    public Account<I> getAccount(UUID owner) {
+        return accounts.get(owner);
     }
 
-    protected abstract void loadPages();
+    @Nonnull
+    public Map<UUID, Account<I>> getAccounts() {
+        return accounts;
+    }
 
-    public abstract boolean openInv(P viewer, UUID owner, W world, int page);
+    @Nonnull
+    protected File getStorageDir() {
+        return storageDir;
+    }
 
-    public List<File> resetAll() {
-        List<File> files = new ArrayList<>();
-        for (File file : storageDir.listFiles()) {
-            if (!file.delete()) {
-                files.add(file);
-            }
+    public abstract void load();
+
+    public abstract void openInv(@Nonnull P viewer, @Nonnull UUID uuid, @Nonnull String name, @Nonnull W world, int page);
+
+    public void resetAccount(@Nonnull UUID uuid) {
+        Account<I> account = getAccount(uuid);
+        if (account != null) {
+            setAccount(new Account<>(uuid, account.getName()));
         }
+    }
 
-        return files;
+    public void resetAll() {
+        accounts.replaceAll((key, value) -> new Account<>(key, value.getName()));
+    }
+
+    public abstract void save();
+
+    public void setAccount(@Nonnull Account<I> account) {
+        accounts.put(account.getID(), account);
     }
 }

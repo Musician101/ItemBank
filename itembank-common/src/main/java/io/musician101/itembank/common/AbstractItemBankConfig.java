@@ -4,6 +4,7 @@ import io.musician101.musicianlibrary.java.minecraft.config.AbstractConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public abstract class AbstractItemBankConfig<I> extends AbstractConfig {
 
@@ -19,6 +20,7 @@ public abstract class AbstractItemBankConfig<I> extends AbstractConfig {
         super(file);
     }
 
+    @Nullable
     public abstract I getItem(I itemStack);
 
     public int getPageLimit() {
