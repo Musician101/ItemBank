@@ -1,5 +1,6 @@
 package io.musician101.itembank.common;
 
+import io.musician101.musicianlibrary.java.MySQLHandler;
 import io.musician101.musicianlibrary.java.minecraft.config.AbstractConfig;
 import java.io.File;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ public abstract class AbstractItemBankConfig<I> extends AbstractConfig {
     protected boolean enableEconomy = false;
     protected boolean isMultiWorldStorageEnabled = false;
     protected boolean isWhitelist = false;
+    @Nullable
+    protected MySQLHandler mysql;
     protected int pageLimit = 0;
     protected double transactionCost;
     protected boolean useMySQL = false;
@@ -22,6 +25,11 @@ public abstract class AbstractItemBankConfig<I> extends AbstractConfig {
 
     @Nullable
     public abstract I getItem(I itemStack);
+
+    @Nullable
+    public MySQLHandler getMySQL() {
+        return mysql;
+    }
 
     public int getPageLimit() {
         return pageLimit;

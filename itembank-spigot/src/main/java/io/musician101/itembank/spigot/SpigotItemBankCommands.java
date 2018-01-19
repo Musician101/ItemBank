@@ -4,7 +4,7 @@ import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.Permissions;
-import io.musician101.itembank.spigot.account.SpigotAccountStorage;
+import io.musician101.itembank.common.account.storage.AccountStorage;
 import io.musician101.itembank.spigot.config.SpigotConfig;
 import io.musician101.musicianlibrary.java.minecraft.spigot.command.SpigotCommand;
 import io.musician101.musicianlibrary.java.minecraft.spigot.command.SpigotCommandArgument;
@@ -22,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class SpigotItemBankCommands {
 
@@ -74,7 +75,7 @@ public class SpigotItemBankCommands {
                 }
             }
 
-            SpigotItemBank plugin = SpigotItemBank.instance();
+            SpigotItemBank plugin = (SpigotItemBank) SpigotItemBank.instance();
             SpigotConfig config = plugin.getPluginConfig();
             Economy economy = plugin.getEconomy();
             if (player.getUniqueId().equals(uuid) && plugin.getPluginConfig().useEconomy() && economy != null) {
@@ -89,13 +90,19 @@ public class SpigotItemBankCommands {
             }
 
             if (canAccessPage(player, uuid, page, world)) {
-                SpigotItemBank.instance().getAccountStorage().openInv(player, uuid, name, world, page);
+                AccountStorage<ItemStack, Player, World> accountStorage = plugin.getAccountStorage();
+                if (accountStorage == null) {
+                    player.sendMessage(ChatColor.RED + Reference.PREFIX + Messages.DATABASE_UNAVAILABLE);
+                    return false;
+                }
+
+                accountStorage.openInv(player, uuid, name, world, page);
                 return true;
             }
 
             player.sendMessage(ChatColor.RED + Messages.NO_PERMISSION);
             return false;
-        }).build(SpigotItemBank.instance());
+        }).build((SpigotItemBank) SpigotItemBank.instance());
     }
 
     private static boolean canAccessPage(Player player, UUID owner, int page, World world) {
@@ -107,16 +114,17 @@ public class SpigotItemBankCommands {
             return player.hasPermission(Permissions.PLAYER);
         }
 
-        return SpigotItemBank.instance().getPluginConfig().isMultiWorldStorageEnabled() && player.getWorld() != world && (player.hasPermission(Permissions.WORLD + "." + world.getName()) || player.hasPermission(Permissions.WORLD)) || SpigotItemBank.instance().getPluginConfig().getPageLimit() > 0 && (player.hasPermission(Permissions.PAGE) || page < SpigotItemBank.instance().getPluginConfig().getPageLimit());
+        SpigotConfig config = ((SpigotItemBank) SpigotItemBank.instance()).getPluginConfig();
+        return config.isMultiWorldStorageEnabled() && player.getWorld() != world && (player.hasPermission(Permissions.WORLD + "." + world.getName()) || player.hasPermission(Permissions.WORLD)) || config.getPageLimit() > 0 && (player.hasPermission(Permissions.PAGE) || page < config.getPageLimit());
     }
 
     public static SpigotCommand<SpigotItemBank> ib() {
-        return SpigotCommand.<SpigotItemBank>builder().name(Commands.IB_CMD.replace("/", "")).description(Reference.DESCRIPTION).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.IB_CMD))).permissions(SpigotCommandPermissions.blank()).addCommand(purge()).addCommand(reload()).addCommand(uuid()).build(SpigotItemBank.instance());
+        return SpigotCommand.<SpigotItemBank>builder().name(Commands.IB_CMD.replace("/", "")).description(Reference.DESCRIPTION).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.IB_CMD))).permissions(SpigotCommandPermissions.blank()).addCommand(purge()).addCommand(reload()).addCommand(uuid()).build((SpigotItemBank) SpigotItemBank.instance());
     }
 
     private static SpigotCommand<SpigotItemBank> purge() {
         return SpigotCommand.<SpigotItemBank>builder().name(Commands.PURGE_NAME).description(Commands.PURGE_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.IB_CMD), SpigotCommandArgument.of(Commands.PURGE_NAME))).permissions(SpigotCommandPermissions.builder().permissionNode(Permissions.PURGE).noPermissionMessage(ChatColor.RED + Messages.NO_PERMISSION).playerOnlyMessage("").build()).function((sender, args) -> {
-            SpigotAccountStorage accountStorage = SpigotItemBank.instance().getAccountStorage();
+            AccountStorage<ItemStack, Player, World> accountStorage = SpigotItemBank.instance().getAccountStorage();
             if (args.size() > 0) {
                 UUID uuid;
                 try {
@@ -135,15 +143,15 @@ public class SpigotItemBankCommands {
             accountStorage.resetAll();
             sender.sendMessage(Messages.PURGE_MULTIPLE);
             return true;
-        }).build(SpigotItemBank.instance());
+        }).build((SpigotItemBank) SpigotItemBank.instance());
     }
 
     private static SpigotCommand<SpigotItemBank> reload() {
         return SpigotCommand.<SpigotItemBank>builder().name(Commands.RELOAD_NAME).description(Commands.RELOAD_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.RELOAD_NAME), SpigotCommandArgument.of(Commands.RELOAD_NAME))).permissions(SpigotCommandPermissions.builder().permissionNode(Permissions.RELOAD).noPermissionMessage(ChatColor.RED + Messages.NO_PERMISSION).playerOnlyMessage("").build()).function((sender, args) -> {
-            SpigotItemBank.instance().getPluginConfig().reload();
+            ((SpigotItemBank) SpigotItemBank.instance()).getPluginConfig().reload();
             sender.sendMessage(Messages.RELOAD_SUCCESS);
             return true;
-        }).build(SpigotItemBank.instance());
+        }).build((SpigotItemBank) SpigotItemBank.instance());
     }
 
     private static SpigotCommand<SpigotItemBank> uuid() {
@@ -167,6 +175,6 @@ public class SpigotItemBankCommands {
             Player player = (Player) sender;
             sender.sendMessage(Messages.uuid(player.getName(), player.getUniqueId()));
             return true;
-        }).build(SpigotItemBank.instance());
+        }).build((SpigotItemBank) SpigotItemBank.instance());
     }
 }

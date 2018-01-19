@@ -170,11 +170,11 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
             isWhitelist = config.getNode(Config.WHITELIST).getBoolean(false);
             isMultiWorldStorageEnabled = config.getNode(Config.MULTI_WORLD).getBoolean(false);
             pageLimit = config.getNode(Config.PAGE_LIMIT).getInt(0);
-            ConfigurationNode mysql = config.getNode(Config.MYSQL);
-            if (!mysql.isVirtual()) {
-                useMySQL = mysql.getNode(Config.ENABLE_MYSQL).getBoolean(false);
+            ConfigurationNode mysqlNode = config.getNode(Config.MYSQL);
+            if (!mysqlNode.isVirtual()) {
+                useMySQL = mysqlNode.getNode(Config.ENABLE_MYSQL).getBoolean(false);
                 if (useMySQL) {
-                    plugin.setMySQL(new MySQLHandler(mysql.getNode(Config.DATABASE).getString(Config.DATABASE), mysql.getNode(Config.HOST).getString(Config.LOCAL_HOST), mysql.getNode(Config.PASSWORD).getString(Config.PASSWORD), mysql.getNode(Config.PORT).getString(Config.PORT_DEFAULT), mysql.getNode(Config.USER).getString(Config.USER)));
+                    mysql = new MySQLHandler(mysqlNode.getNode(Config.DATABASE).getString(Config.DATABASE), mysqlNode.getNode(Config.HOST).getString(Config.LOCAL_HOST), mysqlNode.getNode(Config.PASSWORD).getString(Config.PASSWORD), mysqlNode.getNode(Config.PORT).getString(Config.PORT_DEFAULT), mysqlNode.getNode(Config.USER).getString(Config.USER));
                 }
             }
 

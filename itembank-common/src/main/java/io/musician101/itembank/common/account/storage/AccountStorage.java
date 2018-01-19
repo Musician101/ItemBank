@@ -1,23 +1,23 @@
-package io.musician101.itembank.common.account;
+package io.musician101.itembank.common.account.storage;
 
-import java.io.File;
+import com.google.gson.Gson;
+import io.musician101.itembank.common.account.Account;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-//TODO create different versions for each module and create MySQL versions
-public abstract class AbstractAccountStorage<I, P, W> {
+//TODO use optional for getting account stuffs
+public abstract class AccountStorage<I, P, W> {
 
     @Nonnull
     private final Map<UUID, Account<I>> accounts = new HashMap<>();
     @Nonnull
-    private final File storageDir;
+    private final Gson gson;
 
-    public AbstractAccountStorage(@Nonnull File storageDir) {
-        this.storageDir = storageDir;
-        load();
+    protected AccountStorage(@Nonnull Gson gson) {
+        this.gson = gson;
     }
 
     @Nullable
@@ -31,8 +31,8 @@ public abstract class AbstractAccountStorage<I, P, W> {
     }
 
     @Nonnull
-    protected File getStorageDir() {
-        return storageDir;
+    protected Gson getGson() {
+        return gson;
     }
 
     public abstract void load();

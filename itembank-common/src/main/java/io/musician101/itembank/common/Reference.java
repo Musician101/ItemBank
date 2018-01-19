@@ -69,6 +69,7 @@ public class Reference {
         public static final String ACCOUNT_ILLEGAL_AMOUNT = PREFIX + "Some of the items you deposited put you over the limit. They have been returned to you.";
         public static final String ACCOUNT_ILLEGAL_ITEM = PREFIX + "You attempted to deposit prohibited items into your account. They have been returned to you.";
         public static final String ACCOUNT_WORLD_DNE = PREFIX + "That world does not exist.";
+        public static final String DATABASE_UNAVAILABLE = "ItemBank could not connect to the database. The /account command will not function until this is fixed.";
         public static final String ECON_LOAD_FAIL_NO_SERVICE = "No economy service was detected. Disabling economy support.";
         public static final String ECON_LOAD_SUCCESS = "Economy service detected and enabled.";
         public static final String NO_PERMISSION = PREFIX + "Error: You do not have permission for this command.";

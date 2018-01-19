@@ -1,6 +1,6 @@
 package io.musician101.itembank.common.account;
 
-public class AbstractInventoryHandler<I, P, S, W> {
+public class AbstractInventoryHandler<I, P, S> {
 
     protected final I inventory;
     protected final AccountPage<S> page;

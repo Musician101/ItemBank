@@ -7,7 +7,6 @@ import io.musician101.itembank.common.account.AccountPage;
 import io.musician101.itembank.common.account.AccountSlot;
 import io.musician101.itembank.spigot.SpigotItemBank;
 import io.musician101.itembank.spigot.config.SpigotConfig;
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,11 +19,11 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, Player, ItemStack, World> implements Listener {
+public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, Player, ItemStack> implements Listener {
 
-    public SpigotInventoryHandler(AccountPage<ItemStack> page, Player viewer, UUID ownerID, String ownerName, World world) {
+    public SpigotInventoryHandler(AccountPage<ItemStack> page, Player viewer, String ownerName, World world) {
         super(parseInventory(page, viewer, ownerName, world), page, viewer);
-        Bukkit.getPluginManager().registerEvents(this, SpigotItemBank.instance());
+        Bukkit.getPluginManager().registerEvents(this, (SpigotItemBank) SpigotItemBank.instance());
         viewer.openInventory(inventory);
     }
 
@@ -56,7 +55,7 @@ public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, 
 
         boolean hasIllegalItems = false;
         boolean hasIllegalAmount = false;
-        SpigotConfig config = SpigotItemBank.instance().getPluginConfig();
+        SpigotConfig config = ((SpigotItemBank) SpigotItemBank.instance()).getPluginConfig();
         for (int x = 0; x < inv.getSize(); x++) {
             ItemStack itemStack = inv.getItem(x);
             if (itemStack != null) {

@@ -4,6 +4,7 @@ import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.Permissions;
+import io.musician101.itembank.common.account.storage.AccountStorage;
 import io.musician101.itembank.sponge.SpongeItemBank;
 import io.musician101.itembank.sponge.command.args.PlayerCommandElement;
 import io.musician101.itembank.sponge.command.args.WorldCommandElement;
@@ -22,6 +23,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.cause.EventContextKeys;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.transaction.ResultType;
@@ -39,7 +41,7 @@ public class SpongeItemBankCommands {
     public static CommandSpec account() {
         return CommandSpec.builder().description(Text.of(Commands.ACCOUNT_DESC)).arguments(GenericArguments.optional(GenericArguments.integer(Text.of(Commands.PAGE))), GenericArguments.optional(new WorldCommandElement()), GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> {
             if (source instanceof Player) {
-                return SpongeItemBank.instance().map(plugin -> {
+                return SpongeItemBank.instance().map(SpongeItemBank.class::cast).map(plugin -> {
                     Player player = (Player) source;
                     int page = args.<Integer>getOne(Commands.PAGE).orElse(1);
                     Entry<UUID, String> entry = args.<Entry<UUID, String>>getOne(PlayerCommandElement.KEY).orElse(new SimpleEntry<>(player.getUniqueId(), player.getName()));
@@ -58,7 +60,13 @@ public class SpongeItemBankCommands {
                     });
 
                     if (canAccessPage(player, entry.getKey(), page, world)) {
-                        plugin.getAccountStorage().openInv(player, entry.getKey(), entry.getValue(), world, page);
+                        AccountStorage<ItemStack, Player, World> accountStorage = plugin.getAccountStorage();
+                        if (accountStorage == null) {
+                            player.sendMessage(Text.builder(Messages.DATABASE_UNAVAILABLE).color(TextColors.RED).build());
+                            return CommandResult.empty();
+                        }
+
+                        accountStorage.openInv(player, entry.getKey(), entry.getValue(), world, page);
                         return CommandResult.success();
                     }
 
@@ -73,7 +81,7 @@ public class SpongeItemBankCommands {
     }
 
     private static boolean canAccessPage(Player player, UUID owner, int page, World world) {
-        return SpongeItemBank.instance().map(SpongeItemBank::getConfig).map(config -> {
+        return SpongeItemBank.instance().map(SpongeItemBank.class::cast).map(SpongeItemBank::getConfig).map(config -> {
             if (player.hasPermission(Permissions.ADMIN)) {
                 return true;
             }
@@ -109,7 +117,7 @@ public class SpongeItemBankCommands {
     }
 
     private static CommandSpec reload() {
-        return CommandSpec.builder().description(Text.of(Commands.RELOAD_DESC)).executor((source, args) -> SpongeItemBank.instance().map(plugin -> {
+        return CommandSpec.builder().description(Text.of(Commands.RELOAD_DESC)).executor((source, args) -> SpongeItemBank.instance().map(SpongeItemBank.class::cast).map(plugin -> {
             plugin.getConfig().reload();
             source.sendMessage(Text.builder(Messages.RELOAD_SUCCESS).color(TextColors.GREEN).build());
             return CommandResult.success();

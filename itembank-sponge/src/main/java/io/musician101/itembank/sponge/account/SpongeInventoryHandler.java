@@ -1,5 +1,6 @@
 package io.musician101.itembank.sponge.account;
 
+import io.musician101.itembank.common.ItemBank;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.Permissions;
 import io.musician101.itembank.common.account.AbstractInventoryHandler;
@@ -10,9 +11,9 @@ import io.musician101.itembank.sponge.SpongeItemBank;
 import io.musician101.itembank.sponge.config.SpongeConfig;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
@@ -35,9 +36,9 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, Player, ItemStack, World> {
+public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, Player, ItemStack> {
 
-    public SpongeInventoryHandler(SpongeItemBank plugin, AccountPage<ItemStack> page, Player viewer, UUID ownerID, String ownerName, World world) {
+    public SpongeInventoryHandler(ItemBank<ItemStack, Logger, Player, World> plugin, AccountPage<ItemStack> page, Player viewer, String ownerName, World world) {
         super(parseInventory(plugin, page, ownerName, world), page, viewer);
         Sponge.getEventManager().registerListeners(this, plugin);
         viewer.openInventory(inventory);
@@ -47,7 +48,7 @@ public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, 
         return inventory.query(QueryOperationTypes.INVENTORY_PROPERTY.of(new SlotIndex(slot)));
     }
 
-    private static Inventory parseInventory(SpongeItemBank plugin, AccountPage<ItemStack> page, String ownerName, World world) {
+    private static Inventory parseInventory(ItemBank<ItemStack, Logger, Player, World> plugin, AccountPage<ItemStack> page, String ownerName, World world) {
         String name = ownerName + "'s Account for " + world.getName() + " - Page " + page.getPage();
         InventoryArchetype.Builder builder = InventoryArchetype.builder().property(new InventoryCapacity(54)).title(Text.of(name));
         for (int i = 0; i < 54; i++) {
@@ -79,7 +80,7 @@ public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, 
             return;
         }
 
-        SpongeItemBank.instance().ifPresent(plugin -> {
+        SpongeItemBank.instance().map(SpongeItemBank.class::cast).ifPresent(plugin -> {
             boolean hasIllegalItems = false;
             boolean hasIllegalAmount = false;
             SpongeConfig config = plugin.getConfig();

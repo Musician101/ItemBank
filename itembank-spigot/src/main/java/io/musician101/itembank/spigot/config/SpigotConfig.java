@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 public class SpigotConfig extends AbstractItemBankConfig<ItemStack> {
 
     public SpigotConfig() {
-        super(new File(SpigotItemBank.instance().getDataFolder(), "config.yml"));
+        super(new File(((SpigotItemBank) SpigotItemBank.instance()).getDataFolder(), "config.yml"));
         reload();
     }
 
@@ -33,9 +33,10 @@ public class SpigotConfig extends AbstractItemBankConfig<ItemStack> {
 
     @Override
     public void reload() {
-        SpigotItemBank.instance().saveDefaultConfig();
-        SpigotItemBank.instance().reloadConfig();
-        FileConfiguration config = SpigotItemBank.instance().getConfig();
+        SpigotItemBank plugin = (SpigotItemBank) SpigotItemBank.instance();
+        plugin.saveDefaultConfig();
+        plugin.reloadConfig();
+        FileConfiguration config = plugin.getConfig();
         isWhitelist = config.getBoolean(Config.WHITELIST, false);
         enableEconomy = config.getBoolean(Config.ENABLE_ECONOMY, false);
         isMultiWorldStorageEnabled = config.getBoolean(Config.MULTI_WORLD, false);
@@ -54,7 +55,7 @@ public class SpigotConfig extends AbstractItemBankConfig<ItemStack> {
         if (config.isSet(Config.MYSQL)) {
             ConfigurationSection mysqlCS = config.createSection(Config.MYSQL);
             if (mysqlCS.getBoolean(Config.ENABLE_MYSQL, false)) {
-                SpigotItemBank.instance().setMySQLHandler(new MySQLHandler(config.getString(Config.DATABASE), config.getString(Config.HOST), config.getString(Config.PASSWORD), config.getString(Config.PORT), config.getString(Config.USER)));
+                mysql = new MySQLHandler(config.getString(Config.DATABASE), config.getString(Config.HOST), config.getString(Config.PASSWORD), config.getString(Config.PORT), config.getString(Config.USER));
             }
         }
     }
