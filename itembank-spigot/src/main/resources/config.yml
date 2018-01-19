@@ -26,8 +26,8 @@ mysql:
     user: user
     pass: password
 
-# Limit the number of worlds of items players can have.
-# If the amount is 0 then the amount of worlds is infinite.
+# Limit the number of pages of items players can have.
+# If the amount is 0 then the amount of pages is infinite.
 pageLimit: 0
 
 # How much to charge for use of /account
