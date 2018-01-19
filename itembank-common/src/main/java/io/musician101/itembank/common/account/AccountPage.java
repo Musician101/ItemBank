@@ -4,8 +4,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class AccountPage<I> {
 
@@ -30,9 +30,9 @@ public class AccountPage<I> {
         return page;
     }
 
-    @Nullable
-    public AccountSlot<I> getSlot(int slot) {
-        return slots.get(slot);
+    @Nonnull
+    public Optional<AccountSlot<I>> getSlot(int slot) {
+        return Optional.ofNullable(slots.get(slot));
     }
 
     @Nonnull

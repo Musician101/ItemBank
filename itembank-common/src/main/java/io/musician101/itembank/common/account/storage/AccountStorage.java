@@ -4,11 +4,10 @@ import com.google.gson.Gson;
 import io.musician101.itembank.common.account.Account;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-//TODO use optional for getting account stuffs
 public abstract class AccountStorage<I, P, W> {
 
     @Nonnull
@@ -20,9 +19,9 @@ public abstract class AccountStorage<I, P, W> {
         this.gson = gson;
     }
 
-    @Nullable
-    public Account<I> getAccount(UUID owner) {
-        return accounts.get(owner);
+    @Nonnull
+    public Optional<Account<I>> getAccount(UUID owner) {
+        return Optional.ofNullable(accounts.get(owner));
     }
 
     @Nonnull
@@ -40,10 +39,7 @@ public abstract class AccountStorage<I, P, W> {
     public abstract void openInv(@Nonnull P viewer, @Nonnull UUID uuid, @Nonnull String name, @Nonnull W world, int page);
 
     public void resetAccount(@Nonnull UUID uuid) {
-        Account<I> account = getAccount(uuid);
-        if (account != null) {
-            setAccount(new Account<>(uuid, account.getName()));
-        }
+        getAccount(uuid).ifPresent(account -> setAccount(new Account<>(uuid, account.getName())));
     }
 
     public void resetAll() {

@@ -4,8 +4,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class AccountWorld<I> {
 
@@ -27,9 +27,9 @@ public class AccountWorld<I> {
         pages.remove(page);
     }
 
-    @Nullable
-    public AccountPage<I> getPage(int page) {
-        return pages.get(page);
+    @Nonnull
+    public Optional<AccountPage<I>> getPage(int page) {
+        return Optional.ofNullable(pages.get(page));
     }
 
     @Nonnull

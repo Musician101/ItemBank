@@ -7,9 +7,9 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class Account<I> {
 
@@ -54,9 +54,9 @@ public class Account<I> {
         CHANGED_NAMES.put(uuid, this.name);
     }
 
-    @Nullable
-    public AccountWorld<I> getWorld(@Nonnull String worldName) {
-        return worlds.get(worldName);
+    @Nonnull
+    public Optional<AccountWorld<I>> getWorld(@Nonnull String worldName) {
+        return Optional.ofNullable(worlds.get(worldName));
     }
 
     @Nonnull
