@@ -4,7 +4,6 @@ import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.Permissions;
-import io.musician101.itembank.common.account.storage.AccountStorage;
 import io.musician101.itembank.sponge.SpongeItemBank;
 import io.musician101.itembank.sponge.command.args.PlayerCommandElement;
 import io.musician101.itembank.sponge.command.args.WorldCommandElement;
@@ -23,7 +22,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.cause.EventContextKeys;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.transaction.ResultType;
@@ -60,14 +58,13 @@ public class SpongeItemBankCommands {
                     });
 
                     if (canAccessPage(player, entry.getKey(), page, world)) {
-                        AccountStorage<ItemStack, Player, World> accountStorage = plugin.getAccountStorage();
-                        if (accountStorage == null) {
-                            player.sendMessage(Text.builder(Messages.DATABASE_UNAVAILABLE).color(TextColors.RED).build());
+                        return plugin.getAccountStorage().map(accountStorage -> {
+                            accountStorage.openInv(player, entry.getKey(), entry.getValue(), world, page);
+                            return CommandResult.success();
+                        }).orElseGet(() -> {
+                            player.sendMessage(Text.builder(Reference.PREFIX + Messages.DATABASE_UNAVAILABLE).color(TextColors.RED).build());
                             return CommandResult.empty();
-                        }
-
-                        accountStorage.openInv(player, entry.getKey(), entry.getValue(), world, page);
-                        return CommandResult.success();
+                        });
                     }
 
                     player.sendMessage(Text.builder(Messages.NO_PERMISSION).color(TextColors.RED).build());
@@ -105,13 +102,16 @@ public class SpongeItemBankCommands {
     }
 
     private static CommandSpec purge() {
-        return CommandSpec.builder().description(Text.of(Commands.PURGE_DESC)).arguments(GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> SpongeItemBank.instance().map(plugin -> args.<UUID>getOne(PlayerCommandElement.KEY).map(uuid -> {
-            plugin.getAccountStorage().resetAccount(uuid);
+        return CommandSpec.builder().description(Text.of(Commands.PURGE_DESC)).arguments(GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> SpongeItemBank.instance().map(plugin -> plugin.getAccountStorage().map(accountStorage -> args.<UUID>getOne(PlayerCommandElement.KEY).map(uuid -> {
+            accountStorage.resetAccount(uuid);
             source.sendMessage(Text.builder(Messages.PURGE_SINGLE).color(TextColors.GREEN).build());
             return CommandResult.success();
         }).orElseGet(() -> {
-            plugin.getAccountStorage().resetAll();
+            accountStorage.resetAll();
             source.sendMessage(Text.builder(Messages.PURGE_MULTIPLE).color(TextColors.GREEN).build());
+            return CommandResult.empty();
+        })).orElseGet(() -> {
+            source.sendMessage(Text.builder(Reference.PREFIX + Messages.DATABASE_UNAVAILABLE).color(TextColors.RED).build());
             return CommandResult.empty();
         })).orElse(CommandResult.empty())).permission(Permissions.PURGE).build();
     }

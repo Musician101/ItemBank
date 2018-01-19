@@ -18,6 +18,7 @@ import io.musician101.itembank.spigot.json.account.AccountWorldSerializer;
 import io.musician101.musicianlibrary.java.MySQLHandler;
 import io.musician101.musicianlibrary.java.minecraft.spigot.plugin.AbstractSpigotPlugin;
 import java.io.File;
+import java.util.Optional;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,10 +43,10 @@ public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig, SpigotIte
         return JavaPlugin.getPlugin(SpigotItemBank.class);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public AccountStorage<ItemStack, Player, World> getAccountStorage() {
-        return accountStorage;
+    public Optional<AccountStorage<ItemStack, Player, World>> getAccountStorage() {
+        return Optional.ofNullable(accountStorage);
     }
 
     @Nullable

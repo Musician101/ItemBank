@@ -52,10 +52,10 @@ public class SpongeItemBank extends AbstractSpongePlugin<SpongeConfig> implement
         return Sponge.getPluginManager().getPlugin(Reference.ID).flatMap(PluginContainer::getInstance).filter(SpongeItemBank.class::isInstance).map(SpongeItemBank.class::cast);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public AccountStorage<ItemStack, Player, World> getAccountStorage() {
-        return accountStorage;
+    public Optional<AccountStorage<ItemStack, Player, World>> getAccountStorage() {
+        return Optional.ofNullable(accountStorage);
     }
 
     @Nonnull

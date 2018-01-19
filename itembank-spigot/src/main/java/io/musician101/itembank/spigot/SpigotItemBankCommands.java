@@ -14,6 +14,7 @@ import io.musician101.musicianlibrary.java.minecraft.spigot.command.SpigotComman
 import io.musician101.musicianlibrary.java.minecraft.uuid.UUIDUtils;
 import io.musician101.musicianlibrary.java.util.Utils;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -90,13 +91,13 @@ public class SpigotItemBankCommands {
             }
 
             if (canAccessPage(player, uuid, page, world)) {
-                AccountStorage<ItemStack, Player, World> accountStorage = plugin.getAccountStorage();
-                if (accountStorage == null) {
+                Optional<AccountStorage<ItemStack, Player, World>> accountStorage = plugin.getAccountStorage();
+                if (!accountStorage.isPresent()) {
                     player.sendMessage(ChatColor.RED + Reference.PREFIX + Messages.DATABASE_UNAVAILABLE);
                     return false;
                 }
 
-                accountStorage.openInv(player, uuid, name, world, page);
+                accountStorage.get().openInv(player, uuid, name, world, page);
                 return true;
             }
 
@@ -123,8 +124,7 @@ public class SpigotItemBankCommands {
     }
 
     private static SpigotCommand<SpigotItemBank> purge() {
-        return SpigotCommand.<SpigotItemBank>builder().name(Commands.PURGE_NAME).description(Commands.PURGE_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.IB_CMD), SpigotCommandArgument.of(Commands.PURGE_NAME))).permissions(SpigotCommandPermissions.builder().permissionNode(Permissions.PURGE).noPermissionMessage(ChatColor.RED + Messages.NO_PERMISSION).playerOnlyMessage("").build()).function((sender, args) -> {
-            AccountStorage<ItemStack, Player, World> accountStorage = SpigotItemBank.instance().getAccountStorage();
+        return SpigotCommand.<SpigotItemBank>builder().name(Commands.PURGE_NAME).description(Commands.PURGE_DESC).usage(SpigotCommandUsage.of(SpigotCommandArgument.of(Commands.IB_CMD), SpigotCommandArgument.of(Commands.PURGE_NAME))).permissions(SpigotCommandPermissions.builder().permissionNode(Permissions.PURGE).noPermissionMessage(ChatColor.RED + Messages.NO_PERMISSION).playerOnlyMessage("").build()).function((sender, args) -> SpigotItemBank.instance().getAccountStorage().map(accountStorage -> {
             if (args.size() > 0) {
                 UUID uuid;
                 try {
@@ -143,7 +143,10 @@ public class SpigotItemBankCommands {
             accountStorage.resetAll();
             sender.sendMessage(Messages.PURGE_MULTIPLE);
             return true;
-        }).build((SpigotItemBank) SpigotItemBank.instance());
+        }).orElseGet(() -> {
+            sender.sendMessage(ChatColor.RED + Reference.PREFIX + Messages.DATABASE_UNAVAILABLE);
+            return false;
+        })).build((SpigotItemBank) SpigotItemBank.instance());
     }
 
     private static SpigotCommand<SpigotItemBank> reload() {

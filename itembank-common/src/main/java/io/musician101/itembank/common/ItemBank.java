@@ -1,15 +1,13 @@
 package io.musician101.itembank.common;
 
 import io.musician101.itembank.common.account.storage.AccountStorage;
+import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface ItemBank<I, L, P, W> {
 
-    //TODO turn into Optional
-    @Deprecated
-    @Nullable
-    AccountStorage<I, P, W> getAccountStorage();
+    @Nonnull
+    Optional<AccountStorage<I, P, W>> getAccountStorage();
 
     @Nonnull
     String getId();
@@ -23,8 +21,6 @@ public interface ItemBank<I, L, P, W> {
     void reload();
 
     default void save() {
-        if (getAccountStorage() != null) {
-            getAccountStorage().save();
-        }
+        getAccountStorage().ifPresent(AccountStorage::save);
     }
 }
