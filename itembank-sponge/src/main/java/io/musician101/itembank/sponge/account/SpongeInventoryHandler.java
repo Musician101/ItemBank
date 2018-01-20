@@ -9,9 +9,8 @@ import io.musician101.itembank.common.account.AccountSlot;
 import io.musician101.itembank.sponge.IBUtils;
 import io.musician101.itembank.sponge.SpongeItemBank;
 import io.musician101.itembank.sponge.config.SpongeConfig;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -64,7 +63,6 @@ public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, 
         getSlot(inventory, slot).set(itemStack);
     }
 
-    //TODO simplify method a bit to allow code analysis
     @Listener
     public void close(InteractInventoryEvent.Close event, @First Player player) {
         Container inv = event.getTargetInventory();
@@ -81,76 +79,20 @@ public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, 
         }
 
         SpongeItemBank.instance().map(SpongeItemBank.class::cast).ifPresent(plugin -> {
-            boolean hasIllegalItems = false;
-            boolean hasIllegalAmount = false;
             SpongeConfig config = plugin.getConfig();
-            for (int x = 0; x < inv.capacity(); x++) {
-                Optional<ItemStack> itemStackOptional = getItem(inv, x).filter(is -> is.getType() != ItemTypes.AIR);
-                if (itemStackOptional.isPresent()) {
-                    ItemStack itemStack = itemStackOptional.get();
-                    int itemAmount = 0;
-                    List<ItemStack> availableStacks = StreamSupport.stream(inv.spliterator(), false).map(Inventory::peek).filter(Optional::isPresent).map(Optional::get).filter(is -> is.getType() != ItemTypes.AIR).collect(Collectors.toList());
-                    for (ItemStack is : availableStacks) {
-                        if (is != null && itemStack.getType() == is.getType() && IBUtils.isSameVariant(itemStack, is)) {
-                            itemAmount += itemStack.getQuantity();
-                        }
-                    }
-
-                    ItemStack configItem = config.getItem(itemStack);
-                    if (configItem != null && config.isWhitelist()) {
-                        int maxAmount = configItem.getQuantity();
-                        if (maxAmount == 0) {
-                            spawnItem(itemStack, player.getLocation());
-                            setItem(inv, x, ItemStack.empty());
-                            hasIllegalItems = true;
-                        }
-                        else if (maxAmount < itemAmount) {
-                            int amount = itemAmount;
-                            while (maxAmount < amount) {
-                                int maxStackSize = itemStack.getMaxStackQuantity();
-                                if (maxStackSize < amount) {
-                                    spawnItem(itemStack, player.getLocation());
-                                    setItem(inv, x, ItemStack.empty());
-                                    amount -= maxStackSize;
-                                }
-                                else {
-                                    ItemStack removeItem = itemStack.copy();
-                                    removeItem.setQuantity(amount - maxAmount);
-                                    if (getItem(inv, x).isPresent()) {
-                                        int slot = 0;
-                                        for (int y = 0; y < inv.capacity(); y++) {
-                                            Optional<ItemStack> yStack = getItem(inv, y);
-                                            if (yStack.isPresent() && IBUtils.isSameVariant(yStack.get(), itemStack)) {
-                                                slot = y;
-                                            }
-                                        }
-
-                                        Optional<ItemStack> isOptional = getItem(inv, slot);
-                                        if (isOptional.isPresent()) {
-                                            ItemStack is = isOptional.get();
-                                            is.setQuantity(itemStack.getQuantity() - removeItem.getQuantity());
-                                            setItem(inv, slot, is);
-                                        }
-                                    }
-                                    else {
-                                        getItem(inv, x).ifPresent(itemStack1 -> itemStack1.setQuantity(itemStack.getQuantity() - removeItem.getQuantity()));
-                                    }
-
-                                    spawnItem(removeItem, player.getLocation());
-                                    amount -= removeItem.getQuantity();
-                                }
-                            }
-
-                            hasIllegalAmount = true;
-                        }
-                    }
-                    else if (configItem == null && config.isWhitelist()) {
-                        spawnItem(itemStack, player.getLocation());
-                        setItem(inv, x, ItemStack.empty());
-                        hasIllegalItems = true;
-                    }
+            IntStream.range(0, inv.capacity()).forEach(x -> getItem(inv, x).filter(is -> is.getType() != ItemTypes.AIR).ifPresent(itemStack -> {
+                itemAmount = 0;
+                StreamSupport.stream(inv.spliterator(), false).map(Inventory::peek).filter(Optional::isPresent).map(Optional::get).filter(is -> is.getType() != ItemTypes.AIR && itemStack.getType() == is.getType() && IBUtils.isSameVariant(itemStack, is)).forEach(is -> itemAmount += itemStack.getQuantity());
+                ItemStack configItem = config.getItem(itemStack);
+                if (configItem != null && config.isWhitelist()) {
+                    handleMaxAmount(inv, x, configItem, itemStack, player);
                 }
-            }
+                else if (configItem == null && config.isWhitelist()) {
+                    spawnItem(itemStack, player.getLocation());
+                    setItem(inv, x, ItemStack.empty());
+                    hasIllegalItems = true;
+                }
+            }));
 
             if (hasIllegalItems) {
                 player.sendMessage(Text.builder(Messages.ACCOUNT_ILLEGAL_ITEM).color(TextColors.RED).build());
@@ -160,18 +102,14 @@ public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, 
                 player.sendMessage(Text.builder(Messages.ACCOUNT_ILLEGAL_AMOUNT).color(TextColors.RED).build());
             }
 
-            for (int slot = 0; slot < inv.capacity(); slot++) {
-                Optional<ItemStack> itemStackOptional = getItem(inv, slot);
-                if (itemStackOptional.isPresent()) {
-                    ItemStack itemStack = itemStackOptional.get();
-                    if (itemStack.getType() == ItemTypes.AIR) {
-                        page.clearSlot(slot);
-                    }
-                    else {
-                        page.setSlot(new AccountSlot<>(slot, itemStack));
-                    }
+            IntStream.range(0, inv.size()).forEach(slot -> getItem(inv, slot).ifPresent(itemStack -> {
+                if (itemStack.getType() == ItemTypes.AIR) {
+                    page.clearSlot(slot);
                 }
-            }
+                else {
+                    page.setSlot(new AccountSlot<>(slot, itemStack));
+                }
+            }));
         });
 
         Sponge.getEventManager().unregisterListeners(this);
@@ -179,6 +117,44 @@ public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, 
 
     private Optional<ItemStack> getItem(Inventory inventory, int slot) {
         return getSlot(inventory, slot).peek();
+    }
+
+    private void handleMaxAmount(Inventory inv, int x, ItemStack configItem, ItemStack itemStack, Player player) {
+        int maxAmount = configItem.getQuantity();
+        if (maxAmount == 0) {
+            spawnItem(itemStack, player.getLocation());
+            setItem(inv, x, ItemStack.empty());
+            hasIllegalItems = true;
+        }
+        else if (maxAmount < itemAmount) {
+            int amount = itemAmount;
+            while (maxAmount < amount) {
+                int maxStackSize = itemStack.getMaxStackQuantity();
+                if (maxStackSize < amount) {
+                    spawnItem(itemStack, player.getLocation());
+                    setItem(inv, x, ItemStack.empty());
+                    amount -= maxStackSize;
+                }
+                else {
+                    ItemStack removeItem = itemStack.copy();
+                    removeItem.setQuantity(amount - maxAmount);
+                    if (!getItem(inv, x).isPresent()) {
+                        IntStream.range(0, inv.capacity()).forEach(y -> getItem(inv, y).filter(is -> IBUtils.isSameVariant(is, itemStack)).ifPresent(is -> {
+                            is.setQuantity(itemStack.getQuantity() - removeItem.getQuantity());
+                            setItem(inv, y, is);
+                        }));
+                    }
+                    else {
+                        getItem(inv, x).ifPresent(itemStack1 -> itemStack1.setQuantity(itemStack.getQuantity() - removeItem.getQuantity()));
+                    }
+
+                    spawnItem(removeItem, player.getLocation());
+                    amount -= removeItem.getQuantity();
+                }
+            }
+
+            hasIllegalAmount = true;
+        }
     }
 
     private void spawnItem(ItemStack itemStack, Location<World> location) {

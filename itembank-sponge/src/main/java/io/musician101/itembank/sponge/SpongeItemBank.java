@@ -77,6 +77,7 @@ public class SpongeItemBank extends AbstractSpongePlugin<SpongeConfig> implement
         save();
     }
 
+    @Override
     public void reload() {
         config.reload();
         save();

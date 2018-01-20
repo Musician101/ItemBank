@@ -73,6 +73,7 @@ public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig, SpigotIte
         commands.add(SpigotItemBankCommands.ib());
     }
 
+    @Override
     public void reload() {
         config.reload();
         setupEconomy();

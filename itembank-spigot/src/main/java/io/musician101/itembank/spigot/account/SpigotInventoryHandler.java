@@ -7,6 +7,8 @@ import io.musician101.itembank.common.account.AccountPage;
 import io.musician101.itembank.common.account.AccountSlot;
 import io.musician101.itembank.spigot.SpigotItemBank;
 import io.musician101.itembank.spigot.config.SpigotConfig;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -53,71 +55,59 @@ public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, 
             return;
         }
 
-        boolean hasIllegalItems = false;
-        boolean hasIllegalAmount = false;
         SpigotConfig config = ((SpigotItemBank) SpigotItemBank.instance()).getPluginConfig();
-        for (int x = 0; x < inv.getSize(); x++) {
+        IntStream.range(0, inv.getSize()).filter(x -> inv.getItem(x) != null).forEach(x -> {
+            itemAmount = 0;
             ItemStack itemStack = inv.getItem(x);
-            if (itemStack != null) {
-                int itemAmount = 0;
-                for (ItemStack is : inv.getContents()) {
-                    if (is != null && itemStack.getType() == is.getType() && itemStack.getDurability() == is.getDurability()) {
-                        itemAmount += itemStack.getAmount();
-                    }
-                }
-
-                ItemStack configItem = config.getItem(itemStack);
-                if (configItem != null && config.isWhitelist()) {
-                    int maxAmount = configItem.getAmount();
-                    if (maxAmount == 0) {
-                        player.getWorld().dropItem(player.getLocation(), itemStack);
-                        inv.setItem(x, null);
-                        hasIllegalItems = true;
-                    }
-                    else if (maxAmount < itemAmount) {
-                        int amount = itemAmount;
-                        while (maxAmount < amount) {
-                            int maxStackSize = itemStack.getType().getMaxStackSize();
-                            if (maxStackSize < amount) {
-                                player.getWorld().dropItem(player.getLocation(), itemStack);
-                                inv.setItem(x, null);
-                                amount -= maxStackSize;
-                            }
-                            else {
-                                ItemStack removeItem = itemStack.clone();
-                                removeItem.setAmount(amount - maxAmount);
-                                if (inv.getItem(x) == null) {
-                                    int slot = 0;
-                                    for (int y = 0; y < inv.getSize(); y++) {
-                                        ItemStack yStack = inv.getItem(y);
-                                        if (yStack != null && yStack.getDurability() == itemStack.getDurability()) {
-                                            slot = y;
-                                        }
-                                    }
-
-                                    ItemStack is = inv.getItem(slot);
-                                    is.setAmount(itemStack.getAmount() - removeItem.getAmount());
-                                    inv.setItem(slot, is);
-                                }
-                                else {
-                                    inv.getItem(x).setAmount(itemStack.getAmount() - removeItem.getAmount());
-                                }
-
-                                player.getWorld().dropItem(player.getLocation(), removeItem);
-                                amount -= removeItem.getAmount();
-                            }
-                        }
-
-                        hasIllegalAmount = true;
-                    }
-                }
-                else if (configItem == null && config.isWhitelist()) {
+            Arrays.stream(inv.getContents()).filter(is -> is != null && itemStack.getType() == is.getType() && itemStack.getDurability() == is.getDurability()).forEach(is -> itemAmount += itemStack.getAmount());
+            ItemStack configItem = config.getItem(itemStack);
+            if (configItem != null && config.isWhitelist()) {
+                int maxAmount = configItem.getAmount();
+                if (maxAmount == 0) {
                     player.getWorld().dropItem(player.getLocation(), itemStack);
                     inv.setItem(x, null);
                     hasIllegalItems = true;
                 }
+                else if (maxAmount < itemAmount) {
+                    int amount = itemAmount;
+                    while (maxAmount < amount) {
+                        int maxStackSize = itemStack.getType().getMaxStackSize();
+                        if (maxStackSize < amount) {
+                            player.getWorld().dropItem(player.getLocation(), itemStack);
+                            inv.setItem(x, null);
+                            amount -= maxStackSize;
+                        }
+                        else {
+                            ItemStack removeItem = itemStack.clone();
+                            removeItem.setAmount(amount - maxAmount);
+                            if (inv.getItem(x) == null) {
+                                IntStream.range(0, inv.getSize()).forEach(y -> {
+                                    ItemStack yStack = inv.getItem(y);
+                                    if (yStack != null && yStack.getDurability() == itemStack.getDurability()) {
+                                        ItemStack is = inv.getItem(y);
+                                        is.setAmount(itemStack.getAmount() - removeItem.getAmount());
+                                        inv.setItem(y, is);
+                                    }
+                                });
+                            }
+                            else {
+                                inv.getItem(x).setAmount(itemStack.getAmount() - removeItem.getAmount());
+                            }
+
+                            player.getWorld().dropItem(player.getLocation(), removeItem);
+                            amount -= removeItem.getAmount();
+                        }
+                    }
+
+                    hasIllegalAmount = true;
+                }
             }
-        }
+            else if (configItem == null && config.isWhitelist()) {
+                player.getWorld().dropItem(player.getLocation(), itemStack);
+                inv.setItem(x, null);
+                hasIllegalItems = true;
+            }
+        });
 
         if (hasIllegalItems) {
             player.sendMessage(ChatColor.RED + Messages.ACCOUNT_ILLEGAL_ITEM);
@@ -127,7 +117,7 @@ public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, 
             player.sendMessage(ChatColor.RED + Messages.ACCOUNT_ILLEGAL_AMOUNT);
         }
 
-        for (int slot = 0; slot < inv.getSize(); slot++) {
+        IntStream.range(0, inv.getSize()).forEach(slot -> {
             ItemStack itemStack = inv.getItem(slot);
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 page.clearSlot(slot);
@@ -135,7 +125,7 @@ public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, 
             else {
                 page.setSlot(new AccountSlot<>(slot, itemStack));
             }
-        }
+        });
 
         HandlerList.unregisterAll(this);
     }

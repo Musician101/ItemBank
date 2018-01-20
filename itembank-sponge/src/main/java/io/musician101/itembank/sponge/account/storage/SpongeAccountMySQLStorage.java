@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
@@ -60,12 +61,8 @@ public class SpongeAccountMySQLStorage extends AccountMySQLStorage<ItemStack, Pl
                         continue;
                     }
 
-                    Account<ItemStack> account = getAccount(uuid);
-                    if (account == null) {
-                        account = new Account<>(uuid, name);
-                        setAccount(account);
-                    }
-
+                    Account<ItemStack> account = getAccount(uuid).orElse(new Account<>(uuid, name));
+                    setAccount(account);
                     String worldName = pageSet.getString(MySQL.WORLD);
                     if (worldSkip.contains(worldName)) {
                         logger.error(Messages.worldDNE(name, worldName));
@@ -77,24 +74,16 @@ public class SpongeAccountMySQLStorage extends AccountMySQLStorage<ItemStack, Pl
                         continue;
                     }
 
-                    AccountWorld<ItemStack> world = account.getWorld(worldName);
-                    if (world == null) {
-                        world = new AccountWorld<>(worldName);
-                        account.setWorld(world);
-                    }
-
+                    AccountWorld<ItemStack> world = account.getWorld(worldName).orElse(new AccountWorld<>(worldName));
+                    account.setWorld(world);
                     int page = pageSet.getInt(MySQL.SLOT);
                     if (page < 1) {
                         logger.error(Messages.invalidPage(name, worldName, page));
                         continue;
                     }
 
-                    AccountPage<ItemStack> accountPage = world.getPage(page);
-                    if (accountPage == null) {
-                        accountPage = new AccountPage<>(page);
-                        world.setPage(accountPage);
-                    }
-
+                    AccountPage<ItemStack> accountPage = world.getPage(page).orElse(new AccountPage<>(page));
+                    world.setPage(accountPage);
                     int slot = pageSet.getInt(MySQL.SLOT);
                     if (slot < 0 || slot > 53) {
                         logger.error(Messages.invalidSlot(name, worldName, slot));
@@ -116,11 +105,8 @@ public class SpongeAccountMySQLStorage extends AccountMySQLStorage<ItemStack, Pl
                         continue;
                     }
 
-                    AccountSlot<ItemStack> accountSlot = accountPage.getSlot(slot);
-                    if (accountSlot == null) {
-                        accountSlot = new AccountSlot<>(slot, itemStack);
-                        accountPage.setSlot(accountSlot);
-                    }
+                    AccountSlot<ItemStack> accountSlot = accountPage.getSlot(slot).orElse(new AccountSlot<>(slot, itemStack));
+                    accountPage.setSlot(accountSlot);
                 }
             }
             catch (ClassNotFoundException | SQLException e) {
@@ -152,13 +138,13 @@ public class SpongeAccountMySQLStorage extends AccountMySQLStorage<ItemStack, Pl
                     world.getPages().values().forEach(page -> {
                         int pg = page.getPage();
                         for (int i = 0; i < 54; i++) {
-                            AccountSlot<ItemStack> slot = page.getSlot(i);
-                            if (slot == null) {
+                            Optional<AccountSlot<ItemStack>> slot = page.getSlot(i);
+                            if (!slot.isPresent()) {
                                 queries.add(MySQL.deleteItem(uuid, name, worldName, pg, i));
                             }
                             else {
-                                int s = slot.getSlot();
-                                String item = GSON.toJson(slot.getItemStack());
+                                int s = slot.get().getSlot();
+                                String item = GSON.toJson(slot.get().getItemStack());
                                 queries.add(MySQL.addItem(uuid, name, worldName, pg, s, item));
                             }
                         }
