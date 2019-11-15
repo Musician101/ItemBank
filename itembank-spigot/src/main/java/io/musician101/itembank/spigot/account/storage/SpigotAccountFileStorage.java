@@ -69,6 +69,7 @@ public class SpigotAccountFileStorage extends AccountFileStorage<ItemStack, Play
                 os.close();
             }
             catch (IOException e) {
+                //TODO fileWriteFail/fileSaveFail
                 logger.warning(Messages.fileLoadFail(file));
             }
         });

@@ -4,7 +4,6 @@ import io.musician101.itembank.common.AbstractItemBankConfig;
 import io.musician101.itembank.common.Reference;
 import io.musician101.itembank.common.Reference.Config;
 import io.musician101.itembank.common.Reference.Messages;
-import io.musician101.itembank.sponge.IBUtils;
 import io.musician101.itembank.sponge.SpongeItemBank;
 import io.musician101.musicianlibrary.java.MySQLHandler;
 import java.io.File;
@@ -32,17 +31,6 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
     public SpongeConfig(File configDir) {
         super(new File(configDir, "config.conf"));
         reload();
-    }
-
-    @Override
-    public ItemStack getItem(ItemStack itemStack) {
-        for (ItemStack is : itemList) {
-            if (itemStack.getType() == is.getType() && IBUtils.isSameVariant(itemStack, is)) {
-                return is;
-            }
-        }
-
-        return null;
     }
 
     private void itemList(ConfigurationNode node) {
@@ -122,69 +110,66 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
 
     @Override
     public void reload() {
-        SpongeItemBank.instance().ifPresent(plugin -> {
-
-            File configFolder = new File("config", Reference.ID);
-            File configFile = new File(configFolder, "config.conf");
-            Logger log = plugin.getLogger();
-            if (!configFile.exists()) {
-                if (!configFile.mkdirs()) {
-                    log.error(Messages.fileCreateFail(configFile));
-                    return;
-                }
-
-                try {
-                    configFile.createNewFile();
-                    ConfigurationNode config = SimpleCommentedConfigurationNode.root();
-                    config.getNode(Config.WHITELIST).setValue(false);
-                    config.getNode(Config.MULTI_WORLD).setValue(false);
-                    config.getNode(Config.PAGE_LIMIT).setValue(0);
-                    ConfigurationNode bedrock = SimpleConfigurationNode.root();
-                    bedrock.getNode(Config.AMOUNT).setValue(0);
-                    config.getNode(Config.ITEM_LIST).setValue(bedrock);
-                    ConfigurationNode mysql = SimpleConfigurationNode.root();
-                    mysql.getNode(Config.HOST).setValue("127.0.0.1");
-                    mysql.getNode(Config.ENABLE_MYSQL).setValue(false);
-                    mysql.getNode(Config.DATABASE).setValue("database");
-                    mysql.getNode(Config.PASSWORD).setValue("password");
-                    mysql.getNode(Config.PORT).setValue(3306);
-                    config.getNode(Config.MYSQL).setValue(mysql);
-                    HoconConfigurationLoader.builder().setFile(configFile).build().save(config);
-                }
-                catch (IOException e) {
-                    log.warn(Messages.fileCreateFail(configFile));
-                    return;
-                }
-            }
-
-            ConfigurationLoader<CommentedConfigurationNode> configLoader = HoconConfigurationLoader.builder().setFile(configFile).build();
-            ConfigurationNode config;
-            try {
-                config = configLoader.load();
-            }
-            catch (IOException e) {
-                log.warn(Messages.fileLoadFail(configFile));
+        File configFolder = new File("config", Reference.ID);
+        File configFile = new File(configFolder, "config.conf");
+        Logger log = SpongeItemBank.instance().getLogger();
+        if (!configFile.exists()) {
+            if (!configFile.mkdirs()) {
+                log.error(Messages.fileCreateFail(configFile));
                 return;
             }
 
-            isWhitelist = config.getNode(Config.WHITELIST).getBoolean(false);
-            isMultiWorldStorageEnabled = config.getNode(Config.MULTI_WORLD).getBoolean(false);
-            pageLimit = config.getNode(Config.PAGE_LIMIT).getInt(0);
-            ConfigurationNode mysqlNode = config.getNode(Config.MYSQL);
-            if (!mysqlNode.isVirtual()) {
-                useMySQL = mysqlNode.getNode(Config.ENABLE_MYSQL).getBoolean(false);
-                if (useMySQL) {
-                    mysql = new MySQLHandler(mysqlNode.getNode(Config.DATABASE).getString(Config.DATABASE), mysqlNode.getNode(Config.HOST).getString(Config.LOCAL_HOST), mysqlNode.getNode(Config.PASSWORD).getString(Config.PASSWORD), mysqlNode.getNode(Config.PORT).getString(Config.PORT_DEFAULT), mysqlNode.getNode(Config.USER).getString(Config.USER));
-                }
+            try {
+                configFile.createNewFile();
+                ConfigurationNode config = SimpleCommentedConfigurationNode.root();
+                config.getNode(Config.WHITELIST).setValue(false);
+                config.getNode(Config.MULTI_WORLD).setValue(false);
+                config.getNode(Config.PAGE_LIMIT).setValue(0);
+                ConfigurationNode bedrock = SimpleConfigurationNode.root();
+                bedrock.getNode(Config.AMOUNT).setValue(0);
+                config.getNode(Config.ITEM_LIST).setValue(bedrock);
+                ConfigurationNode mysql = SimpleConfigurationNode.root();
+                mysql.getNode(Config.HOST).setValue("127.0.0.1");
+                mysql.getNode(Config.ENABLE_MYSQL).setValue(false);
+                mysql.getNode(Config.DATABASE).setValue("database");
+                mysql.getNode(Config.PASSWORD).setValue("password");
+                mysql.getNode(Config.PORT).setValue(3306);
+                config.getNode(Config.MYSQL).setValue(mysql);
+                HoconConfigurationLoader.builder().setFile(configFile).build().save(config);
             }
+            catch (IOException e) {
+                log.warn(Messages.fileCreateFail(configFile));
+                return;
+            }
+        }
 
-            if (!config.getNode(Config.ITEM_LIST).isVirtual()) {
-                itemList(config.getNode(Config.ITEM_LIST));
+        ConfigurationLoader<CommentedConfigurationNode> configLoader = HoconConfigurationLoader.builder().setFile(configFile).build();
+        ConfigurationNode config;
+        try {
+            config = configLoader.load();
+        }
+        catch (IOException e) {
+            log.warn(Messages.fileLoadFail(configFile));
+            return;
+        }
+
+        isWhitelist = config.getNode(Config.WHITELIST).getBoolean(false);
+        isMultiWorldStorageEnabled = config.getNode(Config.MULTI_WORLD).getBoolean(false);
+        pageLimit = config.getNode(Config.PAGE_LIMIT).getInt(0);
+        ConfigurationNode mysqlNode = config.getNode(Config.MYSQL);
+        if (!mysqlNode.isVirtual()) {
+            useMySQL = mysqlNode.getNode(Config.ENABLE_MYSQL).getBoolean(false);
+            if (useMySQL) {
+                mysql = new MySQLHandler(mysqlNode.getNode(Config.DATABASE).getString(Config.DATABASE), mysqlNode.getNode(Config.HOST).getString(Config.LOCAL_HOST), mysqlNode.getNode(Config.PASSWORD).getString(Config.PASSWORD), mysqlNode.getNode(Config.PORT).getString(Config.PORT_DEFAULT), mysqlNode.getNode(Config.USER).getString(Config.USER));
             }
-            else {
-                itemList.add(ItemStack.of(ItemTypes.BEDROCK, 0));
-            }
-        });
+        }
+
+        if (!config.getNode(Config.ITEM_LIST).isVirtual()) {
+            itemList(config.getNode(Config.ITEM_LIST));
+        }
+        else {
+            typeList.put(ItemStack.of(ItemTypes.BEDROCK, 0), 1);
+        }
     }
 
     private <T extends CatalogType> void setVariant(ItemStack.Builder builder, Key<Value<T>> key, Class<T> typeClass, String variant) {

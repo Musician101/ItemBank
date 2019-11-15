@@ -5,35 +5,20 @@ import io.musician101.itembank.common.Reference.Config;
 import io.musician101.itembank.spigot.SpigotItemBank;
 import io.musician101.musicianlibrary.java.MySQLHandler;
 import java.io.File;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.ItemStack;
 
-public class SpigotConfig extends AbstractItemBankConfig<ItemStack> {
+public class SpigotConfig extends AbstractItemBankConfig<Material> {
 
     public SpigotConfig() {
-        super(new File(((SpigotItemBank) SpigotItemBank.instance()).getDataFolder(), "config.yml"));
+        super(new File(SpigotItemBank.instance().getDataFolder(), "config.yml"));
         reload();
-    }
-
-    @Nullable
-    @Override
-    public ItemStack getItem(ItemStack itemStack) {
-        for (ItemStack item : itemList) {
-            if (item.getType() == itemStack.getType() && item.getDurability() == itemStack.getDurability()) {
-                return item;
-            }
-        }
-
-        return null;
     }
 
     @Override
     public void reload() {
-        SpigotItemBank plugin = (SpigotItemBank) SpigotItemBank.instance();
+        SpigotItemBank plugin = SpigotItemBank.instance();
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
         FileConfiguration config = plugin.getConfig();
@@ -45,11 +30,15 @@ public class SpigotConfig extends AbstractItemBankConfig<ItemStack> {
         updateCheck = config.getBoolean(Config.UPDATE_CHECK, true);
 
         if (config.isSet(Config.ITEM_LIST)) {
-            ConfigurationSection itemListSection = config.getConfigurationSection(Config.ITEM_LIST);
-            for (String materialKey : config.getConfigurationSection(Config.ITEM_LIST).getValues(false).keySet()) {
-                ConfigurationSection materialSection = itemListSection.getConfigurationSection(materialKey);
-                itemList.addAll(itemListSection.getConfigurationSection(materialKey).getValues(false).keySet().stream().map(durabilityKey -> new ItemStack(Material.getMaterial(materialKey.toUpperCase()), materialSection.getInt(durabilityKey), Short.parseShort(durabilityKey))).collect(Collectors.toList()));
-            }
+            ConfigurationSection itemList = config.getConfigurationSection(Config.ITEM_LIST);
+            itemList.getKeys(false).forEach(key -> {
+                Material material = Material.matchMaterial(key);
+                if (material == null) {
+                    return;
+                }
+
+                typeList.put(material, itemList.getInt(key));
+            });
         }
 
         if (config.isSet(Config.MYSQL)) {

@@ -12,7 +12,6 @@ import io.musician101.itembank.sponge.config.SpongeConfig;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
-import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
@@ -25,6 +24,7 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetype;
+import org.spongepowered.api.item.inventory.InventoryArchetype.Builder;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.InventoryCapacity;
@@ -35,23 +35,27 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, Player, ItemStack> {
+public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, Player, ItemStack, Text> {
 
-    public SpongeInventoryHandler(ItemBank<ItemStack, Logger, Player, World> plugin, AccountPage<ItemStack> page, Player viewer, String ownerName, World world) {
-        super(parseInventory(plugin, page, ownerName, world), page, viewer);
+    public SpongeInventoryHandler(ItemBank<ItemStack, Player, World> plugin, AccountPage<ItemStack> page, Player viewer, String owner, World world) {
+        super(parseInventory(plugin, page, owner, world), Text.of(parseInventoryName(page, owner, world)), page, viewer);
         Sponge.getEventManager().registerListeners(this, plugin);
         viewer.openInventory(inventory);
     }
 
-    private static Inventory getSlot(Inventory inventory, int slot) {
-        return inventory.query(QueryOperationTypes.INVENTORY_PROPERTY.of(new SlotIndex(slot)));
+    private static String parseInventoryName(AccountPage<ItemStack> page, String owner, World world) {
+        return owner + "'s Account for " + world.getName() + " - Page " + page.getPage();
     }
 
-    private static Inventory parseInventory(ItemBank<ItemStack, Logger, Player, World> plugin, AccountPage<ItemStack> page, String ownerName, World world) {
-        String name = ownerName + "'s Account for " + world.getName() + " - Page " + page.getPage();
-        InventoryArchetype.Builder builder = InventoryArchetype.builder().property(new InventoryCapacity(54)).title(Text.of(name));
+    private static Inventory getSlot(Inventory inventory, int slot) {
+        return inventory.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotIndex.of(slot)));
+    }
+
+    private static Inventory parseInventory(ItemBank<ItemStack, Player, World> plugin, AccountPage<ItemStack> page, String owner, World world) {
+        String name = parseInventoryName(page, owner, world);
+        Builder builder = InventoryArchetype.builder().property(InventoryCapacity.of(54)).title(Text.of(name));
         for (int i = 0; i < 54; i++) {
-            builder.with(InventoryArchetype.builder().from(InventoryArchetypes.SLOT).property(new SlotIndex(i)).build("minecraft:slot" + i, "Slot"));
+            builder.with(InventoryArchetype.builder().from(InventoryArchetypes.SLOT).property(SlotIndex.of(i)).build("minecraft:slot" + i, "Slot"));
         }
 
         Inventory inventory = Inventory.builder().of(builder.build(plugin.getId() + ":" + name.replace("\\s", "_").replace("'", "").replace("-", ""), name)).build(plugin);
@@ -78,39 +82,37 @@ public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, 
             return;
         }
 
-        SpongeItemBank.instance().map(SpongeItemBank.class::cast).ifPresent(plugin -> {
-            SpongeConfig config = plugin.getConfig();
-            IntStream.range(0, inv.capacity()).forEach(x -> getItem(inv, x).filter(is -> is.getType() != ItemTypes.AIR).ifPresent(itemStack -> {
-                itemAmount = 0;
-                StreamSupport.stream(inv.spliterator(), false).map(Inventory::peek).filter(Optional::isPresent).map(Optional::get).filter(is -> is.getType() != ItemTypes.AIR && itemStack.getType() == is.getType() && IBUtils.isSameVariant(itemStack, is)).forEach(is -> itemAmount += itemStack.getQuantity());
-                ItemStack configItem = config.getItem(itemStack);
-                if (configItem != null && config.isWhitelist()) {
-                    handleMaxAmount(inv, x, configItem, itemStack, player);
-                }
-                else if (configItem == null && config.isWhitelist()) {
-                    spawnItem(itemStack, player.getLocation());
-                    setItem(inv, x, ItemStack.empty());
-                    hasIllegalItems = true;
-                }
-            }));
-
-            if (hasIllegalItems) {
-                player.sendMessage(Text.builder(Messages.ACCOUNT_ILLEGAL_ITEM).color(TextColors.RED).build());
+        SpongeConfig config = SpongeItemBank.instance().getConfig();
+        IntStream.range(0, inv.capacity()).forEach(x -> getItem(inv, x).filter(is -> is.getType() != ItemTypes.AIR).ifPresent(itemStack -> {
+            itemAmount = 0;
+            StreamSupport.stream(inv.spliterator(), false).map(Inventory::peek).filter(Optional::isPresent).map(Optional::get).filter(is -> is.getType() != ItemTypes.AIR && itemStack.getType() == is.getType() && IBUtils.isSameVariant(itemStack, is)).forEach(is -> itemAmount += itemStack.getQuantity());
+            int maxAmount = config.getMaxAmount(itemStack);
+            if (maxAmount == 0) {
+                spawnItem(itemStack, player.getLocation());
+                setItem(inv, x, ItemStack.empty());
+                hasIllegalItems = true;
             }
-
-            if (hasIllegalAmount) {
-                player.sendMessage(Text.builder(Messages.ACCOUNT_ILLEGAL_AMOUNT).color(TextColors.RED).build());
+            else if (maxAmount < itemAmount) {
+                handleMaxAmount(inv, x, maxAmount, itemStack, player);
             }
+        }));
 
-            IntStream.range(0, inv.size()).forEach(slot -> getItem(inv, slot).ifPresent(itemStack -> {
-                if (itemStack.getType() == ItemTypes.AIR) {
-                    page.clearSlot(slot);
-                }
-                else {
-                    page.setSlot(new AccountSlot<>(slot, itemStack));
-                }
-            }));
-        });
+        if (hasIllegalItems) {
+            player.sendMessage(Text.builder(Messages.ACCOUNT_ILLEGAL_ITEM).color(TextColors.RED).build());
+        }
+
+        if (hasIllegalAmount) {
+            player.sendMessage(Text.builder(Messages.ACCOUNT_ILLEGAL_AMOUNT).color(TextColors.RED).build());
+        }
+
+        IntStream.range(0, inv.size()).forEach(slot -> getItem(inv, slot).ifPresent(itemStack -> {
+            if (itemStack.getType() == ItemTypes.AIR) {
+                page.clearSlot(slot);
+            }
+            else {
+                page.setSlot(new AccountSlot<>(slot, itemStack));
+            }
+        }));
 
         Sponge.getEventManager().unregisterListeners(this);
     }
@@ -119,8 +121,7 @@ public class SpongeInventoryHandler extends AbstractInventoryHandler<Inventory, 
         return getSlot(inventory, slot).peek();
     }
 
-    private void handleMaxAmount(Inventory inv, int x, ItemStack configItem, ItemStack itemStack, Player player) {
-        int maxAmount = configItem.getQuantity();
+    private void handleMaxAmount(Inventory inv, int x, int maxAmount, ItemStack itemStack, Player player) {
         if (maxAmount == 0) {
             spawnItem(itemStack, player.getLocation());
             setItem(inv, x, ItemStack.empty());

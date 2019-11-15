@@ -19,53 +19,58 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, Player, ItemStack> implements Listener {
+public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, Player, ItemStack, String> implements Listener {
 
-    public SpigotInventoryHandler(AccountPage<ItemStack> page, Player viewer, String ownerName, World world) {
-        super(parseInventory(page, viewer, ownerName, world), page, viewer);
-        Bukkit.getPluginManager().registerEvents(this, (SpigotItemBank) SpigotItemBank.instance());
+    public SpigotInventoryHandler(AccountPage<ItemStack> page, Player viewer, String owner, World world) {
+        super(parseInventory(page, viewer, owner, world), parseInventoryName(page, owner, world), page, viewer);
+        Bukkit.getPluginManager().registerEvents(this, SpigotItemBank.instance());
         viewer.openInventory(inventory);
     }
 
-    private static Inventory parseInventory(AccountPage<ItemStack> page, Player viewer, String ownerName, World world) {
-        Inventory inventory = Bukkit.createInventory(viewer, 54, ownerName + "'s Account for " + world.getName() + " - Page " + page.getPage());
+    private static String parseInventoryName(AccountPage<ItemStack> page, String owner, World world) {
+        return owner + "'s Account for " + world.getName() + " - Page " + page.getPage();
+    }
+
+    private static Inventory parseInventory(AccountPage<ItemStack> page, Player viewer, String owner, World world) {
+        Inventory inventory = Bukkit.createInventory(viewer, 54, parseInventoryName(page, owner, world));
         page.getSlots().values().forEach(slot -> inventory.setItem(slot.getSlot(), slot.getItemStack()));
         return inventory;
     }
 
     @EventHandler
     public void close(InventoryCloseEvent event) {
-        Inventory inv = event.getInventory();
-        if (!(inv.getHolder() instanceof Player)) {
+        InventoryView view = event.getView();
+        if (!(view.getPlayer() instanceof Player)) {
             return;
         }
 
-        if (!((Player) inv.getHolder()).getUniqueId().equals(viewer.getUniqueId())) {
-            return;
-        }
-
-        Player player = (Player) event.getPlayer();
+        Player player = (Player) view.getPlayer();
         if (!player.getUniqueId().equals(viewer.getUniqueId()) && player.hasPermission(Permissions.ADMIN)) {
             return;
         }
 
-        if (!inv.getName().equals(inventory.getName())) {
+        if (!view.getTitle().equals(title)) {
             return;
         }
 
-        SpigotConfig config = ((SpigotItemBank) SpigotItemBank.instance()).getPluginConfig();
-        IntStream.range(0, inv.getSize()).filter(x -> inv.getItem(x) != null).forEach(x -> {
+        SpigotConfig config = SpigotItemBank.instance().getPluginConfig();
+        Inventory inventory = view.getTopInventory();
+        IntStream.range(0, inventory.getSize()).filter(x -> inventory.getItem(x) != null).forEach(x -> {
             itemAmount = 0;
-            ItemStack itemStack = inv.getItem(x);
-            Arrays.stream(inv.getContents()).filter(is -> is != null && itemStack.getType() == is.getType() && itemStack.getDurability() == is.getDurability()).forEach(is -> itemAmount += itemStack.getAmount());
-            ItemStack configItem = config.getItem(itemStack);
-            if (configItem != null && config.isWhitelist()) {
-                int maxAmount = configItem.getAmount();
+            ItemStack itemStack = inventory.getItem(x);
+            if (itemStack == null) {
+                return;
+            }
+
+            Arrays.stream(inventory.getContents()).filter(is -> is != null && itemStack.getType() == is.getType()).forEach(is -> itemAmount += itemStack.getAmount());
+            int maxAmount = config.getMaxAmount(itemStack.getType());
+            if (config.isWhitelist()) {
                 if (maxAmount == 0) {
                     player.getWorld().dropItem(player.getLocation(), itemStack);
-                    inv.setItem(x, null);
+                    inventory.setItem(x, null);
                     hasIllegalItems = true;
                 }
                 else if (maxAmount < itemAmount) {
@@ -74,24 +79,24 @@ public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, 
                         int maxStackSize = itemStack.getType().getMaxStackSize();
                         if (maxStackSize < amount) {
                             player.getWorld().dropItem(player.getLocation(), itemStack);
-                            inv.setItem(x, null);
+                            inventory.setItem(x, null);
                             amount -= maxStackSize;
                         }
                         else {
                             ItemStack removeItem = itemStack.clone();
                             removeItem.setAmount(amount - maxAmount);
-                            if (inv.getItem(x) == null) {
-                                IntStream.range(0, inv.getSize()).forEach(y -> {
-                                    ItemStack yStack = inv.getItem(y);
-                                    if (yStack != null && yStack.getDurability() == itemStack.getDurability()) {
-                                        ItemStack is = inv.getItem(y);
+                            if (inventory.getItem(x) == null) {
+                                IntStream.range(0, inventory.getSize()).forEach(y -> {
+                                    ItemStack yStack = inventory.getItem(y);
+                                    if (yStack != null) {
+                                        ItemStack is = inventory.getItem(y);
                                         is.setAmount(itemStack.getAmount() - removeItem.getAmount());
-                                        inv.setItem(y, is);
+                                        inventory.setItem(y, is);
                                     }
                                 });
                             }
                             else {
-                                inv.getItem(x).setAmount(itemStack.getAmount() - removeItem.getAmount());
+                                inventory.getItem(x).setAmount(itemStack.getAmount() - removeItem.getAmount());
                             }
 
                             player.getWorld().dropItem(player.getLocation(), removeItem);
@@ -102,9 +107,9 @@ public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, 
                     hasIllegalAmount = true;
                 }
             }
-            else if (configItem == null && config.isWhitelist()) {
+            else if (maxAmount == 0 && !config.isWhitelist()) {
                 player.getWorld().dropItem(player.getLocation(), itemStack);
-                inv.setItem(x, null);
+                inventory.setItem(x, null);
                 hasIllegalItems = true;
             }
         });
@@ -117,8 +122,8 @@ public class SpigotInventoryHandler extends AbstractInventoryHandler<Inventory, 
             player.sendMessage(ChatColor.RED + Messages.ACCOUNT_ILLEGAL_AMOUNT);
         }
 
-        IntStream.range(0, inv.getSize()).forEach(slot -> {
-            ItemStack itemStack = inv.getItem(slot);
+        IntStream.range(0, inventory.getSize()).forEach(slot -> {
+            ItemStack itemStack = inventory.getItem(slot);
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 page.clearSlot(slot);
             }

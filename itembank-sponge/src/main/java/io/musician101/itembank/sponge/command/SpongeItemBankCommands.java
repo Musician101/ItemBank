@@ -8,12 +8,12 @@ import io.musician101.itembank.sponge.SpongeItemBank;
 import io.musician101.itembank.sponge.command.args.PlayerCommandElement;
 import io.musician101.itembank.sponge.command.args.WorldCommandElement;
 import io.musician101.itembank.sponge.config.SpongeConfig;
-import io.musician101.musicianlibrary.java.minecraft.uuid.UUIDUtils;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -39,37 +39,36 @@ public class SpongeItemBankCommands {
     public static CommandSpec account() {
         return CommandSpec.builder().description(Text.of(Commands.ACCOUNT_DESC)).arguments(GenericArguments.optional(GenericArguments.integer(Text.of(Commands.PAGE))), GenericArguments.optional(new WorldCommandElement()), GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> {
             if (source instanceof Player) {
-                return SpongeItemBank.instance().map(SpongeItemBank.class::cast).map(plugin -> {
-                    Player player = (Player) source;
-                    int page = args.<Integer>getOne(Commands.PAGE).orElse(1);
-                    Entry<UUID, String> entry = args.<Entry<UUID, String>>getOne(PlayerCommandElement.KEY).orElse(new SimpleEntry<>(player.getUniqueId(), player.getName()));
-                    World world = args.<World>getOne(WorldCommandElement.KEY).orElse(player.getWorld());
-                    SpongeConfig config = plugin.getConfig();
-                    Sponge.getServiceManager().provide(EconomyService.class).ifPresent(economy -> {
-                        Currency currency = economy.getDefaultCurrency();
-                        economy.getOrCreateAccount(player.getUniqueId()).ifPresent(account -> {
-                            TransactionResult result = account.withdraw(currency, new BigDecimal(config.getTransactionCost()), Cause.of(EventContext.builder().add(EventContextKeys.PLUGIN, plugin.getPluginContainer()).add(EventContextKeys.PLAYER, player).build(), plugin, player));
-                            if (result.getResult() != ResultType.SUCCESS) {
-                                player.sendMessage(Text.builder(Messages.ACCOUNT_ECON_WITHDRAW_FAIL).color(TextColors.RED).build());
-                            }
+                SpongeItemBank plugin = SpongeItemBank.instance();
+                Player player = (Player) source;
+                int page = args.<Integer>getOne(Commands.PAGE).orElse(1);
+                Entry<UUID, String> entry = args.<Entry<UUID, String>>getOne(PlayerCommandElement.KEY).orElse(new SimpleEntry<>(player.getUniqueId(), player.getName()));
+                World world = args.<World>getOne(WorldCommandElement.KEY).orElse(player.getWorld());
+                SpongeConfig config = plugin.getConfig();
+                Sponge.getServiceManager().provide(EconomyService.class).ifPresent(economy -> {
+                    Currency currency = economy.getDefaultCurrency();
+                    economy.getOrCreateAccount(player.getUniqueId()).ifPresent(account -> {
+                        TransactionResult result = account.withdraw(currency, new BigDecimal(config.getTransactionCost()), Cause.of(EventContext.builder().add(EventContextKeys.PLUGIN, plugin.getPluginContainer()).add(EventContextKeys.PLAYER, player).build(), plugin, player));
+                        if (result.getResult() != ResultType.SUCCESS) {
+                            player.sendMessage(Text.builder(Messages.ACCOUNT_ECON_WITHDRAW_FAIL).color(TextColors.RED).build());
+                        }
 
-                            player.sendMessage(Text.builder(Messages.accountWithdrawSuccess(currency.getSymbol().toPlain(), config.getTransactionCost())).color(TextColors.RED).build());
-                        });
+                        player.sendMessage(Text.builder(Messages.accountWithdrawSuccess(currency.getSymbol().toPlain(), config.getTransactionCost())).color(TextColors.RED).build());
                     });
+                });
 
-                    if (canAccessPage(player, entry.getKey(), page, world)) {
-                        return plugin.getAccountStorage().map(accountStorage -> {
-                            accountStorage.openInv(player, entry.getKey(), entry.getValue(), world, page);
-                            return CommandResult.success();
-                        }).orElseGet(() -> {
-                            player.sendMessage(Text.builder(Reference.PREFIX + Messages.DATABASE_UNAVAILABLE).color(TextColors.RED).build());
-                            return CommandResult.empty();
-                        });
-                    }
+                if (canAccessPage(player, entry.getKey(), page, world)) {
+                    return plugin.getAccountStorage().map(accountStorage -> {
+                        accountStorage.openInv(player, entry.getKey(), entry.getValue(), world, page);
+                        return CommandResult.success();
+                    }).orElseGet(() -> {
+                        player.sendMessage(Text.builder(Reference.PREFIX + Messages.DATABASE_UNAVAILABLE).color(TextColors.RED).build());
+                        return CommandResult.empty();
+                    });
+                }
 
-                    player.sendMessage(Text.builder(Messages.NO_PERMISSION).color(TextColors.RED).build());
-                    return CommandResult.empty();
-                }).orElse(CommandResult.empty());
+                player.sendMessage(Text.builder(Messages.NO_PERMISSION).color(TextColors.RED).build());
+                return CommandResult.empty();
             }
 
             source.sendMessage(Text.builder(Messages.PLAYER_CMD).color(TextColors.RED).build());
@@ -78,17 +77,16 @@ public class SpongeItemBankCommands {
     }
 
     private static boolean canAccessPage(Player player, UUID owner, int page, World world) {
-        return SpongeItemBank.instance().map(SpongeItemBank.class::cast).map(SpongeItemBank::getConfig).map(config -> {
-            if (player.hasPermission(Permissions.ADMIN)) {
-                return true;
-            }
+        SpongeConfig config = SpongeItemBank.instance().getConfig();
+        if (player.hasPermission(Permissions.ADMIN)) {
+            return true;
+        }
 
-            if (player.getUniqueId() != owner) {
-                return player.hasPermission(Permissions.PLAYER);
-            }
+        if (player.getUniqueId() != owner) {
+            return player.hasPermission(Permissions.PLAYER);
+        }
 
-            return config.isMultiWorldStorageEnabled() && player.getWorld() != world && (player.hasPermission(Permissions.WORLD + "." + world.getName()) || player.hasPermission(Permissions.WORLD)) || config.getPageLimit() > 0 && (player.hasPermission(Permissions.PAGE) || page < config.getPageLimit());
-        }).orElse(false);
+        return config.isMultiWorldStorageEnabled() && player.getWorld() != world && (player.hasPermission(Permissions.WORLD + "." + world.getName()) || player.hasPermission(Permissions.WORLD)) || config.getPageLimit() > 0 && (player.hasPermission(Permissions.PAGE) || page < config.getPageLimit());
     }
 
     public static CommandSpec ib() {
@@ -102,7 +100,7 @@ public class SpongeItemBankCommands {
     }
 
     private static CommandSpec purge() {
-        return CommandSpec.builder().description(Text.of(Commands.PURGE_DESC)).arguments(GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> SpongeItemBank.instance().map(plugin -> plugin.getAccountStorage().map(accountStorage -> args.<UUID>getOne(PlayerCommandElement.KEY).map(uuid -> {
+        return CommandSpec.builder().description(Text.of(Commands.PURGE_DESC)).arguments(GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> SpongeItemBank.instance().getAccountStorage().map(accountStorage -> args.<UUID>getOne(PlayerCommandElement.KEY).map(uuid -> {
             accountStorage.resetAccount(uuid);
             source.sendMessage(Text.builder(Messages.PURGE_SINGLE).color(TextColors.GREEN).build());
             return CommandResult.success();
@@ -113,24 +111,30 @@ public class SpongeItemBankCommands {
         })).orElseGet(() -> {
             source.sendMessage(Text.builder(Reference.PREFIX + Messages.DATABASE_UNAVAILABLE).color(TextColors.RED).build());
             return CommandResult.empty();
-        })).orElse(CommandResult.empty())).permission(Permissions.PURGE).build();
+        })).permission(Permissions.PURGE).build();
     }
 
     private static CommandSpec reload() {
-        return CommandSpec.builder().description(Text.of(Commands.RELOAD_DESC)).executor((source, args) -> SpongeItemBank.instance().map(SpongeItemBank.class::cast).map(plugin -> {
-            plugin.getConfig().reload();
+        return CommandSpec.builder().description(Text.of(Commands.RELOAD_DESC)).executor((source, args) -> {
+            SpongeItemBank.instance().getConfig().reload();
             source.sendMessage(Text.builder(Messages.RELOAD_SUCCESS).color(TextColors.GREEN).build());
             return CommandResult.success();
-        }).orElse(CommandResult.empty())).permission(Permissions.RELOAD).build();
+        }).permission(Permissions.RELOAD).build();
     }
 
     private static CommandSpec uuid() {
         return CommandSpec.builder().description(Text.of(Commands.UUID_DESC)).arguments(GenericArguments.optional(new PlayerCommandElement())).executor((source, args) -> args.<UUID>getOne(PlayerCommandElement.KEY).map(uuid -> {
             try {
-                source.sendMessage(Text.builder(Messages.uuid(UUIDUtils.getNameOf(uuid), uuid)).color(TextColors.GREEN).build());
-                return CommandResult.success();
+                Optional<String> name = Sponge.getServer().getGameProfileManager().get(uuid).get().getName();
+                if (name.isPresent()) {
+                    source.sendMessage(Text.builder(Messages.uuid(name.get(), uuid)).color(TextColors.GREEN).build());
+                    return CommandResult.success();
+                }
+
+                source.sendMessage(Text.of(TextColors.RED, Messages.PLAYER_DNE));
+                return CommandResult.empty();
             }
-            catch (IOException e) {
+            catch (InterruptedException | ExecutionException e) {
                 source.sendMessage(Text.builder(Messages.UNKNOWN_EX).color(TextColors.RED).build());
                 return CommandResult.empty();
             }

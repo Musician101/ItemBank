@@ -26,6 +26,7 @@ import static io.musician101.itembank.spigot.SpigotItemBank.GSON;
 
 public class AccountSerializer implements Serializer<ItemStack> {
 
+    //TODO drop usage of GSON static member and use the context that's provided
     public static final Type TYPE = new TypeToken<AccountWorld<ItemStack>>() {
 
     }.getType();

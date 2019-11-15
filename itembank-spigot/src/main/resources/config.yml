@@ -4,8 +4,7 @@ whitelist: false
 # Which blocks/items shouldn't be stored in the bank.
 # If the amount is 0 and the whitelist is false, then that block/item is NON-DEPOSITABLE.
 itemlist:
-    bedrock:
-        '0': 0
+    bedrock: 0
 
 # Vault related options.
 # Enable vault support?

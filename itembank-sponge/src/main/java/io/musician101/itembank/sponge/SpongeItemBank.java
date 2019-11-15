@@ -24,7 +24,6 @@ import java.io.File;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.entity.living.player.Player;
@@ -36,8 +35,9 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
 
+//TODO need to wait for Sponge 1.13.2
 @Plugin(id = Reference.ID, name = Reference.NAME, version = Reference.VERSION, description = Reference.DESCRIPTION, authors = {"Musician101"})
-public class SpongeItemBank extends AbstractSpongePlugin<SpongeConfig> implements ItemBank<ItemStack, Logger, Player, World> {
+public class SpongeItemBank extends AbstractSpongePlugin<SpongeConfig> implements ItemBank<ItemStack, Player, World> {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(AccountSerializer.TYPE, new AccountSerializer()).registerTypeAdapter(AccountPageSerializer.TYPE, new AccountPageSerializer()).registerTypeAdapter(AccountSlotSerializer.TYPE, new AccountSlotSerializer()).registerTypeAdapter(AccountWorldSerializer.TYPE, new AccountWorldSerializer()).registerTypeAdapter(ItemStack.class, new ItemStackSerializer()).create();
     @Nullable
@@ -48,8 +48,8 @@ public class SpongeItemBank extends AbstractSpongePlugin<SpongeConfig> implement
     @Inject
     private PluginContainer pluginContainer;
 
-    public static Optional<ItemBank<ItemStack, Logger, Player, World>> instance() {
-        return Sponge.getPluginManager().getPlugin(Reference.ID).flatMap(PluginContainer::getInstance).filter(SpongeItemBank.class::isInstance).map(SpongeItemBank.class::cast);
+    public static SpongeItemBank instance() {
+        return Sponge.getPluginManager().getPlugin(Reference.ID).flatMap(PluginContainer::getInstance).filter(SpongeItemBank.class::isInstance).map(SpongeItemBank.class::cast).orElseThrow(() -> new IllegalStateException("ItemBank is not enabled."));
     }
 
     @Nonnull

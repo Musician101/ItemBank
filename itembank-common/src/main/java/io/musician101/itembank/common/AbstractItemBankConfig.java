@@ -3,13 +3,13 @@ package io.musician101.itembank.common;
 import io.musician101.musicianlibrary.java.MySQLHandler;
 import io.musician101.musicianlibrary.java.minecraft.config.AbstractConfig;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 public abstract class AbstractItemBankConfig<I> extends AbstractConfig {
 
-    protected final List<I> itemList = new ArrayList<>();
+    protected final Map<I, Integer> typeList = new HashMap<>();
     protected boolean enableEconomy = false;
     protected boolean isMultiWorldStorageEnabled = false;
     protected boolean isWhitelist = false;
@@ -23,8 +23,9 @@ public abstract class AbstractItemBankConfig<I> extends AbstractConfig {
         super(file);
     }
 
-    @Nullable
-    public abstract I getItem(I itemStack);
+    public int getMaxAmount(I type) {
+        return typeList.getOrDefault(type, 0);
+    }
 
     @Nullable
     public MySQLHandler getMySQL() {

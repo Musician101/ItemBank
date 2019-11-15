@@ -19,7 +19,6 @@ import io.musician101.musicianlibrary.java.MySQLHandler;
 import io.musician101.musicianlibrary.java.minecraft.spigot.plugin.AbstractSpigotPlugin;
 import java.io.File;
 import java.util.Optional;
-import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.milkbowl.vault.economy.Economy;
@@ -31,7 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig, SpigotItemBank> implements ItemBank<ItemStack, Logger, Player, World> {
+public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig, SpigotItemBank> implements ItemBank<ItemStack, Player, World> {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(AccountSerializer.TYPE, new AccountSerializer()).registerTypeAdapter(AccountPageSerializer.TYPE, new AccountPageSerializer()).registerTypeAdapter(AccountSlotSerializer.TYPE, new AccountSlotSerializer()).registerTypeAdapter(AccountWorldSerializer.TYPE, new AccountWorldSerializer()).registerTypeAdapter(ItemStack.class, new ItemStackSerializer()).create();
     @Nullable
@@ -39,7 +38,7 @@ public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig, SpigotIte
     @Nullable
     private Economy econ;
 
-    public static ItemBank<ItemStack, Logger, Player, World> instance() {
+    public static SpigotItemBank instance() {
         return JavaPlugin.getPlugin(SpigotItemBank.class);
     }
 

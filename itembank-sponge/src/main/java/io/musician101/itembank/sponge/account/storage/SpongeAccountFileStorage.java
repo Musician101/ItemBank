@@ -31,23 +31,21 @@ public class SpongeAccountFileStorage extends AccountFileStorage<ItemStack, Play
 
     @Override
     public void load() {
-        SpongeItemBank.instance().map(SpongeItemBank.class::cast).ifPresent(plugin -> {
-            getStorageDir().mkdirs();
-            File[] files = getStorageDir().listFiles();
-            if (files == null) {
-                return;
-            }
+        getStorageDir().mkdirs();
+        File[] files = getStorageDir().listFiles();
+        if (files == null) {
+            return;
+        }
 
-            Arrays.stream(files).filter(file -> file.getName().endsWith(PlayerData.FILE_EXTENSION)).map(file -> {
-                try {
-                    return getGson().<Account<ItemStack>>fromJson(new FileReader(file), AccountSerializer.TYPE);
-                }
-                catch (FileNotFoundException e) {
-                    plugin.getLogger().error(Messages.fileLoadFail(file));
-                    return null;
-                }
-            }).filter(Objects::nonNull).forEach(this::setAccount);
-        });
+        Arrays.stream(files).filter(file -> file.getName().endsWith(PlayerData.FILE_EXTENSION)).map(file -> {
+            try {
+                return getGson().<Account<ItemStack>>fromJson(new FileReader(file), AccountSerializer.TYPE);
+            }
+            catch (FileNotFoundException e) {
+                SpongeItemBank.instance().getLogger().error(Messages.fileLoadFail(file));
+                return null;
+            }
+        }).filter(Objects::nonNull).forEach(this::setAccount);
     }
 
     @Override
@@ -57,23 +55,21 @@ public class SpongeAccountFileStorage extends AccountFileStorage<ItemStack, Play
 
     @Override
     public void save() {
-        SpongeItemBank.instance().map(SpongeItemBank.class::cast).ifPresent(plugin -> {
-            getStorageDir().mkdirs();
-            getAccounts().values().forEach(account -> {
-                File file = new File(getStorageDir(), account.getID().toString() + PlayerData.FILE_EXTENSION);
-                try {
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
+        getStorageDir().mkdirs();
+        getAccounts().values().forEach(account -> {
+            File file = new File(getStorageDir(), account.getID().toString() + PlayerData.FILE_EXTENSION);
+            try {
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
 
-                    OutputStream os = new FileOutputStream(file);
-                    os.write(GSON.toJson(account).getBytes());
-                    os.close();
-                }
-                catch (IOException e) {
-                    plugin.getLogger().error(Messages.fileLoadFail(file));
-                }
-            });
+                OutputStream os = new FileOutputStream(file);
+                os.write(GSON.toJson(account).getBytes());
+                os.close();
+            }
+            catch (IOException e) {
+                SpongeItemBank.instance().getLogger().error(Messages.fileLoadFail(file));
+            }
         });
     }
 }
