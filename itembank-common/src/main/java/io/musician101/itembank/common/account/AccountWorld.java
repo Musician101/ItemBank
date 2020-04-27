@@ -1,39 +1,42 @@
 package io.musician101.itembank.common.account;
 
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class AccountWorld<I> {
 
     @Nonnull
-    private final Map<Integer, AccountPage<I>> pages;
+    private final List<I[]> pages;
     @Nonnull
     private final String worldName;
 
     public AccountWorld(@Nonnull String worldName) {
-        this(worldName, new HashMap<>());
+        this(worldName, new ArrayList<>());
     }
 
-    public AccountWorld(@Nonnull String worldName, @Nonnull Map<Integer, AccountPage<I>> pages) {
+    public AccountWorld(@Nonnull String worldName, @Nonnull List<I[]> pages) {
         this.worldName = worldName;
         this.pages = pages;
     }
 
+    public void clear() {
+        IntStream.range(0, pages.size()).forEach(this::clearPage);
+    }
+
     public void clearPage(int page) {
-        pages.remove(page);
+        IntStream.range(0, 45).forEach(y -> pages.get(page)[y] = null);
     }
 
     @Nonnull
-    public Optional<AccountPage<I>> getPage(int page) {
-        return Optional.ofNullable(pages.get(page));
+    public I[] getPage(int page) {
+        return pages.get(page);
     }
 
     @Nonnull
-    public Map<Integer, AccountPage<I>> getPages() {
+    public List<I[]> getPages() {
         return pages;
     }
 
@@ -42,11 +45,11 @@ public class AccountWorld<I> {
         return worldName;
     }
 
-    public void setPage(@Nonnull AccountPage<I> page) {
-        pages.put(page.getPage(), page);
+    public void setPage(int page, I[] contents) {
+        pages.set(page, contents);
     }
 
-    public interface Serializer<I> extends JsonDeserializer<AccountWorld<I>>, JsonSerializer<AccountWorld<I>> {
-
+    public void setSlot(int page, int slot, @Nullable I itemStack) {
+        pages.get(page)[slot] = itemStack;
     }
 }

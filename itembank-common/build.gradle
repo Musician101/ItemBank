@@ -1,3 +1,43 @@
+def configurateVersion = 3.5
+
 dependencies {
     compile 'io.musician101:musicianlibrary-common:3.0-SNAPSHOT'
+    compile "me.lucko.configurate:configurate-core:${configurateVersion}"
+    compile "me.lucko.configurate:configurate-gson:${configurateVersion}"
+    compile "me.lucko.configurate:configurate-hocon:${configurateVersion}"
+    compile "me.lucko.configurate:configurate-toml:${configurateVersion}"
+    compile "me.lucko.configurate:configurate-yaml:${configurateVersion}"
+    compile "org.mongodb:mongo-java-driver:3.12.2"
+}
+
+shadowJar {
+    dependencies {
+        include dependency(':configurate-core:')
+        include dependency(':configurate-gson:')
+        include dependency(':configurate-hocon:')
+        include dependency(':configurate-toml:')
+        include dependency(':configurate-yaml:')
+        include dependency(':mongo-java-driver:')
+    }
+}
+
+compileJava {
+    def referenceName = 'Reference.java'
+    def referencePath = "src/main/java/io/musician101/itembank/common/${referenceName}"
+    def tempDir = 'build/tmp/sourcesCache'
+    doFirst {
+        copy {
+            from(referencePath)
+            into(tempDir)
+        }
+
+        ant.replace(file: referencePath, token: '@VERSION@', value: project.version)
+    }
+
+    doLast {
+        copy {
+            from ("${tempDir}/${referenceName}")
+            into(project.file(referencePath).parent)
+        }
+    }
 }

@@ -14,9 +14,12 @@ repositories {
 }
 
 dependencies {
+    compile('me.lucko:commodore:1.8') {
+        exclude group: 'com.mojang'
+    }
     compile project(':itembank-common')
     compile 'io.musician101:musicianlibrary-spigot:3.0-SNAPSHOT'
-    compile 'net.milkbowl.vault:VaultAPI:1.6'
+    compile 'net.milkbowl.vault:VaultAPI:1.7'
 }
 
 processResources {
@@ -27,6 +30,13 @@ processResources {
 
 shadowJar {
     dependencies {
-        include(dependency(':itembank-common'))
+        include dependency(':itembank-common')
+        include dependency(':commodore:')
+        include dependency(':configurate-core:')
+        include dependency(':configurate-gson:')
+        include dependency(':configurate-hocon:')
+        include dependency(':configurate-toml:')
+        include dependency(':configurate-yaml:')
+        include dependency(':mongo-java-driver:')
     }
 }

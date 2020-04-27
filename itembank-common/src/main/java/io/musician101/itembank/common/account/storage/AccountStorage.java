@@ -1,54 +1,45 @@
 package io.musician101.itembank.common.account.storage;
 
-import com.google.gson.Gson;
 import io.musician101.itembank.common.account.Account;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 
-public abstract class AccountStorage<I, P, W> {
+public abstract class AccountStorage<I> {
 
     @Nonnull
-    private final Map<UUID, Account<I>> accounts = new HashMap<>();
+    private final List<Account<I>> accounts = new ArrayList<>();
     @Nonnull
-    private final Gson gson;
+    protected final ItemStackParsing<I> itemStackParsing;
 
-    protected AccountStorage(@Nonnull Gson gson) {
-        this.gson = gson;
+    public AccountStorage(@Nonnull ItemStackParsing<I> itemStackParsing) {
+        this.itemStackParsing = itemStackParsing;
+    }
+
+    public void clear() {
+        accounts.clear();
     }
 
     @Nonnull
     public Optional<Account<I>> getAccount(UUID owner) {
-        return Optional.ofNullable(accounts.get(owner));
+        return accounts.stream().filter(account -> owner.equals(account.getID())).findFirst();
     }
 
     @Nonnull
-    public Map<UUID, Account<I>> getAccounts() {
+    public List<Account<I>> getAccounts() {
         return accounts;
     }
 
     @Nonnull
-    protected Gson getGson() {
-        return gson;
-    }
+    public abstract List<String> load();
 
-    public abstract void load();
-
-    public abstract void openInv(@Nonnull P viewer, @Nonnull UUID uuid, @Nonnull String name, @Nonnull W world, int page);
-
-    public void resetAccount(@Nonnull UUID uuid) {
-        getAccount(uuid).ifPresent(account -> setAccount(new Account<>(uuid, account.getName())));
-    }
-
-    public void resetAll() {
-        accounts.replaceAll((key, value) -> new Account<>(key, value.getName()));
-    }
-
-    public abstract void save();
+    @Nonnull
+    public abstract List<String> save();
 
     public void setAccount(@Nonnull Account<I> account) {
-        accounts.put(account.getID(), account);
+        accounts.removeIf(a -> a.getID().equals(account.getID()));
+        accounts.add(account);
     }
 }

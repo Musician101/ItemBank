@@ -1,141 +1,37 @@
 package io.musician101.itembank.sponge.config;
 
-import io.musician101.itembank.common.AbstractItemBankConfig;
-import io.musician101.itembank.common.Reference;
+import com.google.common.reflect.TypeToken;
+import io.musician101.itembank.common.ItemBankConfig;
 import io.musician101.itembank.common.Reference.Config;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.sponge.SpongeItemBank;
-import io.musician101.musicianlibrary.java.MySQLHandler;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Collections;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.SimpleConfigurationNode;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
-import org.spongepowered.api.CatalogType;
-import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Key;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.value.mutable.Value;
+import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStack.Builder;
 
-public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
+public class SpongeConfig extends ItemBankConfig<ItemType> {
 
     public SpongeConfig(File configDir) {
         super(new File(configDir, "config.conf"));
         reload();
     }
 
-    private void itemList(ConfigurationNode node) {
-        Sponge.getRegistry().getAllOf(ItemType.class).forEach(itemType -> {
-            ConfigurationNode itemNode = node.getNode(itemType.getId());
-            if (!itemNode.isVirtual()) {
-                ConfigurationNode amountNode = itemNode.getNode(Config.AMOUNT);
-                ConfigurationNode variationNode = itemNode.getNode(Config.VARIATIONS);
-                Builder builder = ItemStack.builder().itemType(itemType).quantity(0);
-                if (!amountNode.isVirtual()) {
-                    builder.quantity(amountNode.getInt());
-                }
-
-                if (!variationNode.isVirtual()) {
-                    ItemStack tempStack = builder.build();
-                    if (tempStack.supports(Keys.BRICK_TYPE)) {
-                        setVariant(builder, Keys.BRICK_TYPE, CatalogTypes.BRICK_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.COAL_TYPE)) {
-                        setVariant(builder, Keys.COAL_TYPE, CatalogTypes.COAL_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.COOKED_FISH)) {
-                        setVariant(builder, Keys.COOKED_FISH, CatalogTypes.COOKED_FISH, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.DIRT_TYPE)) {
-                        setVariant(builder, Keys.DIRT_TYPE, CatalogTypes.DIRT_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.DISGUISED_BLOCK_TYPE)) {
-                        setVariant(builder, Keys.DISGUISED_BLOCK_TYPE, CatalogTypes.DISGUISED_BLOCK_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.DOUBLE_PLANT_TYPE)) {
-                        setVariant(builder, Keys.DOUBLE_PLANT_TYPE, CatalogTypes.DOUBLE_PLANT_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.DYE_COLOR)) {
-                        setVariant(builder, Keys.DYE_COLOR, CatalogTypes.DYE_COLOR, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.FISH_TYPE)) {
-                        setVariant(builder, Keys.FISH_TYPE, CatalogTypes.FISH, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.GOLDEN_APPLE_TYPE)) {
-                        setVariant(builder, Keys.GOLDEN_APPLE_TYPE, CatalogTypes.GOLDEN_APPLE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.PRISMARINE_TYPE)) {
-                        setVariant(builder, Keys.PRISMARINE_TYPE, CatalogTypes.PRISMARINE_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.QUARTZ_TYPE)) {
-                        setVariant(builder, Keys.QUARTZ_TYPE, CatalogTypes.QUARTZ_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.SAND_TYPE)) {
-                        setVariant(builder, Keys.SAND_TYPE, CatalogTypes.SAND_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.SANDSTONE_TYPE)) {
-                        setVariant(builder, Keys.SANDSTONE_TYPE, CatalogTypes.SANDSTONE_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.SHRUB_TYPE)) {
-                        setVariant(builder, Keys.SHRUB_TYPE, CatalogTypes.SHRUB_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.SLAB_TYPE)) {
-                        setVariant(builder, Keys.SLAB_TYPE, CatalogTypes.SLAB_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.SPAWNABLE_ENTITY_TYPE)) {
-                        setVariant(builder, Keys.SPAWNABLE_ENTITY_TYPE, CatalogTypes.ENTITY_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.STONE_TYPE)) {
-                        setVariant(builder, Keys.STONE_TYPE, CatalogTypes.STONE_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.TREE_TYPE)) {
-                        setVariant(builder, Keys.TREE_TYPE, CatalogTypes.TREE_TYPE, variationNode.getString());
-                    }
-                    else if (tempStack.supports(Keys.WALL_TYPE)) {
-                        setVariant(builder, Keys.WALL_TYPE, CatalogTypes.WALL_TYPE, variationNode.getString());
-                    }
-                }
-            }
-        });
-    }
-
     @Override
     public void reload() {
-        File configFolder = new File("config", Reference.ID);
-        File configFile = new File(configFolder, "config.conf");
         Logger log = SpongeItemBank.instance().getLogger();
         if (!configFile.exists()) {
-            if (!configFile.mkdirs()) {
-                log.error(Messages.fileCreateFail(configFile));
-                return;
-            }
-
+            configFile.mkdirs();
+            Asset asset = SpongeItemBank.instance().getPluginContainer().getAsset("config.conf").orElseThrow(() -> new IllegalStateException("Default config is missing form jar. Please contact the dev."));
             try {
-                configFile.createNewFile();
-                ConfigurationNode config = SimpleCommentedConfigurationNode.root();
-                config.getNode(Config.WHITELIST).setValue(false);
-                config.getNode(Config.MULTI_WORLD).setValue(false);
-                config.getNode(Config.PAGE_LIMIT).setValue(0);
-                ConfigurationNode bedrock = SimpleConfigurationNode.root();
-                bedrock.getNode(Config.AMOUNT).setValue(0);
-                config.getNode(Config.ITEM_LIST).setValue(bedrock);
-                ConfigurationNode mysql = SimpleConfigurationNode.root();
-                mysql.getNode(Config.HOST).setValue("127.0.0.1");
-                mysql.getNode(Config.ENABLE_MYSQL).setValue(false);
-                mysql.getNode(Config.DATABASE).setValue("database");
-                mysql.getNode(Config.PASSWORD).setValue("password");
-                mysql.getNode(Config.PORT).setValue(3306);
-                config.getNode(Config.MYSQL).setValue(mysql);
-                HoconConfigurationLoader.builder().setFile(configFile).build().save(config);
+                asset.copyToDirectory(Paths.get(configFile.getParent()));
             }
             catch (IOException e) {
                 log.warn(Messages.fileCreateFail(configFile));
@@ -143,36 +39,35 @@ public class SpongeConfig extends AbstractItemBankConfig<ItemStack> {
             }
         }
 
-        ConfigurationLoader<CommentedConfigurationNode> configLoader = HoconConfigurationLoader.builder().setFile(configFile).build();
+        HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setFile(configFile).build();
         ConfigurationNode config;
         try {
-            config = configLoader.load();
+            config = loader.load();
         }
         catch (IOException e) {
             log.warn(Messages.fileLoadFail(configFile));
             return;
         }
 
-        isWhitelist = config.getNode(Config.WHITELIST).getBoolean(false);
-        isMultiWorldStorageEnabled = config.getNode(Config.MULTI_WORLD).getBoolean(false);
+        enableEconomy = config.getNode(Config.ENABLE_ECONOMY).getBoolean(false);
+        enableMultiWorldStorage = config.getNode(Config.MULTI_WORLD).getBoolean(false);
         pageLimit = config.getNode(Config.PAGE_LIMIT).getInt(0);
-        ConfigurationNode mysqlNode = config.getNode(Config.MYSQL);
-        if (!mysqlNode.isVirtual()) {
-            useMySQL = mysqlNode.getNode(Config.ENABLE_MYSQL).getBoolean(false);
-            if (useMySQL) {
-                mysql = new MySQLHandler(mysqlNode.getNode(Config.DATABASE).getString(Config.DATABASE), mysqlNode.getNode(Config.HOST).getString(Config.LOCAL_HOST), mysqlNode.getNode(Config.PASSWORD).getString(Config.PASSWORD), mysqlNode.getNode(Config.PORT).getString(Config.PORT_DEFAULT), mysqlNode.getNode(Config.USER).getString(Config.USER));
-            }
+        transactionCost = config.getNode(Config.TRANSACTION_COST).getDouble(5);
+        format = config.getNode(Config.FORMAT).getString(Config.YAML);
+        try {
+            //noinspection UnstableApiUsage
+            config.getNode(Config.WHITELIST).getList(TypeToken.of(String.class), Collections.emptyList()).forEach(s -> Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(itemType -> s.equals(itemType.getId())).forEach(whiteList::add));
+            //noinspection UnstableApiUsage
+            config.getNode(Config.BLACKLIST).getList(TypeToken.of(String.class), Collections.emptyList()).forEach(s -> Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(itemType -> s.equals(itemType.getId())).forEach(blackList::add));
+        }
+        catch (ObjectMappingException e) {
+            e.printStackTrace();
         }
 
-        if (!config.getNode(Config.ITEM_LIST).isVirtual()) {
-            itemList(config.getNode(Config.ITEM_LIST));
-        }
-        else {
-            typeList.put(ItemStack.of(ItemTypes.BEDROCK, 0), 1);
+        ConfigurationNode itemRestrictions = config.getNode(Config.ITEM_RESTRICTIONS);
+        if (!itemRestrictions.isVirtual()) {
+            itemRestrictions.getChildrenMap().forEach((key, value) -> Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(itemType -> key.equals(itemType.getId())).forEach(itemType -> this.itemRestrictions.put(itemType, value.getInt())));
         }
     }
 
-    private <T extends CatalogType> void setVariant(ItemStack.Builder builder, Key<Value<T>> key, Class<T> typeClass, String variant) {
-        Sponge.getRegistry().getType(typeClass, variant).ifPresent(value -> builder.add(key, value));
-    }
 }

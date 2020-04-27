@@ -12,5 +12,7 @@ sponge.plugin.id = pluginId
 shadowJar {
     dependencies {
         include(dependency(':itembank-common'))
+        include dependency(':configurate-toml:')
+        include dependency(':mongo-java-driver:')
     }
 }

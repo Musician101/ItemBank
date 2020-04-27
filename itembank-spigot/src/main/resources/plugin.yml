@@ -1,12 +1,12 @@
 name: ItemBank
-main: ${groupId}.${artifactId}.ItemBank
-version: ${version}
+main: io.musician101.itembank.spigot.ItemBank
+version: '${version}'
 description: Virtual chest with configurable limits.
 author: Musician101
 softdepend: [Vault]
 api-version: '1.13'
 commands:
     account:
-        description: Open an account page.
+        description: View accounts.
     itembank:
         description: Base command for the plugin

@@ -1,40 +1,28 @@
 package io.musician101.itembank.spigot;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.musician101.itembank.common.ItemBank;
-import io.musician101.itembank.common.Reference;
+import io.musician101.itembank.common.Reference.Config;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.PlayerData;
 import io.musician101.itembank.common.account.storage.AccountStorage;
-import io.musician101.itembank.spigot.account.storage.SpigotAccountFileStorage;
-import io.musician101.itembank.spigot.account.storage.SpigotAccountMySQLStorage;
-import io.musician101.itembank.spigot.config.SpigotConfig;
-import io.musician101.itembank.spigot.json.ItemStackSerializer;
-import io.musician101.itembank.spigot.json.account.AccountPageSerializer;
-import io.musician101.itembank.spigot.json.account.AccountSerializer;
-import io.musician101.itembank.spigot.json.account.AccountSlotSerializer;
-import io.musician101.itembank.spigot.json.account.AccountWorldSerializer;
-import io.musician101.musicianlibrary.java.MySQLHandler;
+import io.musician101.itembank.common.account.storage.database.MongoAccountStorage;
+import io.musician101.itembank.common.account.storage.database.sql.MySQLAccountStorage;
+import io.musician101.itembank.common.account.storage.database.sql.SQLiteAccountStorage;
+import io.musician101.itembank.common.account.storage.file.AccountFileStorage;
+import io.musician101.itembank.common.account.storage.file.ConfigurateLoader;
+import io.musician101.itembank.spigot.command.SpigotItemBankCommands;
 import io.musician101.musicianlibrary.java.minecraft.spigot.plugin.AbstractSpigotPlugin;
 import java.io.File;
-import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig, SpigotItemBank> implements ItemBank<ItemStack, Player, World> {
+public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig> implements ItemBank<ItemStack> {
 
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(AccountSerializer.TYPE, new AccountSerializer()).registerTypeAdapter(AccountPageSerializer.TYPE, new AccountPageSerializer()).registerTypeAdapter(AccountSlotSerializer.TYPE, new AccountSlotSerializer()).registerTypeAdapter(AccountWorldSerializer.TYPE, new AccountWorldSerializer()).registerTypeAdapter(ItemStack.class, new ItemStackSerializer()).create();
-    @Nullable
-    private AccountStorage<ItemStack, Player, World> accountStorage;
+    private AccountStorage<ItemStack> accountStorage;
     @Nullable
     private Economy econ;
 
@@ -44,8 +32,8 @@ public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig, SpigotIte
 
     @Nonnull
     @Override
-    public Optional<AccountStorage<ItemStack, Player, World>> getAccountStorage() {
-        return Optional.ofNullable(accountStorage);
+    public AccountStorage<ItemStack> getAccountStorage() {
+        return accountStorage;
     }
 
     @Nullable
@@ -53,43 +41,51 @@ public class SpigotItemBank extends AbstractSpigotPlugin<SpigotConfig, SpigotIte
         return econ;
     }
 
-    @Nonnull
-    @Override
-    public String getId() {
-        return Reference.ID;
-    }
-
     @Override
     public void onDisable() {
-        save();
+        getAccountStorage().save().forEach(getLogger()::warning);
     }
 
     @Override
     public void onEnable() {
         config = new SpigotConfig();
         reload();
-        commands.add(SpigotItemBankCommands.account());
-        commands.add(SpigotItemBankCommands.ib());
+        SpigotItemBankCommands.init();
     }
 
     @Override
     public void reload() {
         config.reload();
         setupEconomy();
-        save();
-        if (config.useMySQL()) {
-            MySQLHandler mysql = config.getMySQL();
-            if (mysql == null) {
-                getLogger().warning(ChatColor.RED + Messages.DATABASE_UNAVAILABLE);
-                Bukkit.getPluginManager().disablePlugin(this);
-                return;
-            }
+        if (accountStorage != null) {
+            getAccountStorage().save().forEach(getLogger()::warning);
+        }
 
-            accountStorage = new SpigotAccountMySQLStorage(mysql, GSON);
+        switch (config.getFormat()) {
+            case Config.JSON:
+                accountStorage = new AccountFileStorage<>(new File(getDataFolder(), PlayerData.DIRECTORY), ConfigurateLoader.JSON, PlayerData.JSON, new SpigotItemStackParsing());
+                break;
+            case Config.HOCON:
+                accountStorage = new AccountFileStorage<>(new File(getDataFolder(), PlayerData.DIRECTORY), ConfigurateLoader.HOCON, PlayerData.HOCON, new SpigotItemStackParsing());
+                break;
+            case Config.MONGO_DB:
+                accountStorage = new MongoAccountStorage<>(config.getDatabaseOptions(), new SpigotItemStackParsing());
+                break;
+            case Config.MYSQL:
+                accountStorage = new MySQLAccountStorage<>(config.getDatabaseOptions(), new SpigotItemStackParsing());
+                break;
+            case Config.SQLITE:
+                accountStorage = new SQLiteAccountStorage<>(new SpigotItemStackParsing());
+                break;
+            case Config.TOML:
+                accountStorage = new AccountFileStorage<>(new File(getDataFolder(), PlayerData.DIRECTORY), ConfigurateLoader.TOML, PlayerData.TOML, new SpigotItemStackParsing());
+                break;
+            case Config.YAML:
+            default:
+                accountStorage = new AccountFileStorage<>(new File(getDataFolder(), PlayerData.DIRECTORY), ConfigurateLoader.YAML, PlayerData.YAML, new SpigotItemStackParsing());
         }
-        else {
-            accountStorage = new SpigotAccountFileStorage(new File(getDataFolder(), PlayerData.DIRECTORY), GSON);
-        }
+
+        accountStorage.load();
     }
 
     private void setupEconomy() {

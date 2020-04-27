@@ -1,42 +1,40 @@
 package io.musician101.itembank.common.account;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiPredicate;
 import javax.annotation.Nonnull;
 
 public class Account<I> {
 
-    private static final Multimap<UUID, String> CHANGED_NAMES = HashMultimap.create();
+    private final BiPredicate<String, AccountWorld<I>> worldNamePredicate = (worldName, world) -> worldName.equals(world.getWorldName());
     @Nonnull
     private final UUID uuid;
     @Nonnull
-    private final Map<String, AccountWorld<I>> worlds;
+    private final List<AccountWorld<I>> worlds;
     @Nonnull
-    private String name;
+    private final String name;
 
     public Account(@Nonnull UUID uuid, @Nonnull String name) {
-        this(uuid, name, new HashMap<>());
+        this(uuid, name, new ArrayList<>());
     }
 
-    public Account(@Nonnull UUID uuid, @Nonnull String name, @Nonnull Map<String, AccountWorld<I>> worlds) {
+    public Account(@Nonnull UUID uuid, @Nonnull String name, @Nonnull List<AccountWorld<I>> worlds) {
         this.uuid = uuid;
         this.name = name;
         this.worlds = worlds;
     }
 
-    public static Multimap<UUID, String> getChangedNames() {
-        return ImmutableMultimap.copyOf(CHANGED_NAMES);
+    public void clear() {
+        worlds.clear();
     }
 
     public void clearWorld(@Nonnull String worldName) {
-        worlds.remove(worldName);
+        worlds.removeIf(w -> worldNamePredicate.test(worldName, w));
     }
 
     @Nonnull
@@ -49,23 +47,19 @@ public class Account<I> {
         return name;
     }
 
-    public void setName(@Nonnull String name) {
-        this.name = name;
-        CHANGED_NAMES.put(uuid, this.name);
-    }
-
     @Nonnull
     public Optional<AccountWorld<I>> getWorld(@Nonnull String worldName) {
-        return Optional.ofNullable(worlds.get(worldName));
+        return worlds.stream().filter(w -> worldNamePredicate.test(worldName, w)).findFirst();
     }
 
     @Nonnull
-    public Map<String, AccountWorld<I>> getWorlds() {
+    public List<AccountWorld<I>> getWorlds() {
         return worlds;
     }
 
     public void setWorld(@Nonnull AccountWorld<I> world) {
-        worlds.put(world.getWorldName(), world);
+        worlds.removeIf(w -> worldNamePredicate.test(world.getWorldName(), w));
+        worlds.add(world);
     }
 
     public interface Serializer<I> extends JsonDeserializer<Account<I>>, JsonSerializer<Account<I>> {
