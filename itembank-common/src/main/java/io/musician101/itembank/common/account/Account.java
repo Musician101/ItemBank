@@ -149,9 +149,9 @@ public class Account<I> {
                 catch (ConfigurateException e) {
                     throw new SQLException(Messages.invalidItem(account.uuid, accountWorld.getWorldName(), page, slot, itemString), e);
                 }
-
             }
 
+            resultSet.close();
             return accounts;
         }
 
