@@ -1,100 +1,144 @@
 package io.musician101.itembank.sponge;
 
 import com.google.inject.Inject;
+import com.mongodb.client.model.Filters;
+import io.leangen.geantyref.TypeToken;
 import io.musician101.itembank.common.ItemBank;
 import io.musician101.itembank.common.Reference;
+import io.musician101.itembank.common.Reference.AccountData;
 import io.musician101.itembank.common.Reference.Commands;
 import io.musician101.itembank.common.Reference.Config;
-import io.musician101.itembank.common.Reference.PlayerData;
-import io.musician101.itembank.common.account.storage.AccountStorage;
-import io.musician101.itembank.common.account.storage.database.MongoAccountStorage;
-import io.musician101.itembank.common.account.storage.database.sql.MySQLAccountStorage;
-import io.musician101.itembank.common.account.storage.database.sql.SQLiteAccountStorage;
-import io.musician101.itembank.common.account.storage.file.AccountFileStorage;
-import io.musician101.itembank.common.account.storage.file.ConfigurateLoader;
+import io.musician101.itembank.common.account.Account;
+import io.musician101.itembank.common.account.Account.Serializer;
+import io.musician101.itembank.common.account.AccountWorld;
+import io.musician101.itembank.common.account.storage.AccountFileStorage;
 import io.musician101.itembank.sponge.command.SpongeItemBankCommands;
 import io.musician101.itembank.sponge.config.SpongeConfig;
-import io.musician101.musicianlibrary.java.minecraft.sponge.plugin.AbstractSpongePlugin;
+import io.musician101.musicianlibrary.java.configurate.ConfigurateLoader;
+import io.musician101.musicianlibrary.java.minecraft.common.Location;
+import io.musician101.musicianlibrary.java.storage.DataStorage;
+import io.musician101.musicianlibrary.java.storage.database.mongo.MongoDataStorage;
+import io.musician101.musicianlibrary.java.storage.database.sql.MySQLDataStorage;
+import io.musician101.musicianlibrary.java.storage.database.sql.SQLiteDataStorage;
 import java.io.File;
+import java.io.IOException;
 import javax.annotation.Nonnull;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.command.Command;
+import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
+import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
+import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.reference.ConfigurationReference;
+import org.spongepowered.configurate.serialize.TypeSerializerCollection;
+import org.spongepowered.plugin.PluginContainer;
+import org.spongepowered.plugin.jvm.Plugin;
 
-@Plugin(id = Reference.ID, name = Reference.NAME, version = Reference.VERSION, description = Reference.DESCRIPTION, authors = {"Musician101"})
-public class SpongeItemBank extends AbstractSpongePlugin<SpongeConfig> implements ItemBank<ItemStack> {
+@Plugin(Reference.ID)
+public class SpongeItemBank implements ItemBank<ItemStack> {
 
-    private AccountStorage<ItemStack> accountStorage;
+    @Nonnull
+    private final SpongeConfig config;
+    @Nonnull
+    private final PluginContainer pluginContainer;
+    private DataStorage<?, Account<ItemStack>> accountStorage;
+
     @Inject
-    @ConfigDir(sharedRoot = true)
-    private File configDir;
-    @Inject
-    private PluginContainer pluginContainer;
+    public SpongeItemBank(@Nonnull PluginContainer pluginContainer, @DefaultConfig(sharedRoot = false) ConfigurationReference<ConfigurationNode> configReference) {
+        this.config = new SpongeConfig(configReference);
+        this.pluginContainer = pluginContainer;
+    }
 
     public static SpongeItemBank instance() {
-        return Sponge.getPluginManager().getPlugin(Reference.ID).flatMap(PluginContainer::getInstance).filter(SpongeItemBank.class::isInstance).map(SpongeItemBank.class::cast).orElseThrow(() -> new IllegalStateException("ItemBank is not enabled."));
+        return Sponge.pluginManager().plugin(Reference.ID).map(PluginContainer::getInstance).filter(SpongeItemBank.class::isInstance).map(SpongeItemBank.class::cast).orElseThrow(() -> new IllegalStateException("ItemBank is not enabled."));
     }
 
     @Nonnull
     @Override
-    public AccountStorage<ItemStack> getAccountStorage() {
+    public DataStorage<?, Account<ItemStack>> getAccountStorage() {
         return accountStorage;
     }
 
     @Nonnull
-    @Override
+    public SpongeConfig getConfig() {
+        return config;
+    }
+
+    @Nonnull
+    public Logger getLogger() {
+        return pluginContainer.getLogger();
+    }
+
+    @Nonnull
     public PluginContainer getPluginContainer() {
         return pluginContainer;
     }
 
     @Listener
-    public void onServerStart(GameStartedServerEvent event) {
-        config = new SpongeConfig(configDir);
-        reload();
-        Sponge.getCommandManager().register(this, SpongeItemBankCommands.ib(), Reference.NAME.toLowerCase(), Commands.IB_CMD.replace("/", ""));
-        Sponge.getCommandManager().register(this, SpongeItemBankCommands.account(), Commands.ACCOUNT_NAME);
+    public void onServerStart(StartingEngineEvent<Server> event) {
+        try {
+            reload();
+        }
+        catch (IOException e) {
+            getLogger().warn("An error occurred while loading the config and/or data.", e);
+        }
     }
 
     @Listener
-    public void onServerStop(GameStoppingServerEvent event) {
+    public void onServerStop(StoppingEngineEvent<Server> event) {
         getAccountStorage().save().forEach(getLogger()::warn);
     }
 
+    @Listener
+    public void registerCommands(RegisterCommandEvent<Command> event) {
+        event.register(pluginContainer, SpongeItemBankCommands.ib(), Reference.NAME.toLowerCase(), Commands.IB_CMD.replace("/", ""));
+        event.register(pluginContainer, SpongeItemBankCommands.account(), Commands.ACCOUNT_NAME);
+    }
+
     @Override
-    public void reload() {
+    public void reload() throws IOException {
         config.reload();
         if (accountStorage != null) {
             getAccountStorage().save().forEach(getLogger()::warn);
         }
 
+        TypeToken<Account<ItemStack>> accountToken = new TypeToken<Account<ItemStack>>() {
+
+        };
+        SpongeItemStackSerializer itemStackSerializer = new SpongeItemStackSerializer();
+        Serializer<ItemStack> accountSerializer = new Account.Serializer<>(new TypeToken<AccountWorld<ItemStack>>() {
+
+        }, ItemStack.class, itemStackSerializer);
+        TypeSerializerCollection tsc = TypeSerializerCollection.builder().register(accountToken, accountSerializer).register(new TypeToken<AccountWorld<ItemStack>>() {
+
+        }, new AccountWorld.Serializer<>(ItemStack.class, itemStackSerializer)).register(Location.class, new Location.Serializer()).register(ItemStack.class, itemStackSerializer).build();
+        File storageDir = new File(Sponge.game().gameDirectory().toFile(), Reference.ID + "/" + AccountData.DIRECTORY);
         switch (config.getFormat()) {
             case Config.JSON:
-                accountStorage = new AccountFileStorage<>(new File(configDir, PlayerData.DIRECTORY), ConfigurateLoader.JSON, PlayerData.JSON, new SpongeItemStackParsing());
+                accountStorage = new AccountFileStorage<>(storageDir, ConfigurateLoader.JSON, AccountData.JSON, accountToken, tsc);
                 break;
             case Config.HOCON:
-                accountStorage = new AccountFileStorage<>(new File(configDir, PlayerData.DIRECTORY), ConfigurateLoader.HOCON, PlayerData.HOCON, new SpongeItemStackParsing());
+                accountStorage = new AccountFileStorage<>(storageDir, ConfigurateLoader.HOCON, AccountData.HOCON, accountToken, tsc);
                 break;
             case Config.MONGO_DB:
-                accountStorage = new MongoAccountStorage<>(config.getDatabaseOptions(), new SpongeItemStackParsing());
+                accountStorage = new MongoDataStorage<>(config.getDatabaseOptions(), accountSerializer, account -> Filters.eq(AccountData.ID, account.getID()));
                 break;
             case Config.MYSQL:
-                accountStorage = new MySQLAccountStorage<>(config.getDatabaseOptions(), new SpongeItemStackParsing());
+                accountStorage = new MySQLDataStorage<>(config.getDatabaseOptions(), accountSerializer);
                 break;
             case Config.SQLITE:
-                accountStorage = new SQLiteAccountStorage<>(new SpongeItemStackParsing());
-                break;
-            case Config.TOML:
-                accountStorage = new AccountFileStorage<>(new File(configDir, PlayerData.DIRECTORY), ConfigurateLoader.TOML, PlayerData.TOML, new SpongeItemStackParsing());
+                accountStorage = new SQLiteDataStorage<>(storageDir.getParentFile(), accountSerializer);
                 break;
             case Config.YAML:
             default:
-                accountStorage = new AccountFileStorage<>(new File(configDir, PlayerData.DIRECTORY), ConfigurateLoader.YAML, PlayerData.YAML, new SpongeItemStackParsing());
+                accountStorage = new AccountFileStorage<>(storageDir, ConfigurateLoader.YAML, AccountData.YAML, accountToken, tsc);
         }
+
         accountStorage.load().forEach(getLogger()::warn);
     }
 }

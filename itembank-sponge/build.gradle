@@ -3,16 +3,23 @@ plugins {
 }
 
 dependencies {
-    compile project(':itembank-common')
-    compile 'io.musician101:musicianlibrary-sponge:3.0-SNAPSHOT'
+    compile(project(':itembank-common')) {
+        exclude group: 'org.spongepowered'
+    }
+
+    compile 'io.musician101.musicianlibrary:sponge:4.1'
 }
 
 sponge.plugin.id = pluginId
 
 shadowJar {
     dependencies {
-        include(dependency(':itembank-common'))
-        include dependency(':configurate-toml:')
+        include dependency(':itembank-common')
         include dependency(':mongo-java-driver:')
     }
+
+    def lib = 'io.musician101.itembank.lib.'
+    relocate 'io.musician101.bukkitier', "${lib}io.musician101.bukkitier"
+    relocate 'io.musician101.musicianlibrary', "${lib}io.musician101.musicianlibrary"
+    dependsOn build
 }

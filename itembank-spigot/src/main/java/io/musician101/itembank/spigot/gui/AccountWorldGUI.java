@@ -5,8 +5,8 @@ import io.musician101.itembank.common.Reference.GUIText;
 import io.musician101.itembank.common.Reference.Messages;
 import io.musician101.itembank.common.Reference.Permissions;
 import io.musician101.itembank.common.account.AccountWorld;
-import io.musician101.itembank.spigot.SpigotItemBank;
 import io.musician101.itembank.spigot.SpigotConfig;
+import io.musician101.itembank.spigot.SpigotItemBank;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -21,12 +21,13 @@ import org.bukkit.inventory.ItemStack;
 public class AccountWorldGUI extends ItemBankChestGUI {
 
     private final AccountWorld<ItemStack> world;
-    private int page = 1;
-    private boolean hasIllegalAmount = false;
     private boolean hasBlacklistedItems = false;
+    private boolean hasIllegalAmount = false;
+    private int page = 1;
 
+    @SuppressWarnings("ConstantConditions")
     public AccountWorldGUI(@Nonnull AccountWorld<ItemStack> world, @Nonnull Player player) {
-        super(player, String.format(GUIText.WORLD_PAGE, world.getWorldName(), 1), 54);
+        super(player, String.format(GUIText.WORLD_PAGE, world.getWorldName(), 1));
         this.world = world;
         updateSlots();
         setButton(49, BACK_ICON, ImmutableMap.of(ClickType.LEFT, p -> {
@@ -69,8 +70,6 @@ public class AccountWorldGUI extends ItemBankChestGUI {
                 while (maxAmount < amount) {
                     int slot = inventory.first(type);
                     ItemStack itemStack = inventory.getItem(slot);
-                    // We filter out null stacks earlier
-                    //noinspection ConstantConditions
                     int maxStackSize = itemStack.getMaxStackSize();
                     if (maxStackSize < amount) {
                         p.getWorld().dropItem(p.getLocation(), itemStack.clone());
@@ -113,6 +112,10 @@ public class AccountWorldGUI extends ItemBankChestGUI {
     }
 
     private void updateSlots() {
+        if (page > world.getPages().size()) {
+            world.setPage(this.page, new ItemStack[45]);
+        }
+
         ItemStack[] page = world.getPage(this.page);
         IntStream.range(0, 45).forEach(i -> addItem(i, page[i]));
         if (this.page == 1) {
@@ -126,7 +129,7 @@ public class AccountWorldGUI extends ItemBankChestGUI {
         }
 
         int maxPage = Double.valueOf(Math.ceil(SpigotItemBank.instance().getPluginConfig().getPageLimit() / 45d)).intValue();
-        if (this.page < maxPage) {
+        if (!player.hasPermission(Permissions.PAGE) && this.page < maxPage) {
             removeButton(53);
         }
         else {

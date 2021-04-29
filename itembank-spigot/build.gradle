@@ -4,21 +4,15 @@ repositories {
         url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
     }
     maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
-    maven {
         name = 'vault-repo'
         url = 'http://nexus.hc.to/content/repositories/pub_releases'
     }
 }
 
 dependencies {
-    compile('me.lucko:commodore:1.8') {
-        exclude group: 'com.mojang'
-    }
+    compile('io.musician101:bukkitier:1.0')
     compile project(':itembank-common')
-    compile 'io.musician101:musicianlibrary-spigot:3.0-SNAPSHOT'
+    compile 'io.musician101.musicianlibrary:spigot:4.1'
     compile 'net.milkbowl.vault:VaultAPI:1.7'
 }
 
@@ -31,12 +25,13 @@ processResources {
 shadowJar {
     dependencies {
         include dependency(':itembank-common')
-        include dependency(':commodore:')
-        include dependency(':configurate-core:')
-        include dependency(':configurate-gson:')
-        include dependency(':configurate-hocon:')
-        include dependency(':configurate-toml:')
-        include dependency(':configurate-yaml:')
         include dependency(':mongo-java-driver:')
+        include dependency('org.spongepowered:')
+        include dependency('io.musician101:')
     }
+
+    def lib = 'io.musician101.itembank.lib.'
+    relocate 'io.musician101.bukkitier', "${lib}io.musician101.bukkitier"
+    relocate 'org', "${lib}org"
+    relocate 'com', "${lib}com"
 }

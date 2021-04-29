@@ -1,0 +1,5 @@
+/.idea/
+/.gradle/
+/out/
+/itembank-*/build/
+/itembank-*/out/

@@ -1,40 +1,23 @@
 package io.musician101.itembank.common;
 
 import io.musician101.itembank.common.Reference.Config;
-import io.musician101.musicianlibrary.java.minecraft.common.config.AbstractConfig;
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ItemBankConfig<I> extends AbstractConfig {
+public abstract class ItemBankConfig<I> {
 
+    protected final List<I> blacklist = new ArrayList<>();
     protected final Map<String, String> databaseOptions = new HashMap<>();
-    protected final List<I> blackList = new ArrayList<>();
     protected final Map<I, Integer> itemRestrictions = new HashMap<>();
-    protected final List<I> whiteList = new ArrayList<>();
+    protected final List<I> whitelist = new ArrayList<>();
     protected boolean enableEconomy = false;
     protected boolean enableMultiWorldStorage = false;
     protected String format = Config.YAML;
     protected int pageLimit = 0;
     protected double transactionCost;
-
-    protected ItemBankConfig(File file) {
-        super(file);
-    }
-
-    public List<I> getBlackList() {
-        return blackList;
-    }
-
-    public boolean isBlacklisted(I type) {
-        return !blackList.isEmpty() && blackList.contains(type);
-    }
-
-    public boolean isWhitelisted(I type) {
-        return whiteList.isEmpty() || whiteList.contains(type);
-    }
 
     public Map<String, String> getDatabaseOptions() {
         return databaseOptions;
@@ -56,13 +39,19 @@ public abstract class ItemBankConfig<I> extends AbstractConfig {
         return transactionCost;
     }
 
-    public List<I> getWhiteList() {
-        return whiteList;
+    public boolean isBlacklisted(I type) {
+        return !blacklist.isEmpty() && blacklist.contains(type);
     }
 
     public boolean isMultiWorldStorageEnabled() {
         return enableMultiWorldStorage;
     }
+
+    public boolean isWhitelisted(I type) {
+        return whitelist.isEmpty() || whitelist.contains(type);
+    }
+
+    public abstract void reload() throws IOException;
 
     public boolean useEconomy() {
         return enableEconomy;

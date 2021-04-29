@@ -5,28 +5,26 @@ import io.musician101.itembank.common.Reference.GUIText;
 import io.musician101.itembank.common.Reference.Permissions;
 import io.musician101.itembank.common.account.Account;
 import io.musician101.itembank.sponge.SpongeItemBank;
-import io.musician101.musicianlibrary.java.minecraft.sponge.gui.SpongeIconBuilder;
+import io.musician101.musicianlibrary.java.minecraft.sponge.gui.chest.SpongeIconBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.type.SkullTypes;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.item.inventory.menu.ClickTypes;
 
 public class AccountsGUI extends ItemBankChestGUI {
 
     private int page = 1;
 
-    public AccountsGUI(@Nonnull Player player) {
-        super(player, GUIText.ACCOUNTS, 54);
+    public AccountsGUI(@Nonnull ServerPlayer player) {
+        super(player, GUIText.ACCOUNTS, true);
         updateSlots();
-        setButton(49, BACK_ICON, ImmutableMap.of(ClickInventoryEvent.Primary.class, p -> {
+        setButton(49, BACK_ICON, ImmutableMap.of(ClickTypes.CLICK_LEFT.get(), p -> {
             if (p.hasPermission(Permissions.PLAYER)) {
                 new AccountsGUI(p);
                 return;
@@ -37,14 +35,14 @@ public class AccountsGUI extends ItemBankChestGUI {
     }
 
     private void updateSlots() {
-        List<Account<ItemStack>> accounts = SpongeItemBank.instance().getAccountStorage().getAccounts();
+        List<Account<ItemStack>> accounts = SpongeItemBank.instance().getAccountStorage().getData();
         IntStream.range(0, 45).forEach(x -> {
             try {
                 int index = x * (page - 1) + 45;
                 Account<ItemStack> account = accounts.get(index);
-                List<Text> description = Arrays.asList(Text.of(TextColors.GREEN, GUIText.CLICK_TO_VIEW), Text.of(TextColors.RED, GUIText.CLICK_TO_PURGE));
-                ItemStack itemStack = SpongeIconBuilder.builder(ItemTypes.SKULL).offer(Keys.SKULL_TYPE, SkullTypes.PLAYER).name(Text.of(account.getName())).description(description).build();
-                setButton(x, itemStack, ImmutableMap.of(ClickInventoryEvent.Primary.class, p -> new AccountGUI(account, p), ClickInventoryEvent.Secondary.class, p -> {
+                List<Component> description = Arrays.asList(Component.text(GUIText.CLICK_TO_VIEW, NamedTextColor.GREEN), Component.text(GUIText.CLICK_TO_PURGE, NamedTextColor.RED));
+                ItemStack itemStack = SpongeIconBuilder.builder(ItemTypes.PLAYER_HEAD).name(Component.text(getAccountName(account))).description(description).build();
+                setButton(x, itemStack, ImmutableMap.of(ClickTypes.CLICK_LEFT.get(), p -> new AccountGUI(account, p), ClickTypes.CLICK_RIGHT.get(), p -> {
                     if (!player.hasPermission(Permissions.PURGE)) {
                         return;
                     }
@@ -62,7 +60,7 @@ public class AccountsGUI extends ItemBankChestGUI {
             removeButton(45);
         }
         else {
-            setButton(45, NEXT_PAGE, ImmutableMap.of(ClickInventoryEvent.Primary.class, p -> {
+            setButton(45, NEXT_PAGE, ImmutableMap.of(ClickTypes.CLICK_LEFT.get(), p -> {
                 page--;
                 updateSlots();
             }));
@@ -73,7 +71,7 @@ public class AccountsGUI extends ItemBankChestGUI {
             removeButton(53);
         }
         else {
-            setButton(53, PREVIOUS_PAGE, ImmutableMap.of(ClickInventoryEvent.Primary.class, p -> {
+            setButton(53, PREVIOUS_PAGE, ImmutableMap.of(ClickTypes.CLICK_LEFT.get(), p -> {
                 page++;
                 updateSlots();
             }));

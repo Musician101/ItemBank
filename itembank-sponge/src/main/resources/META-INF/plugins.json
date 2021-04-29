@@ -1,0 +1,24 @@
+{
+    "plugins": [
+        {
+            "loader": "java_plain",
+            "id": "itembank",
+            "name": "ItemBank",
+            "version": "24.0",
+            "main-class": "io.musician101.itembank.sponge.SpongeItemBank",
+            "description": "Virtual chest with configurable limits.",
+            "contributors": [
+                {
+                    "name": "Musician101",
+                    "description": "Lead Developer"
+                }
+            ],
+            "dependencies": [
+                {
+                    "id": "spongeapi",
+                    "version": "8.0.0"
+                }
+            ]
+        }
+    ]
+}

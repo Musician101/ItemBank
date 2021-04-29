@@ -1,14 +1,14 @@
 # List of whitelisted items.
 # i.e. minecraft:bedrock
-whitelist: []
+whitelist: [ ]
 
 # List of blacklisted items.
 # i.e. minecraft:bedrock
-blacklist: []
+blacklist: [ ]
 
 # Items that have quantity restrictions.
 item-restrictions:
-    minecraft:bedrock: 0
+  minecraft:bedrock: 0
 
 # Economy support. Requires Vault
 enable-economy: false
@@ -20,16 +20,16 @@ transaction-cost: 5
 multi-world: false
 
 # Storage options
-# Storage types: MySQL, MongoDB, SQLite, YAML, JSON, HOCON, TOML
+# Storage types: MySQL, MongoDB, SQLite, YAML, JSON, HOCON
 format: YAML
 
 # Database options
 database:
-    address: localhost
-    database: database
-    user: user
-    pass: password
-    mongo_uri: ''
+  address: localhost
+  database: database
+  user: user
+  pass: password
+  mongo_uri: ''
 
 # Limit the number of pages of items players can have.
 # If the amount is 0 then the amount of pages is infinite.

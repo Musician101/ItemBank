@@ -1,73 +1,75 @@
 package io.musician101.itembank.sponge.config;
 
-import com.google.common.reflect.TypeToken;
 import io.musician101.itembank.common.ItemBankConfig;
 import io.musician101.itembank.common.Reference.Config;
-import io.musician101.itembank.common.Reference.Messages;
-import io.musician101.itembank.sponge.SpongeItemBank;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Collections;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.asset.Asset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
+import org.spongepowered.configurate.reference.ConfigurationReference;
+import org.spongepowered.configurate.reference.ValueReference;
 
 public class SpongeConfig extends ItemBankConfig<ItemType> {
 
-    public SpongeConfig(File configDir) {
-        super(new File(configDir, "config.conf"));
-        reload();
+    private final ConfigurationReference<ConfigurationNode> configReference;
+
+    public SpongeConfig(ConfigurationReference<ConfigurationNode> configReference) {
+        this.configReference = configReference;
     }
 
     @Override
-    public void reload() {
-        Logger log = SpongeItemBank.instance().getLogger();
-        if (!configFile.exists()) {
-            configFile.mkdirs();
-            Asset asset = SpongeItemBank.instance().getPluginContainer().getAsset("config.conf").orElseThrow(() -> new IllegalStateException("Default config is missing form jar. Please contact the dev."));
-            try {
-                asset.copyToDirectory(Paths.get(configFile.getParent()));
-            }
-            catch (IOException e) {
-                log.warn(Messages.fileCreateFail(configFile));
-                return;
-            }
-        }
-
-        HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setFile(configFile).build();
-        ConfigurationNode config;
-        try {
-            config = loader.load();
-        }
-        catch (IOException e) {
-            log.warn(Messages.fileLoadFail(configFile));
-            return;
-        }
-
-        enableEconomy = config.getNode(Config.ENABLE_ECONOMY).getBoolean(false);
-        enableMultiWorldStorage = config.getNode(Config.MULTI_WORLD).getBoolean(false);
-        pageLimit = config.getNode(Config.PAGE_LIMIT).getInt(0);
-        transactionCost = config.getNode(Config.TRANSACTION_COST).getDouble(5);
-        format = config.getNode(Config.FORMAT).getString(Config.YAML);
-        try {
-            //noinspection UnstableApiUsage
-            config.getNode(Config.WHITELIST).getList(TypeToken.of(String.class), Collections.emptyList()).forEach(s -> Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(itemType -> s.equals(itemType.getId())).forEach(whiteList::add));
-            //noinspection UnstableApiUsage
-            config.getNode(Config.BLACKLIST).getList(TypeToken.of(String.class), Collections.emptyList()).forEach(s -> Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(itemType -> s.equals(itemType.getId())).forEach(blackList::add));
-        }
-        catch (ObjectMappingException e) {
-            e.printStackTrace();
-        }
-
-        ConfigurationNode itemRestrictions = config.getNode(Config.ITEM_RESTRICTIONS);
-        if (!itemRestrictions.isVirtual()) {
-            itemRestrictions.getChildrenMap().forEach((key, value) -> Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(itemType -> key.equals(itemType.getId())).forEach(itemType -> this.itemRestrictions.put(itemType, value.getInt())));
-        }
+    public void reload() throws IOException {
+        configReference.load();
+        ValueReference<DefaultConfig, ConfigurationNode> config = configReference.referenceTo(DefaultConfig.class);
+        DefaultConfig defaultConfig = Objects.requireNonNull(config.get());
+        replaceList(whitelist, defaultConfig.whitelist);
+        replaceList(blacklist, defaultConfig.blacklist);
+        replaceMap(itemRestrictions, defaultConfig.itemRestrictions);
+        replaceMap(databaseOptions, defaultConfig.databaseOptions);
+        enableEconomy = defaultConfig.enableEconomy;
+        enableMultiWorldStorage = defaultConfig.multiWorld;
+        transactionCost = defaultConfig.transactionCost;
+        pageLimit = defaultConfig.pageLimit;
+        format = defaultConfig.format;
     }
 
+    private void replaceList(List<ItemType> oldList, List<ItemType> newList) {
+        oldList.clear();
+        oldList.addAll(newList);
+    }
+
+    private <K, V> void replaceMap(Map<K, V> oldMap, Map<K, V> newMap) {
+        oldMap.clear();
+        oldMap.putAll(newMap);
+    }
+
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    @ConfigSerializable
+    public static class DefaultConfig {
+
+        @Setting
+        private List<ItemType> blacklist = new ArrayList<>();
+        @Setting(Config.DATABASE)
+        private Map<String, String> databaseOptions = new HashMap<>();
+        @Setting(Config.ENABLE_ECONOMY)
+        private boolean enableEconomy = false;
+        @Setting
+        private String format = "YAML";
+        @Setting(Config.ITEM_RESTRICTIONS)
+        private Map<ItemType, Integer> itemRestrictions = new HashMap<>();
+        @Setting(Config.MULTI_WORLD)
+        private boolean multiWorld = false;
+        @Setting(Config.PAGE_LIMIT)
+        private int pageLimit = 0;
+        @Setting(Config.TRANSACTION_COST)
+        private int transactionCost = 5;
+        @Setting
+        private List<ItemType> whitelist = new ArrayList<>();
+    }
 }

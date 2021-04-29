@@ -3,7 +3,6 @@ package io.musician101.itembank.spigot;
 import io.musician101.itembank.common.ItemBankConfig;
 import io.musician101.itembank.common.Reference.Config;
 import io.musician101.itembank.common.Reference.Messages;
-import java.io.File;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.bukkit.Material;
@@ -11,11 +10,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class SpigotConfig extends ItemBankConfig<Material> {
-
-    public SpigotConfig() {
-        super(new File(SpigotItemBank.instance().getDataFolder(), "config.yml"));
-        reload();
-    }
 
     @Override
     public void reload() {
@@ -38,7 +32,7 @@ public class SpigotConfig extends ItemBankConfig<Material> {
                     return;
                 }
 
-                whiteList.add(material);
+                whitelist.add(material);
             });
         }
 
@@ -50,7 +44,7 @@ public class SpigotConfig extends ItemBankConfig<Material> {
                     return;
                 }
 
-                blackList.add(material);
+                blacklist.add(material);
             });
         }
 

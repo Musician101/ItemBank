@@ -5,7 +5,7 @@ import io.musician101.itembank.common.Reference.GUIText;
 import io.musician101.itembank.common.Reference.Permissions;
 import io.musician101.itembank.common.account.Account;
 import io.musician101.itembank.spigot.SpigotItemBank;
-import io.musician101.musicianlibrary.java.minecraft.spigot.gui.SpigotIconBuilder;
+import io.musician101.musicianlibrary.java.minecraft.spigot.gui.chest.SpigotIconBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -21,7 +21,7 @@ public class AccountsGUI extends ItemBankChestGUI {
     private int page = 1;
 
     public AccountsGUI(@Nonnull Player player) {
-        super(player, GUIText.ACCOUNTS, 54);
+        super(player, GUIText.ACCOUNTS);
         updateSlots();
         setButton(49, BACK_ICON, ImmutableMap.of(ClickType.LEFT, p -> {
             if (p.hasPermission(Permissions.PLAYER)) {
@@ -34,13 +34,13 @@ public class AccountsGUI extends ItemBankChestGUI {
     }
 
     private void updateSlots() {
-        List<Account<ItemStack>> accounts = SpigotItemBank.instance().getAccountStorage().getAccounts();
+        List<Account<ItemStack>> accounts = SpigotItemBank.instance().getAccountStorage().getData();
         IntStream.range(0, 45).forEach(x -> {
             try {
                 int index = x * (page - 1) + 45;
                 Account<ItemStack> account = accounts.get(index);
                 List<String> description = Arrays.asList(ChatColor.GREEN + GUIText.CLICK_TO_VIEW, ChatColor.RED + GUIText.CLICK_TO_PURGE);
-                ItemStack itemStack = SpigotIconBuilder.builder(Material.PLAYER_HEAD).name(account.getName()).description(description).build();
+                ItemStack itemStack = SpigotIconBuilder.builder(Material.PLAYER_HEAD).name(getAccountName(account)).description(description).build();
                 setButton(x, itemStack, ImmutableMap.of(ClickType.LEFT, p -> new AccountGUI(account, p), ClickType.RIGHT, p -> {
                     if (!player.hasPermission(Permissions.PURGE)) {
                         return;

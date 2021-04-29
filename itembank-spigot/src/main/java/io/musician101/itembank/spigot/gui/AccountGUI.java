@@ -5,9 +5,9 @@ import io.musician101.itembank.common.Reference.GUIText;
 import io.musician101.itembank.common.Reference.Permissions;
 import io.musician101.itembank.common.account.Account;
 import io.musician101.itembank.common.account.AccountWorld;
-import io.musician101.itembank.spigot.SpigotItemBank;
 import io.musician101.itembank.spigot.SpigotConfig;
-import io.musician101.musicianlibrary.java.minecraft.spigot.gui.SpigotIconBuilder;
+import io.musician101.itembank.spigot.SpigotItemBank;
+import io.musician101.musicianlibrary.java.minecraft.spigot.gui.chest.SpigotIconBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -24,7 +24,7 @@ public class AccountGUI extends ItemBankChestGUI {
     private int page = 1;
 
     public AccountGUI(@Nonnull Account<ItemStack> account, @Nonnull Player player) {
-        super(player, String.format(GUIText.ACCOUNT, account.getName()), 54);
+        super(player, String.format(GUIText.ACCOUNT, getAccountName(account)));
         this.account = account;
         updateSlots();
         setButton(49, BACK_ICON, ImmutableMap.of(ClickType.LEFT, p -> {
@@ -35,6 +35,11 @@ public class AccountGUI extends ItemBankChestGUI {
 
             p.closeInventory();
         }));
+    }
+
+    private boolean checkMultiWorld(@Nonnull AccountWorld<ItemStack> world) {
+        SpigotConfig config = SpigotItemBank.instance().getPluginConfig();
+        return config.isMultiWorldStorageEnabled() && !player.getWorld().getName().equals(world.getWorldName()) && (player.hasPermission(Permissions.WORLD + "." + world.getWorldName()) || player.hasPermission(Permissions.WORLD));
     }
 
     private void updateSlots() {
@@ -84,10 +89,5 @@ public class AccountGUI extends ItemBankChestGUI {
                 updateSlots();
             }));
         }
-    }
-
-    private boolean checkMultiWorld(@Nonnull AccountWorld<ItemStack> world) {
-        SpigotConfig config = SpigotItemBank.instance().getPluginConfig();
-        return config.isMultiWorldStorageEnabled() && !player.getWorld().getName().equals(world.getWorldName()) && (player.hasPermission(Permissions.WORLD + "." + world.getWorldName()) || player.hasPermission(Permissions.WORLD));
     }
 }

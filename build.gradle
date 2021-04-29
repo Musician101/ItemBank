@@ -1,11 +1,5 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
-    }
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0' apply false
 }
 
 subprojects {
@@ -24,7 +18,9 @@ subprojects {
         mavenLocal()
     }
 
-    build {
-        dependsOn shadowJar
+    shadowJar {
+        archiveFileName = "${project.pluginId}-${project.version}.jar"
+        relocate 'io.musician101.musicianlibrary', 'io.musician101.itembank.lib.io.musician101.musicianlibrary'
+        dependsOn build
     }
 }
