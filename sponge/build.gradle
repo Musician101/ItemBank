@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compile(project(':itembank-common')) {
+    compile(project(':common')) {
         exclude group: 'org.spongepowered'
     }
 
@@ -14,7 +14,7 @@ sponge.plugin.id = pluginId
 
 shadowJar {
     dependencies {
-        include dependency(':itembank-common')
+        include dependency(':common')
         include dependency(':mongo-java-driver:')
     }
 }

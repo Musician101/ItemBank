@@ -1,5 +1,9 @@
 /.idea/
 /.gradle/
 /out/
-/itembank-*/build/
-/itembank-*/out/
+/common/build/
+/spigot/build/
+/sponge/build/
+/common/out/
+/spigot/out/
+/sponge/out/
