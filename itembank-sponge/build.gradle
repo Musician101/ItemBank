@@ -17,9 +17,4 @@ shadowJar {
         include dependency(':itembank-common')
         include dependency(':mongo-java-driver:')
     }
-
-    def lib = 'io.musician101.itembank.lib.'
-    relocate 'io.musician101.bukkitier', "${lib}io.musician101.bukkitier"
-    relocate 'io.musician101.musicianlibrary', "${lib}io.musician101.musicianlibrary"
-    dependsOn build
 }
